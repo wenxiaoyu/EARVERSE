@@ -73,6 +73,7 @@ export default function Today({
   const [shadowItems, setShadowItems] = useState<any[]>([]);
   const [shadowIdx, setShadowIdx] = useState(0);
   const [shadowGroup, setShadowGroup] = useState(1);
+  const [shadowSeen, setShadowSeen] = useState(1);
   const [shadowResult, setShadowResult] = useState<any>(null);
   const [shadowDetail, setShadowDetail] = useState(false);
   const [shadowScores, setShadowScores] = useState<number[]>([]);
@@ -106,7 +107,7 @@ export default function Today({
   // 切换场景：清空并重新生成练习 + 跟读
   useEffect(() => {
     setItems([]); setResults({}); setRevealed({}); setDiagnosis(null);
-    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1);
+    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1); setShadowSeen(1);
     tabPicked.current = false; setTab(0);
     let alive = true;
     api.generate(domain, "cards", 10)
@@ -170,6 +171,7 @@ export default function Today({
   const loadShadow = async () => {
     setShadowLoading(true); setShadowResult(null); setShadowIdx(0);
     setShadowGroup((g) => g + 1);
+    setShadowSeen((n) => n + 1);
     try {
       const r = await api.pronunciationItems(domain, 5);
       setShadowItems(r.items || []);
@@ -195,6 +197,7 @@ export default function Today({
     setShadowDetail(false);
     if (shadowIdx + 1 < shadowItems.length) {
       setShadowIdx(shadowIdx + 1);
+      setShadowSeen((n) => n + 1);
     } else {
       toast("本组 5 句完成，开始下一组");
       loadShadow();
@@ -203,12 +206,20 @@ export default function Today({
 
   // 首次进入不自动播放；用户点过播放/做过选择后，后续新题自动播放
   const mpArmed = useRef(false);
+  const mpAutoTimer = useRef<number | null>(null);
+  const clearMpAuto = () => {
+    if (mpAutoTimer.current !== null) {
+      window.clearTimeout(mpAutoTimer.current);
+      mpAutoTimer.current = null;
+    }
+  };
   const pickMp = (p: any, autoplay = false) => {
     const t = Math.random() < 0.5 ? "a" : "b";
     setMpPair(p); setMpTarget(t); setMpPick(null);
     if (autoplay) setTimeout(() => speak(p[t], "real"), 60);
   };
   const loadMp = async (first = false) => {
+    clearMpAuto();
     const r = await api.minimalPairs(domain, 8);
     const items = r.items || [];
     setMpItems(items);
@@ -218,6 +229,7 @@ export default function Today({
     else setMpPair(null);
   };
   const nextMp = async () => {
+    clearMpAuto();
     if (!mpItems.length) { await loadMp(); return; }
     const next = mpIdx + 1;
     if (next >= mpItems.length) { await loadMp(); return; }
@@ -236,6 +248,13 @@ export default function Today({
     setMpPick(c);
     setMpStat((s) => ({ ok: s.ok + (c === mpTarget ? 1 : 0), total: s.total + 1 }));
     api.dailyMinimalPair(domain, c === mpTarget, mpPair.focus, mpPair[mpTarget]).catch(() => {});
+    // 答对：短暂停留展示结果后，自动进入下一题并播放；答错：停留，便于重听
+    if (c === mpTarget) {
+      mpAutoTimer.current = window.setTimeout(() => {
+        mpAutoTimer.current = null;
+        nextMp();
+      }, 950);
+    }
   };
 
   const marked = items.filter((it) => results[it.id] !== undefined).length;
@@ -442,7 +461,7 @@ export default function Today({
             {shadow ? (
               <>
                 <div className="row" style={{ justifyContent: "space-between" }}>
-                  <span className="hint">第 {shadowGroup} 组 · {shadowIdx + 1}/{shadowItems.length} 句</span>
+                  <span className="hint">第 {shadowSeen} 句（第 {shadowGroup} 组 · {shadowIdx + 1}/{shadowItems.length}）</span>
                   <div className="row">
                     {shadow.focus && <span className="badge">{shadow.focus}</span>}
                     <button className="p-play" onClick={() => speak(shadow.text, "real")}>▶</button>
