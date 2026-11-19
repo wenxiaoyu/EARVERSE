@@ -358,7 +358,9 @@ label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transfo
 
 /* 最小对立对 / 场景台词跟读 */
 .mp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.mp-opt{background:#191411;border:1px solid var(--hair);color:var(--ink);padding:14px;border-radius:12px;cursor:pointer;font-size:16px}
+.mp-opt{display:flex;align-items:center;justify-content:center;min-height:84px;
+  background:#191411;border:1px solid var(--hair);color:var(--ink);padding:20px 14px;
+  border-radius:12px;cursor:pointer;font-size:17px;line-height:1.2}
 .mp-opt:hover{border-color:rgba(232,163,61,.5)}
 .mp-opt.ok{border-color:var(--green);color:var(--green)}
 .mp-opt.bad{border-color:var(--red);color:var(--red)}
