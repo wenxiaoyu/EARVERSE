@@ -3,16 +3,13 @@
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 --no-start
 
-param()
-
 $ErrorActionPreference = "Stop"
 try {
   [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 } catch {}
 
-$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-Set-Location $Root
-$NoStart = $args -contains "--no-start"
+$NoStart = ($args -contains "--no-start") -or ($env:EARVERSE_NO_START -eq "1")
+$Update = $args -contains "--update"
 
 function Log($m) { Write-Host "[earverse] $m" -ForegroundColor Yellow }
 function Ok($m) { Write-Host "[earverse] $m" -ForegroundColor Green }
@@ -21,6 +18,43 @@ function Die($m) {
   exit 1
 }
 
+# ---------- 定位代码：本地目录 或 远端下载 ----------
+$Root = $null
+if ($PSScriptRoot -and (Test-Path (Join-Path $PSScriptRoot "app\backend"))) {
+  $Root = $PSScriptRoot
+}
+if (-not $Root) {
+  $Dest = if ($env:EARVERSE_DIR) { $env:EARVERSE_DIR } else { Join-Path $HOME "earverse" }
+  $needDownload = $Update -or (-not (Test-Path (Join-Path $Dest "app\backend")))
+  if ($needDownload) {
+    Log "下载最新代码 → $Dest"
+    $stamp = [guid]::NewGuid().ToString("N")
+    $zip = Join-Path $env:TEMP "earverse-$stamp.zip"
+    $tmp = Join-Path $env:TEMP "earverse-$stamp"
+    Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/wenxiaoyu/EARVERSE/archive/refs/heads/main.zip" -OutFile $zip
+    Expand-Archive -Path $zip -DestinationPath $tmp -Force
+    $src = Get-ChildItem $tmp -Directory | Select-Object -First 1
+    if (-not $src) { Die "下载包解压失败。" }
+    New-Item -ItemType Directory -Force -Path $Dest | Out-Null
+    $backup = Join-Path $Dest ".earverse-data-preserve"
+    if (Test-Path (Join-Path $Dest "app\backend\data")) {
+      if (Test-Path $backup) { Remove-Item $backup -Recurse -Force }
+      Move-Item (Join-Path $Dest "app\backend\data") $backup
+    }
+    Copy-Item (Join-Path $src.FullName "*") $Dest -Recurse -Force
+    if (Test-Path $backup) {
+      $dataDir = Join-Path $Dest "app\backend\data"
+      if (Test-Path $dataDir) { Remove-Item $dataDir -Recurse -Force }
+      Move-Item $backup $dataDir
+    }
+    Remove-Item $zip, $tmp -Recurse -Force -ErrorAction SilentlyContinue
+  } else {
+    Log "已安装：$Dest（加 --update 更新代码）"
+  }
+  $Root = $Dest
+}
+Set-Location $Root
+Log "目录：$Root"
 Log "平台：Windows"
 
 # ---------- Python ----------

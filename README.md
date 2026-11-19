@@ -99,31 +99,48 @@ english-trainer/
 
 ---
 
-## 快速开始（一键安装）
+## 快速开始（一行安装）
 
-> 需要：**Python 3.10+**、**Node.js 18+**。脚本会自动创建虚拟环境、装依赖、构建前端并启动。
+> 需要：**Python 3.10+**、**Node.js 18+**。安装器会自动下载代码、创建虚拟环境、装依赖、构建前端并启动。
 
 ### macOS / Linux / WSL
 
 ```bash
-chmod +x install.sh
-./install.sh                 # 安装并启动
-./install.sh --no-start      # 只安装
-./start.sh                   # 之后启动
+curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash
 ```
 
-### Windows
+- 只安装不启动：
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash -s -- --no-start
+  ```
+- 指定安装目录（默认 `~/earverse`）：
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh \
+    | EARVERSE_DIR="$HOME/apps/earverse" bash
+  ```
+- 之后启动：`cd ~/earverse && ./start.sh`
 
-双击 **`install.bat`**（推荐），或在 PowerShell 中：
+### Windows（PowerShell）
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install.ps1
-powershell -ExecutionPolicy Bypass -File .\install.ps1 --no-start
+irm https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.ps1 | iex
 ```
 
-之后双击 **`start.bat`** 启动。
+- 只安装不启动：
+  ```powershell
+  $env:EARVERSE_NO_START="1"; irm https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.ps1 | iex
+  ```
+- 之后启动：双击安装目录下的 `start.bat`
 
 打开 **http://127.0.0.1:8000**
+
+### 本地仓库
+
+```bash
+./install.sh                 # 安装并启动
+./install.sh --no-start      # 只安装
+./install.sh --update        # 更新代码（保留画像/设置）
+```
 
 ### 手动方式（可选）
 

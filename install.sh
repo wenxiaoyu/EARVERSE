@@ -1,17 +1,42 @@
 #!/usr/bin/env bash
-# 耳界 EARVERSE · 跨平台一键安装（macOS / Linux / WSL / Git Bash）
-# 用法：./install.sh            安装并启动
-#       ./install.sh --no-start 只安装，不启动
+# 耳界 EARVERSE · 跨平台安装
+#
+# 远端一键（推荐）：
+#   curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash
+#   加参数：curl -fsSL ... | bash -s -- --no-start
+#   指定目录：curl -fsSL ... | EARVERSE_DIR="$HOME/apps/earverse" bash
+#
+# 本地仓库：
+#   ./install.sh [--no-start] [--update]
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$ROOT"
+REPO_OWNER="wenxiaoyu"
+REPO_NAME="EARVERSE"
+BRANCH="main"
+TARBALL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.tar.gz"
 
 START=1
+UPDATE=0
 for arg in "$@"; do
   case "$arg" in
     --no-start) START=0 ;;
     --start) START=1 ;;
+    --update) UPDATE=1 ;;
+    -h|--help)
+      cat <<'EOF'
+耳界 EARVERSE 安装器
+
+用法：
+  ./install.sh                 本地安装并启动
+  ./install.sh --no-start      只安装
+  ./install.sh --update        更新代码（保留画像/设置）
+  curl -fsSL <install.sh> | bash
+  curl -fsSL <install.sh> | bash -s -- --no-start
+
+环境变量：
+  EARVERSE_DIR   安装目录（默认 ~/earverse）
+EOF
+      exit 0 ;;
   esac
 done
 
@@ -21,13 +46,54 @@ log()  { printf "${AMBER}[earverse]${RESET} %s\n" "$*"; }
 ok()   { printf "${BOLD}[earverse]${RESET} %s\n" "$*"; }
 die()  { printf "${RED}[earverse] %s${RESET}\n" "$*" >&2; exit 1; }
 
-# ---------- 平台 ----------
+# ---------- 定位代码：本地目录 或 远端下载 ----------
+ROOT=""
+SRC="${BASH_SOURCE[0]:-}"
+if [ -n "$SRC" ] && [ -f "$SRC" ]; then
+  CAND="$(cd "$(dirname "$SRC")" && pwd)"
+  if [ -d "$CAND/app/backend" ]; then ROOT="$CAND"; fi
+fi
+
+if [ -z "$ROOT" ]; then
+  command -v curl >/dev/null 2>&1 || die "需要 curl 才能远端安装。"
+  command -v tar  >/dev/null 2>&1 || die "需要 tar 才能解压。"
+  DEST="${EARVERSE_DIR:-$HOME/earverse}"
+
+  if [ ! -d "$DEST/app/backend" ] || [ "$UPDATE" = "1" ]; then
+    log "下载最新代码 → $DEST"
+    TMP="$(mktemp -d)"
+    curl -fsSL "$TARBALL" -o "$TMP/repo.tgz" || die "下载失败：$TARBALL"
+    tar -xzf "$TMP/repo.tgz" -C "$TMP"
+    SRC_DIR="$(find "$TMP" -maxdepth 1 -type d -name "${REPO_NAME}-*" | head -n 1)"
+    [ -n "$SRC_DIR" ] || die "解压失败。"
+
+    mkdir -p "$DEST"
+    # 更新时保留画像与设置
+    if [ -d "$DEST/app/backend/data" ]; then
+      rm -rf "$DEST/.earverse-data-preserve"
+      mv "$DEST/app/backend/data" "$DEST/.earverse-data-preserve"
+    fi
+    cp -R "$SRC_DIR/." "$DEST/"
+    if [ -d "$DEST/.earverse-data-preserve" ]; then
+      mkdir -p "$DEST/app/backend"
+      rm -rf "$DEST/app/backend/data"
+      mv "$DEST/.earverse-data-preserve" "$DEST/app/backend/data"
+    fi
+    rm -rf "$TMP"
+  else
+    log "已安装：$DEST（加 --update 更新代码）"
+  fi
+  ROOT="$DEST"
+fi
+
+cd "$ROOT"
 case "$(uname -s)" in
   Darwin) PLATFORM="macOS" ;;
   Linux)  if grep -qi microsoft /proc/version 2>/dev/null; then PLATFORM="WSL"; else PLATFORM="Linux"; fi ;;
   MINGW*|MSYS*|CYGWIN*) PLATFORM="Windows (Git Bash)" ;;
   *) PLATFORM="$(uname -s)" ;;
 esac
+log "目录：$ROOT"
 log "平台：$PLATFORM"
 
 # ---------- Python ----------
@@ -82,7 +148,7 @@ ok "安装完成。"
 # ---------- 启动 ----------
 if [ "$START" = "0" ]; then
   echo
-  echo "启动：./start.sh        → http://127.0.0.1:8000"
+  echo "启动：cd \"$ROOT\" && ./start.sh   → http://127.0.0.1:8000"
   exit 0
 fi
 
@@ -103,4 +169,4 @@ fi
 
 ok "启动服务：http://127.0.0.1:8000"
 cd app/backend
-exec "$(cd "$ROOT" && echo "$VPY")" -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+exec "$ROOT/$VPY" -m uvicorn app.main:app --host 127.0.0.1 --port 8000
