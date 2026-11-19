@@ -1,5 +1,5 @@
 import AsyncButton from "../components/AsyncButton";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { toast } from "../toast";
 import { getBg, setBg } from "../bgTheme";
@@ -13,23 +13,49 @@ import {
   speak,
   subscribe,
   voiceTag,
+  type VoiceSettings,
 } from "../tts";
 
 export default function Settings({ onSaved }: { onSaved: () => void }) {
   const [v, setV] = useState(getSettings());
   const [voices, setVoices] = useState(getVoices());
 
+  // 拖动时只更新本地状态；停顿/松手后再落盘，避免每个像素都写 localStorage。
+  const pending = useRef<Partial<VoiceSettings>>({});
+  const saveTimer = useRef<number | null>(null);
+
+  const flushVoiceSettings = () => {
+    if (saveTimer.current != null) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    const patch = pending.current;
+    pending.current = {};
+    if (Object.keys(patch).length) saveSettings(patch);
+  };
+
+  const changeVoiceSetting = (patch: Partial<VoiceSettings>) => {
+    setV((prev) => ({ ...prev, ...patch }));
+    pending.current = { ...pending.current, ...patch };
+    if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(flushVoiceSettings, 160);
+  };
+
   useEffect(() => {
-    const unsub = subscribe(() => {
-      setV(getSettings());
-      setVoices(getVoices());
-    });
+    const unsub = subscribe(() => setV(getSettings()));
     loadVoices();
+    setVoices(getVoices());
     const t = setTimeout(() => setVoices(getVoices()), 300);
+    const synth = window.speechSynthesis;
+    const onVoices = () => setVoices(loadVoices());
+    synth?.addEventListener?.("voiceschanged", onVoices);
     return () => {
       unsub();
       clearTimeout(t);
+      synth?.removeEventListener?.("voiceschanged", onVoices);
+      if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [baseUrl, setBaseUrl] = useState("");
@@ -121,16 +147,30 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
         </div>
 
         <label>语速 · <b style={{ color: "var(--amber)" }}>{v.rate.toFixed(2)}</b></label>
-        <input type="range" min={0.6} max={1.3} step={0.05} value={v.rate}
-          onChange={(e) => saveSettings({ rate: parseFloat(e.target.value) })} />
+        <input
+          className="range"
+          type="range" min={0.6} max={1.3} step={0.05} value={v.rate}
+          style={{ ["--p" as any]: `${Math.max(0, Math.min(100, ((v.rate - 0.6) / 0.7) * 100))}%` }}
+          onChange={(e) => changeVoiceSetting({ rate: parseFloat(e.target.value) })}
+          onPointerUp={flushVoiceSettings}
+          onKeyUp={flushVoiceSettings}
+          onBlur={flushVoiceSettings}
+        />
         <div className="row" style={{ marginTop: 8 }}>
           <button className="btn sm" onClick={() => { speak(TTS_SAMPLE); toast("试听：语速 " + v.rate.toFixed(2)); }}>试听</button>
           <span className="hint">1.0 接近真人；0.75 只用于第一遍听写。</span>
         </div>
 
         <label>音高 · <b style={{ color: "var(--amber)" }}>{v.pitch.toFixed(2)}</b></label>
-        <input type="range" min={0.8} max={1.2} step={0.02} value={v.pitch}
-          onChange={(e) => saveSettings({ pitch: parseFloat(e.target.value) })} />
+        <input
+          className="range"
+          type="range" min={0.8} max={1.2} step={0.02} value={v.pitch}
+          style={{ ["--p" as any]: `${Math.max(0, Math.min(100, ((v.pitch - 0.8) / 0.4) * 100))}%` }}
+          onChange={(e) => changeVoiceSetting({ pitch: parseFloat(e.target.value) })}
+          onPointerUp={flushVoiceSettings}
+          onKeyUp={flushVoiceSettings}
+          onBlur={flushVoiceSettings}
+        />
         <div className="row" style={{ marginTop: 8 }}>
           <button className="btn sm" onClick={() => { speak(TTS_SAMPLE); toast("试听：音高 " + v.pitch.toFixed(2)); }}>试听</button>
           <span className="hint">1.00 原声；0.94–0.98 压掉一点播音腔。</span>
