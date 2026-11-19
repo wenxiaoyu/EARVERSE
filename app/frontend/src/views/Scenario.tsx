@@ -8,9 +8,29 @@ import { createWavRecorder } from "../wavRecorder";
 type Scenario = { id: string; cat: string; title: string; goal: string; load: number };
 
 const CAT_BY_DOMAIN: Record<string, string[]> = {
-  work: ["work", "client"],
-  travel: ["travel"],
+  work: ["work"],
+  meeting: ["meeting"],
+  client: ["client"],
+  negotiate: ["negotiate"],
+  report: ["report"],
+  phone: ["phone"],
+  email: ["email"],
+  management: ["management"],
+  collab: ["collab"],
   interview: ["interview"],
+  travel: ["travel"],
+  hotel: ["hotel"],
+  airport: ["airport"],
+  transit: ["transit"],
+  dining: ["dining"],
+  shopping: ["shopping"],
+  medical: ["medical"],
+  bank: ["bank"],
+  rent: ["rent"],
+  neighbor: ["neighbor"],
+  complaint: ["complaint"],
+  emergency: ["emergency"],
+  networking: ["networking"],
   social: ["social"],
 };
 type Turn = { role: string; text: string; by_name?: string };

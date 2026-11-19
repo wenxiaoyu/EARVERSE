@@ -2560,5 +2560,3956 @@
       "先给关系台阶，再说问题",
       "提一个可执行的时间约定"
     ]
+  },
+  {
+    "id": "m-interrupt",
+    "cat": "meeting",
+    "load": 3,
+    "title": "会中被抢话，拉回议题",
+    "goal": "把被打断的议题拉回来，并拿到一个结论",
+    "place": "项目周会，五个人在线",
+    "role": "产品经理 Alex",
+    "brief": "你正在说风险，被 Alex 打断去聊另一个需求。你要礼貌但坚决地把话题拉回来，并推动结论。",
+    "opener": "Can we park that and come back to the risk?",
+    "covers": [
+      "cut-in",
+      "clarify-number",
+      "disagree",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "alex",
+        "name": "Alex",
+        "role": "产品经理",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.06,
+          "rate": 1.05
+        },
+        "stance": "习惯抢话，认为自己的需求更急。",
+        "opener": "Can we park that and come back to the risk?"
+      },
+      {
+        "id": "dana",
+        "name": "Dana",
+        "role": "会议主持",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.0
+        },
+        "stance": "控场，但不想得罪人，会问时间。"
+      }
+    ],
+    "must": [
+      "Can I finish this point first",
+      "Let's come back to",
+      "To confirm, we agreed"
+    ],
+    "phrases": [
+      "Can I finish this point first? It affects the launch date.",
+      "Let's come back to your feature right after this.",
+      "To confirm, we agreed to keep the original scope."
+    ],
+    "beats": [
+      {
+        "by": "alex",
+        "text": "Can we park that and come back to the risk?"
+      },
+      {
+        "by": "alex",
+        "text": "Actually, the new dashboard is more urgent."
+      },
+      {
+        "by": "dana",
+        "text": "How much time do you need for this point?"
+      },
+      {
+        "by": "alex",
+        "text": "Fine, go ahead."
+      },
+      {
+        "by": "dana",
+        "text": "So what's the decision here?"
+      }
+    ],
+    "hints": [
+      "被打断时先说“让我说完这一点”",
+      "结尾复述结论"
+    ]
+  },
+  {
+    "id": "m-decision",
+    "cat": "meeting",
+    "load": 2,
+    "title": "会末推动拍板",
+    "goal": "在会议结束前拿到明确决定和负责人",
+    "place": "决策会最后 10 分钟",
+    "role": "产品经理 Rachel",
+    "brief": "讨论了很久但没人拍板。你要收口：给两个选项，问谁负责，定时间。",
+    "opener": "So where are we landing on this?",
+    "covers": [
+      "ask-commit",
+      "clarify-number",
+      "wrap-confirm",
+      "disagree"
+    ],
+    "cast": [
+      {
+        "id": "rachel",
+        "name": "Rachel",
+        "role": "产品经理",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.04
+        },
+        "stance": "想再讨论，容易说“下周再说”。",
+        "opener": "So where are we landing on this?"
+      },
+      {
+        "id": "mark",
+        "name": "Mark",
+        "role": "你的经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.98
+        },
+        "stance": "愿意拍板，但要先看清风险。"
+      }
+    ],
+    "must": [
+      "We can either A or B",
+      "Who owns this",
+      "Can we decide by"
+    ],
+    "phrases": [
+      "We can either ship the smaller scope or delay one week.",
+      "Who owns the follow-up on this?",
+      "Can we decide by the end of this call?"
+    ],
+    "beats": [
+      {
+        "by": "rachel",
+        "text": "So where are we landing on this?"
+      },
+      {
+        "by": "rachel",
+        "text": "Maybe we should discuss it next week."
+      },
+      {
+        "by": "mark",
+        "text": "What are the two options?"
+      },
+      {
+        "by": "rachel",
+        "text": "I still think we need more data."
+      },
+      {
+        "by": "mark",
+        "text": "Okay, let's decide now."
+      }
+    ],
+    "hints": [
+      "给两个选项，别开放式讨论",
+      "把负责人和日期钉死"
+    ]
+  },
+  {
+    "id": "m-remote",
+    "cat": "meeting",
+    "load": 2,
+    "title": "远程会议听不清",
+    "goal": "确认关键数字和下一步，不在噪音里猜",
+    "place": "远程会议，网络很差",
+    "role": "远程同事 Sam",
+    "brief": "对方声音断断续续，关键数字听不清。你要打断、要求重复，并确认理解。",
+    "opener": "Sorry, you cut out — could you repeat the number?",
+    "covers": [
+      "ask-repeat",
+      "clarify-number",
+      "cut-in",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "sam",
+        "name": "Sam",
+        "role": "远程同事",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.06
+        },
+        "stance": "网络差，语速快，容易重复同一句。",
+        "opener": "Sorry, you cut out — could you repeat the number?"
+      },
+      {
+        "id": "dana",
+        "name": "Dana",
+        "role": "会议主持",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.0
+        },
+        "stance": "想推进，会催你“大概知道就行”。"
+      }
+    ],
+    "must": [
+      "Sorry, you cut out",
+      "Do you mean",
+      "Let me repeat that back"
+    ],
+    "phrases": [
+      "Sorry, you cut out — do you mean fifteen or fifty?",
+      "Let me repeat that back: the deadline is the 15th.",
+      "I want to confirm before we move on."
+    ],
+    "beats": [
+      {
+        "by": "sam",
+        "text": "Sorry, you cut out — could you repeat the number?"
+      },
+      {
+        "by": "sam",
+        "text": "It's fifteen, one-five."
+      },
+      {
+        "by": "dana",
+        "text": "Can we move on? We're running late."
+      },
+      {
+        "by": "sam",
+        "text": "Wait — fifteen what? Days or percent?"
+      },
+      {
+        "by": "dana",
+        "text": "Okay, confirm it in the notes."
+      }
+    ],
+    "hints": [
+      "听不清就打断，不要猜",
+      "把数字复述一遍确认"
+    ]
+  },
+  {
+    "id": "p-progress",
+    "cat": "phone",
+    "load": 2,
+    "title": "客户电话问进度",
+    "goal": "给客户明确进度、风险和下一个时间点",
+    "place": "客户突然来电",
+    "role": "客户 PM Laura",
+    "brief": "客户问项目进度。实际有一个风险，你不能只说“顺利”，要给事实和下一个节点。",
+    "opener": "Quick one — are we still on track for Friday?",
+    "covers": [
+      "bad-news",
+      "ask-commit",
+      "clarify-number",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "laura",
+        "name": "Laura",
+        "role": "客户 PM",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "要确定答复，讨厌“应该没问题”。",
+        "opener": "Quick one — are we still on track for Friday?"
+      },
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "客户工程师",
+        "tag": "bystander",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "关心技术风险，会追问细节。"
+      }
+    ],
+    "must": [
+      "We're on track except",
+      "I'll confirm by",
+      "The risk is"
+    ],
+    "phrases": [
+      "We're on track except for one integration risk.",
+      "The risk is the payment API, not the UI.",
+      "I'll confirm by Wednesday noon."
+    ],
+    "beats": [
+      {
+        "by": "laura",
+        "text": "Quick one — are we still on track for Friday?"
+      },
+      {
+        "by": "laura",
+        "text": "So it's all fine?"
+      },
+      {
+        "by": "tom",
+        "text": "What's the actual risk?"
+      },
+      {
+        "by": "laura",
+        "text": "When will you know for sure?"
+      },
+      {
+        "by": "laura",
+        "text": "Okay, send me that in writing."
+      }
+    ],
+    "hints": [
+      "别说“应该没问题”",
+      "给风险 + 下一个确认时间"
+    ]
+  },
+  {
+    "id": "p-signal",
+    "cat": "phone",
+    "load": 2,
+    "title": "信号差，确认关键数字",
+    "goal": "在断线中确认时间/金额，避免事后扯皮",
+    "place": "车内蓝牙电话，信号断断续续",
+    "role": "供应商 Hans",
+    "brief": "电话里对方报了一个价格和交期，你没听清。要逐项确认并复述。",
+    "opener": "So the price is twelve thousand, delivered by the 20th.",
+    "covers": [
+      "ask-repeat",
+      "clarify-number",
+      "self-repair",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "hans",
+        "name": "Hans",
+        "role": "供应商",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 1.02
+        },
+        "stance": "语速快，信号差，容易不耐烦。",
+        "opener": "So the price is twelve thousand, delivered by the 20th."
+      }
+    ],
+    "must": [
+      "Sorry, was that twelve or twenty",
+      "Let me repeat that back",
+      "Can you send it in writing"
+    ],
+    "phrases": [
+      "Sorry, was that twelve or twenty thousand?",
+      "Let me repeat that back: twelve thousand, delivered by the 20th.",
+      "Can you send it in writing after this call?"
+    ],
+    "beats": [
+      {
+        "by": "hans",
+        "text": "So the price is twelve thousand, delivered by the 20th."
+      },
+      {
+        "by": "hans",
+        "text": "Yes, twelve. One-two."
+      },
+      {
+        "by": "hans",
+        "text": "And delivery is the 20th, not the 12th."
+      },
+      {
+        "by": "hans",
+        "text": "Did you get that?"
+      },
+      {
+        "by": "hans",
+        "text": "I'll email the quote."
+      }
+    ],
+    "hints": [
+      "数字逐个确认",
+      "结束后要求书面确认"
+    ]
+  },
+  {
+    "id": "p-vendor",
+    "cat": "phone",
+    "load": 2,
+    "title": "催供应商交付",
+    "goal": "拿到新的交付日期和补偿方案",
+    "place": "供应商电话",
+    "role": "供应商经理 Victor",
+    "brief": "供应商已经晚了两周。你要问清原因、拿到新日期，并谈一个补偿。",
+    "opener": "We're doing our best, but it's going to be late.",
+    "covers": [
+      "ask-commit",
+      "probe-detail",
+      "bad-news",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "供应商经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "会说“尽力”，习惯把日期往后推。",
+        "opener": "We're doing our best, but it's going to be late."
+      }
+    ],
+    "must": [
+      "What's the new date",
+      "What caused the delay",
+      "Can you commit to"
+    ],
+    "phrases": [
+      "What's the new date you can commit to?",
+      "What caused the delay specifically?",
+      "Can you commit to Friday, in writing?"
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "We're doing our best, but it's going to be late."
+      },
+      {
+        "by": "victor",
+        "text": "The parts are stuck at customs."
+      },
+      {
+        "by": "victor",
+        "text": "Maybe next Wednesday."
+      },
+      {
+        "by": "victor",
+        "text": "We can offer a discount for the delay."
+      },
+      {
+        "by": "victor",
+        "text": "I'll confirm Friday by tomorrow."
+      }
+    ],
+    "hints": [
+      "不接受“尽力/尽快”",
+      "新日期 + 补偿一起谈"
+    ]
+  },
+  {
+    "id": "e-confirm",
+    "cat": "email",
+    "load": 2,
+    "title": "电话确认邮件行动项",
+    "goal": "把邮件里的三个行动项口头确认清楚",
+    "place": "电话会，双方对着同一封邮件",
+    "role": "客户 PM Laura",
+    "brief": "邮件里有三个行动项，但没人确认谁做、什么时候做。你要逐条过一遍。",
+    "opener": "I saw your email — can we walk through the action items?",
+    "covers": [
+      "wrap-confirm",
+      "clarify-number",
+      "ask-commit",
+      "probe-detail"
+    ],
+    "cast": [
+      {
+        "id": "laura",
+        "name": "Laura",
+        "role": "客户 PM",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "发了邮件但没细看，容易说“就按邮件”。",
+        "opener": "I saw your email — can we walk through the action items?"
+      },
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "客户工程师",
+        "tag": "bystander",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "关心技术项，会问细节。"
+      }
+    ],
+    "must": [
+      "The first item is",
+      "Who owns",
+      "Can we confirm by"
+    ],
+    "phrases": [
+      "The first item is the API key — who owns it?",
+      "Can we confirm the dates by Friday?",
+      "Let me summarize the three items."
+    ],
+    "beats": [
+      {
+        "by": "laura",
+        "text": "I saw your email — can we walk through the action items?"
+      },
+      {
+        "by": "laura",
+        "text": "I think it's all in the email."
+      },
+      {
+        "by": "tom",
+        "text": "Who's doing the API change?"
+      },
+      {
+        "by": "laura",
+        "text": "Okay, so three items."
+      },
+      {
+        "by": "laura",
+        "text": "Send me the summary."
+      }
+    ],
+    "hints": [
+      "逐条确认负责人和日期",
+      "结尾复述三条"
+    ]
+  },
+  {
+    "id": "e-chase",
+    "cat": "email",
+    "load": 1,
+    "title": "口头催回复",
+    "goal": "礼貌但明确地让对方今天回复",
+    "place": "电话/语音，跟进一封没回的邮件",
+    "role": "同事 Ben",
+    "brief": "你发的邮件两天没回，项目被卡住。你要在不得罪人的情况下拿到回复。",
+    "opener": "Hey — did you get a chance to look at my email?",
+    "covers": [
+      "ask-commit",
+      "soft-no",
+      "probe-detail",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "ben",
+        "name": "Ben",
+        "role": "同事",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "忙，确实没看，容易说“我晚点看”。",
+        "opener": "Hey — did you get a chance to look at my email?"
+      }
+    ],
+    "must": [
+      "I know you're busy, but",
+      "Could you reply by",
+      "Is there anything blocking"
+    ],
+    "phrases": [
+      "I know you're busy, but I need this to unblock the release.",
+      "Could you reply by 4 p.m. today?",
+      "Is there anything blocking your review?"
+    ],
+    "beats": [
+      {
+        "by": "ben",
+        "text": "Hey — did you get a chance to look at my email?"
+      },
+      {
+        "by": "ben",
+        "text": "Not yet, sorry. It's been crazy."
+      },
+      {
+        "by": "ben",
+        "text": "I'll look at it later."
+      },
+      {
+        "by": "ben",
+        "text": "What do you need exactly?"
+      },
+      {
+        "by": "ben",
+        "text": "Okay, I'll reply by four."
+      }
+    ],
+    "hints": [
+      "先给台阶，再说截止时间",
+      "把“晚点”问成具体时间"
+    ]
+  },
+  {
+    "id": "e-mistake",
+    "cat": "email",
+    "load": 2,
+    "title": "误发邮件后澄清",
+    "goal": "承认错误、控制影响、给出补救",
+    "place": "电话，刚发现邮件发错人",
+    "role": "同事 Nora",
+    "brief": "你把带内部报价的邮件发给了客户。要在五分钟内承认、止损、给方案。",
+    "opener": "I think I sent the internal quote to the client.",
+    "covers": [
+      "self-repair",
+      "bad-news",
+      "propose-alt",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "nora",
+        "name": "Nora",
+        "role": "同事",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "会紧张，先问影响范围。",
+        "opener": "I think I sent the internal quote to the client."
+      }
+    ],
+    "must": [
+      "I made a mistake",
+      "The impact is",
+      "What I'm doing now is"
+    ],
+    "phrases": [
+      "I made a mistake and sent the internal quote to the client.",
+      "The impact is that they can see our margin.",
+      "What I'm doing now is recalling the email and calling them."
+    ],
+    "beats": [
+      {
+        "by": "nora",
+        "text": "I think I sent the internal quote to the client."
+      },
+      {
+        "by": "nora",
+        "text": "How bad is it? Can you recall it?"
+      },
+      {
+        "by": "nora",
+        "text": "Do they know it's internal?"
+      },
+      {
+        "by": "nora",
+        "text": "What do you want me to do?"
+      },
+      {
+        "by": "nora",
+        "text": "Okay, I'll call them now."
+      }
+    ],
+    "hints": [
+      "先承认，再讲影响和动作",
+      "别解释太多"
+    ]
+  },
+  {
+    "id": "r-weekly",
+    "cat": "report",
+    "load": 2,
+    "title": "周会汇报",
+    "goal": "用 1 分钟说清进展、风险、下周计划",
+    "place": "团队周会，经理和同事在",
+    "role": "你的经理 Mark",
+    "brief": "轮到你汇报。你要给结构化的一分钟：做了什么、风险、下周。",
+    "opener": "Give us a quick update.",
+    "covers": [
+      "bad-news",
+      "ask-commit",
+      "clarify-number",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "mark",
+        "name": "Mark",
+        "role": "你的经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.98
+        },
+        "stance": "要结论，不喜欢流水账。",
+        "opener": "Give us a quick update."
+      }
+    ],
+    "must": [
+      "This week we shipped",
+      "The main risk is",
+      "Next week we'll"
+    ],
+    "phrases": [
+      "This week we shipped the billing fix.",
+      "The main risk is the pending security review.",
+      "Next week we'll finish the migration."
+    ],
+    "beats": [
+      {
+        "by": "mark",
+        "text": "Give us a quick update."
+      },
+      {
+        "by": "mark",
+        "text": "What's the risk?"
+      },
+      {
+        "by": "mark",
+        "text": "Do you need anything from us?"
+      },
+      {
+        "by": "mark",
+        "text": "When will it land?"
+      },
+      {
+        "by": "mark",
+        "text": "Good, keep me posted."
+      }
+    ],
+    "hints": [
+      "进展/风险/下周三段式",
+      "风险要带影响和需要什么"
+    ]
+  },
+  {
+    "id": "r-exec",
+    "cat": "report",
+    "load": 3,
+    "title": "高管 3 分钟汇报",
+    "goal": "在 3 分钟内说清结论、数据、下一步",
+    "place": "管理层例会",
+    "role": "VP David",
+    "brief": "你有 3 分钟向 VP 汇报。要先给结论，再给两个数据，最后要一个决定。",
+    "opener": "You have three minutes. What do I need to know?",
+    "covers": [
+      "bad-news",
+      "propose-alt",
+      "clarify-number",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "david",
+        "name": "David",
+        "role": "VP",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.98
+        },
+        "stance": "时间少，会打断细节，只关心决定。",
+        "opener": "You have three minutes. What do I need to know?"
+      }
+    ],
+    "must": [
+      "The headline is",
+      "The data shows",
+      "What I need from you is"
+    ],
+    "phrases": [
+      "The headline is we'll miss the date by one week.",
+      "The data shows two blockers, not five.",
+      "What I need from you is a decision on scope."
+    ],
+    "beats": [
+      {
+        "by": "david",
+        "text": "You have three minutes. What do I need to know?"
+      },
+      {
+        "by": "david",
+        "text": "Skip the background. What's the ask?"
+      },
+      {
+        "by": "david",
+        "text": "What happens if we don't decide today?"
+      },
+      {
+        "by": "david",
+        "text": "Give me the two options."
+      },
+      {
+        "by": "david",
+        "text": "Okay, send me a one-pager."
+      }
+    ],
+    "hints": [
+      "先结论，后背景",
+      "明确你要的决定"
+    ]
+  },
+  {
+    "id": "r-risk",
+    "cat": "report",
+    "load": 3,
+    "title": "汇报风险要决策",
+    "goal": "把风险讲成选项，推动老板当场决策",
+    "place": "风险评审会",
+    "role": "总监 Grace",
+    "brief": "项目有一个高风险依赖，你需要老板在两个方案里选一个。",
+    "opener": "Where are we on the vendor dependency?",
+    "covers": [
+      "bad-news",
+      "ask-commit",
+      "disagree",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "grace",
+        "name": "Grace",
+        "role": "总监",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.0
+        },
+        "stance": "要方案，不喜欢只报问题。",
+        "opener": "Where are we on the vendor dependency?"
+      },
+      {
+        "id": "sam",
+        "name": "Sam",
+        "role": "项目经理",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.05
+        },
+        "stance": "想再等等，容易拖。"
+      }
+    ],
+    "must": [
+      "We have two options",
+      "The trade-off is",
+      "I need a decision by"
+    ],
+    "phrases": [
+      "We have two options: wait or switch vendors.",
+      "The trade-off is time versus cost.",
+      "I need a decision by Thursday."
+    ],
+    "beats": [
+      {
+        "by": "grace",
+        "text": "Where are we on the vendor dependency?"
+      },
+      {
+        "by": "grace",
+        "text": "Don't just bring me problems — bring options."
+      },
+      {
+        "by": "sam",
+        "text": "I think we can wait one more week."
+      },
+      {
+        "by": "grace",
+        "text": "What's the cost if we wait?"
+      },
+      {
+        "by": "grace",
+        "text": "Okay, go with option B."
+      }
+    ],
+    "hints": [
+      "风险要带两个方案",
+      "给出决策截止时间"
+    ]
+  },
+  {
+    "id": "n-price",
+    "cat": "negotiate",
+    "load": 3,
+    "title": "价格谈判",
+    "goal": "守住底价，用条款换价格",
+    "place": "采购谈判桌",
+    "role": "采购负责人 Victor",
+    "brief": "对方要求降价 10%，你的底价是 5%。你要用付款周期/年限换。",
+    "opener": "We need ten percent off to sign.",
+    "covers": [
+      "bargain",
+      "trade-offer",
+      "soft-no",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "采购负责人",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "强势，会用竞品价压你。",
+        "opener": "We need ten percent off to sign."
+      }
+    ],
+    "must": [
+      "I can't do ten, but",
+      "If you can commit to",
+      "The best I can offer is"
+    ],
+    "phrases": [
+      "I can't do ten, but I can do five.",
+      "If you can commit to two years, I can do seven.",
+      "The best I can offer is five percent plus free onboarding."
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "We need ten percent off to sign."
+      },
+      {
+        "by": "victor",
+        "text": "Your competitor offered twelve."
+      },
+      {
+        "by": "victor",
+        "text": "Can you meet me at eight?"
+      },
+      {
+        "by": "victor",
+        "text": "What if we pay annually?"
+      },
+      {
+        "by": "victor",
+        "text": "Okay, five plus onboarding works."
+      }
+    ],
+    "hints": [
+      "不直接答应/拒绝，先给条件",
+      "把降价换成付款周期"
+    ]
+  },
+  {
+    "id": "n-deadline",
+    "cat": "negotiate",
+    "load": 2,
+    "title": "交付期限谈判",
+    "goal": "把不合理的期限谈成可承诺的日期",
+    "place": "项目会议",
+    "role": "客户总监 Karen",
+    "brief": "客户要求两周上线，实际需要四周。你要给出可承诺的日期和缓冲。",
+    "opener": "We need this live in two weeks.",
+    "covers": [
+      "ask-delay",
+      "trade-offer",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "karen",
+        "name": "Karen",
+        "role": "客户总监",
+        "tag": "boss",
+        "voice": {
+          "pitch": 1.06,
+          "rate": 1.02
+        },
+        "stance": "强势，认为两周足够。",
+        "opener": "We need this live in two weeks."
+      },
+      {
+        "id": "ben",
+        "name": "Ben",
+        "role": "客户经理",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.92,
+          "rate": 1.05
+        },
+        "stance": "想让你先答应，再想办法。"
+      }
+    ],
+    "must": [
+      "Two weeks isn't realistic because",
+      "What I can commit to is",
+      "If we cut"
+    ],
+    "phrases": [
+      "Two weeks isn't realistic because of the security review.",
+      "What I can commit to is four weeks, with a demo in two.",
+      "If we cut the reporting module, we can do three."
+    ],
+    "beats": [
+      {
+        "by": "karen",
+        "text": "We need this live in two weeks."
+      },
+      {
+        "by": "ben",
+        "text": "Can we just promise it and figure it out?"
+      },
+      {
+        "by": "karen",
+        "text": "Why not two weeks?"
+      },
+      {
+        "by": "ben",
+        "text": "What if we cut something?"
+      },
+      {
+        "by": "karen",
+        "text": "Okay, four weeks with a demo in two."
+      }
+    ],
+    "hints": [
+      "用“不现实因为”给理由",
+      "给可承诺日期 + 中间里程碑"
+    ]
+  },
+  {
+    "id": "n-scope",
+    "cat": "negotiate",
+    "load": 2,
+    "title": "范围谈判",
+    "goal": "在不加价的情况下缩小范围",
+    "place": "合同谈判",
+    "role": "客户 PM Laura",
+    "brief": "客户要加两个模块但预算不变。你要谈范围或分期。",
+    "opener": "Can you include analytics in the same price?",
+    "covers": [
+      "refuse-request",
+      "propose-alt",
+      "trade-offer",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "laura",
+        "name": "Laura",
+        "role": "客户 PM",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "想多要，容易说“下次一起算”。",
+        "opener": "Can you include analytics in the same price?"
+      }
+    ],
+    "must": [
+      "That's outside the current scope",
+      "We can phase it",
+      "If we add it now"
+    ],
+    "phrases": [
+      "That's outside the current scope.",
+      "We can phase it into next quarter.",
+      "If we add it now, something else has to move."
+    ],
+    "beats": [
+      {
+        "by": "laura",
+        "text": "Can you include analytics in the same price?"
+      },
+      {
+        "by": "laura",
+        "text": "It's just a small module."
+      },
+      {
+        "by": "laura",
+        "text": "Can we do it later?"
+      },
+      {
+        "by": "laura",
+        "text": "What would you swap?"
+      },
+      {
+        "by": "laura",
+        "text": "Okay, phase two it is."
+      }
+    ],
+    "hints": [
+      "先界定范围",
+      "给分期/交换方案"
+    ]
+  },
+  {
+    "id": "mg-feedback",
+    "cat": "management",
+    "load": 3,
+    "title": "给下属负面反馈",
+    "goal": "说清具体行为、影响和改进要求",
+    "place": "1:1 会议室",
+    "role": "下属 Leo",
+    "brief": "Leo 连续两次错过同步。你要给具体反馈，不是泛泛说“要主动”。",
+    "opener": "You wanted to talk about my updates?",
+    "covers": [
+      "probe-detail",
+      "clarify-number",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "leo",
+        "name": "Leo",
+        "role": "下属",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.0
+        },
+        "stance": "有点防御，会说“我太忙了”。",
+        "opener": "You wanted to talk about my updates?"
+      }
+    ],
+    "must": [
+      "What I observed was",
+      "The impact was",
+      "What I need going forward is"
+    ],
+    "phrases": [
+      "What I observed was two missed updates in a row.",
+      "The impact was that the team shipped without your input.",
+      "What I need going forward is a heads-up by Monday."
+    ],
+    "beats": [
+      {
+        "by": "leo",
+        "text": "You wanted to talk about my updates?"
+      },
+      {
+        "by": "leo",
+        "text": "I've just been really busy."
+      },
+      {
+        "by": "leo",
+        "text": "So what exactly is the problem?"
+      },
+      {
+        "by": "leo",
+        "text": "Okay, I hear you."
+      },
+      {
+        "by": "leo",
+        "text": "I'll send a note by Monday."
+      }
+    ],
+    "hints": [
+      "说具体行为，不贴标签",
+      "给可执行的要求"
+    ]
+  },
+  {
+    "id": "mg-task",
+    "cat": "management",
+    "load": 2,
+    "title": "分配任务并确认理解",
+    "goal": "让下属复述目标、优先级和截止时间",
+    "place": "团队会议后",
+    "role": "下属 Mia",
+    "brief": "你要把任务交给 Mia，但要确认她真的理解优先级，而不是点头。",
+    "opener": "So I'll take the migration, right?",
+    "covers": [
+      "ask-commit",
+      "wrap-confirm",
+      "probe-detail",
+      "clarify-number"
+    ],
+    "cast": [
+      {
+        "id": "mia",
+        "name": "Mia",
+        "role": "下属",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.04
+        },
+        "stance": "愿意接，但容易低估工作量，说“没问题”。",
+        "opener": "So I'll take the migration, right?"
+      }
+    ],
+    "must": [
+      "Let me make sure we're aligned",
+      "What's your first step",
+      "Can you confirm by"
+    ],
+    "phrases": [
+      "Let me make sure we're aligned on the priority.",
+      "What's your first step tomorrow?",
+      "Can you confirm the plan by end of day?"
+    ],
+    "beats": [
+      {
+        "by": "mia",
+        "text": "So I'll take the migration, right?"
+      },
+      {
+        "by": "mia",
+        "text": "No problem, I'll figure it out."
+      },
+      {
+        "by": "mia",
+        "text": "Wait — is this before the billing fix?"
+      },
+      {
+        "by": "mia",
+        "text": "Okay, migration first."
+      },
+      {
+        "by": "mia",
+        "text": "I'll send the plan today."
+      }
+    ],
+    "hints": [
+      "让对方复述优先级",
+      "确认第一步和截止时间"
+    ]
+  },
+  {
+    "id": "mg-conflict",
+    "cat": "management",
+    "load": 3,
+    "title": "处理下属冲突",
+    "goal": "把情绪降温，拉回事实和分工",
+    "place": "小会议室，两个人都在",
+    "role": "下属 Leo",
+    "brief": "Leo 和 Mia 因为接口责任吵起来。你要打断情绪，确认事实，给出分工。",
+    "opener": "He keeps changing the API without telling me.",
+    "covers": [
+      "cut-in",
+      "disagree",
+      "propose-alt",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "leo",
+        "name": "Leo",
+        "role": "下属",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "觉得被拖累，语气冲。",
+        "opener": "He keeps changing the API without telling me."
+      },
+      {
+        "id": "mia",
+        "name": "Mia",
+        "role": "下属",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.04
+        },
+        "stance": "觉得 Leo 不沟通，也很委屈。"
+      }
+    ],
+    "must": [
+      "Let's separate facts from feelings",
+      "What I heard is",
+      "Let's agree on"
+    ],
+    "phrases": [
+      "Let's separate facts from feelings for a minute.",
+      "What I heard is that both of you were surprised.",
+      "Let's agree on a change-notice rule."
+    ],
+    "beats": [
+      {
+        "by": "leo",
+        "text": "He keeps changing the API without telling me."
+      },
+      {
+        "by": "mia",
+        "text": "I did tell you — you didn't read the thread."
+      },
+      {
+        "by": "leo",
+        "text": "That's not the point."
+      },
+      {
+        "by": "mia",
+        "text": "Then what is the point?"
+      },
+      {
+        "by": "leo",
+        "text": "Fine. Let's set a rule."
+      }
+    ],
+    "hints": [
+      "先降温，再说事实",
+      "把冲突转成规则/分工"
+    ]
+  },
+  {
+    "id": "co-dependency",
+    "cat": "collab",
+    "load": 3,
+    "title": "跨团队要排期",
+    "goal": "在不撕破脸的情况下拿到明确排期",
+    "place": "跨团队同步会",
+    "role": "数据平台负责人 Priya",
+    "brief": "你的功能依赖数据团队。对方一直说“在排”，你要拿到日期和优先级。",
+    "opener": "It's in our backlog, but I can't promise a date.",
+    "covers": [
+      "borrow-resource",
+      "ask-commit",
+      "trade-offer",
+      "clarify-number"
+    ],
+    "cast": [
+      {
+        "id": "priya",
+        "name": "Priya",
+        "role": "数据平台负责人",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.12,
+          "rate": 1.03
+        },
+        "stance": "资源紧，习惯说“在排”，不愿承诺。",
+        "opener": "It's in our backlog, but I can't promise a date."
+      },
+      {
+        "id": "dana",
+        "name": "Dana",
+        "role": "你的经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.0
+        },
+        "stance": "愿意帮你升级，但要知道影响。"
+      }
+    ],
+    "must": [
+      "What would it take to",
+      "If you can do it by",
+      "The impact of waiting is"
+    ],
+    "phrases": [
+      "What would it take to get it into this sprint?",
+      "If you can do it by the 20th, we can hold the launch.",
+      "The impact of waiting is a one-week slip."
+    ],
+    "beats": [
+      {
+        "by": "priya",
+        "text": "It's in our backlog, but I can't promise a date."
+      },
+      {
+        "by": "priya",
+        "text": "We're stretched this quarter."
+      },
+      {
+        "by": "dana",
+        "text": "What's the impact if we wait?"
+      },
+      {
+        "by": "priya",
+        "text": "Maybe next sprint."
+      },
+      {
+        "by": "dana",
+        "text": "Let's put a date on it."
+      }
+    ],
+    "hints": [
+      "把“在排”问成日期",
+      "用影响/交换换优先级"
+    ]
+  },
+  {
+    "id": "co-interface",
+    "cat": "collab",
+    "load": 2,
+    "title": "对齐接口变更",
+    "goal": "确认字段、时间和回滚方案",
+    "place": "接口评审会",
+    "role": "后端同事 Sam",
+    "brief": "你要改一个接口字段，必须让调用方同意时间和回滚方案。",
+    "opener": "If you change that field, our client breaks.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "propose-alt",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "sam",
+        "name": "Sam",
+        "role": "后端同事",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.02
+        },
+        "stance": "担心兼容性，会坚持旧字段。",
+        "opener": "If you change that field, our client breaks."
+      }
+    ],
+    "must": [
+      "The change is",
+      "We can keep both until",
+      "Can we agree on"
+    ],
+    "phrases": [
+      "The change is renaming status to state.",
+      "We can keep both fields until the 30th.",
+      "Can we agree on a two-week overlap?"
+    ],
+    "beats": [
+      {
+        "by": "sam",
+        "text": "If you change that field, our client breaks."
+      },
+      {
+        "by": "sam",
+        "text": "Can you keep the old one?"
+      },
+      {
+        "by": "sam",
+        "text": "For how long?"
+      },
+      {
+        "by": "sam",
+        "text": "What's the rollback plan?"
+      },
+      {
+        "by": "sam",
+        "text": "Okay, two weeks overlap."
+      }
+    ],
+    "hints": [
+      "给兼容期，不硬切",
+      "确认回滚方案"
+    ]
+  },
+  {
+    "id": "co-help",
+    "cat": "collab",
+    "load": 2,
+    "title": "请同事帮忙救火",
+    "goal": "在不道德绑架的情况下拿到支援",
+    "place": "工位旁，快下班了",
+    "role": "技术负责人 Omar",
+    "brief": "线上有问题，你需要 Omar 帮忙看 30 分钟。要具体、限时、给回报。",
+    "opener": "I'm about to head out — what's up?",
+    "covers": [
+      "borrow-resource",
+      "bad-news",
+      "ask-commit",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "omar",
+        "name": "Omar",
+        "role": "技术负责人",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.02
+        },
+        "stance": "愿意帮，但不想被拖到半夜。",
+        "opener": "I'm about to head out — what's up?"
+      }
+    ],
+    "must": [
+      "I need 30 minutes",
+      "The impact is",
+      "I'll take the follow-up"
+    ],
+    "phrases": [
+      "I need 30 minutes on the payment error.",
+      "The impact is that checkout is down.",
+      "I'll take the follow-up and write the postmortem."
+    ],
+    "beats": [
+      {
+        "by": "omar",
+        "text": "I'm about to head out — what's up?"
+      },
+      {
+        "by": "omar",
+        "text": "How long are we talking?"
+      },
+      {
+        "by": "omar",
+        "text": "What do you need me to look at?"
+      },
+      {
+        "by": "omar",
+        "text": "Okay, thirty minutes."
+      },
+      {
+        "by": "omar",
+        "text": "Send me the logs."
+      }
+    ],
+    "hints": [
+      "明确时长和范围",
+      "说明你负责后续"
+    ]
+  },
+  {
+    "id": "h-checkin",
+    "cat": "hotel",
+    "load": 2,
+    "title": "入住发现预订错误",
+    "goal": "拿到当晚可住的房间或等价方案",
+    "place": "酒店前台，晚上十点",
+    "role": "前台 Alex",
+    "brief": "你订了大床房，前台说只剩双床。你要确认订单并争取方案。",
+    "opener": "I'm sorry, but I only see a twin room for you.",
+    "covers": [
+      "clarify-number",
+      "refuse-request",
+      "propose-alt",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "alex",
+        "name": "Alex",
+        "role": "前台",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.02
+        },
+        "stance": "说系统显示双床，愿意查记录。",
+        "opener": "I'm sorry, but I only see a twin room for you."
+      },
+      {
+        "id": "sofia",
+        "name": "Sofia",
+        "role": "值班经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.0
+        },
+        "stance": "怕投诉，愿意补偿。"
+      }
+    ],
+    "must": [
+      "My confirmation says",
+      "Can you check again",
+      "What can you offer"
+    ],
+    "phrases": [
+      "My confirmation says king room, non-smoking.",
+      "Can you check the original booking?",
+      "What can you offer tonight?"
+    ],
+    "beats": [
+      {
+        "by": "alex",
+        "text": "I'm sorry, but I only see a twin room for you."
+      },
+      {
+        "by": "alex",
+        "text": "The system shows twin."
+      },
+      {
+        "by": "sofia",
+        "text": "Let me look at the original booking."
+      },
+      {
+        "by": "alex",
+        "text": "We can move you tomorrow."
+      },
+      {
+        "by": "sofia",
+        "text": "Tonight is on us for the mix-up."
+      }
+    ],
+    "hints": [
+      "先给确认号/凭证",
+      "要当晚方案，不接受只说明天"
+    ]
+  },
+  {
+    "id": "h-noise",
+    "cat": "hotel",
+    "load": 2,
+    "title": "房间噪音要求换房",
+    "goal": "换到安静房间或拿到补偿",
+    "place": "前台，凌晨",
+    "role": "前台 Alex",
+    "brief": "隔壁整夜噪音，你明天有重要会议。要求换房或明确补偿。",
+    "opener": "The room next door is really loud.",
+    "covers": [
+      "refuse-request",
+      "propose-alt",
+      "ask-commit",
+      "soft-no"
+    ],
+    "cast": [
+      {
+        "id": "alex",
+        "name": "Alex",
+        "role": "前台",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.02
+        },
+        "stance": "说满房，但可以给耳塞/补偿。",
+        "opener": "The room next door is really loud."
+      }
+    ],
+    "must": [
+      "I have a meeting tomorrow",
+      "Is there any room",
+      "Can you confirm"
+    ],
+    "phrases": [
+      "I have a client meeting at nine tomorrow.",
+      "Is there any room away from the street?",
+      "Can you confirm the new room number?"
+    ],
+    "beats": [
+      {
+        "by": "alex",
+        "text": "The room next door is really loud."
+      },
+      {
+        "by": "alex",
+        "text": "We're fully booked tonight."
+      },
+      {
+        "by": "alex",
+        "text": "I can send earplugs."
+      },
+      {
+        "by": "alex",
+        "text": "We can move you at seven a.m."
+      },
+      {
+        "by": "alex",
+        "text": "I'll confirm with the manager."
+      }
+    ],
+    "hints": [
+      "说明影响（明天有会）",
+      "接受补偿也要确认换房时间"
+    ]
+  },
+  {
+    "id": "h-bill",
+    "cat": "hotel",
+    "load": 3,
+    "title": "退房账单争议",
+    "goal": "去掉不合理收费，拿到明细",
+    "place": "退房前台",
+    "role": "前台 Alex",
+    "brief": "账单多了两笔你没用过的迷你吧。你要逐项核对并去掉。",
+    "opener": "There are two minibar charges on your bill.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "alex",
+        "name": "Alex",
+        "role": "前台",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.02
+        },
+        "stance": "按系统念账单，愿意查。",
+        "opener": "There are two minibar charges on your bill."
+      }
+    ],
+    "must": [
+      "Can you show me the item",
+      "I didn't use",
+      "Can you remove"
+    ],
+    "phrases": [
+      "Can you show me the item and the time?",
+      "I didn't use the minibar during my stay.",
+      "Can you remove these two charges?"
+    ],
+    "beats": [
+      {
+        "by": "alex",
+        "text": "There are two minibar charges on your bill."
+      },
+      {
+        "by": "alex",
+        "text": "The system says room 812, last night."
+      },
+      {
+        "by": "alex",
+        "text": "Let me check with housekeeping."
+      },
+      {
+        "by": "alex",
+        "text": "You're right, they're from the previous guest."
+      },
+      {
+        "by": "alex",
+        "text": "I'll remove them now."
+      }
+    ],
+    "hints": [
+      "要明细和时间",
+      "只谈事实，不指责"
+    ]
+  },
+  {
+    "id": "a-delay",
+    "cat": "airport",
+    "load": 2,
+    "title": "航班延误改签",
+    "goal": "拿到最早可用航班和住宿安排",
+    "place": "登机口柜台",
+    "role": "地勤 Maria",
+    "brief": "航班取消，你要改签到最早航班，并确认住宿/餐食。",
+    "opener": "Your flight has been cancelled.",
+    "covers": [
+      "ask-delay",
+      "clarify-number",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "maria",
+        "name": "Maria",
+        "role": "地勤",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "忙，按流程给方案，不会主动多说。",
+        "opener": "Your flight has been cancelled."
+      }
+    ],
+    "must": [
+      "What's the earliest",
+      "Can you confirm the hotel",
+      "What about my bag"
+    ],
+    "phrases": [
+      "What's the earliest flight tomorrow?",
+      "Can you confirm the hotel and meal voucher?",
+      "What happens to my checked bag?"
+    ],
+    "beats": [
+      {
+        "by": "maria",
+        "text": "Your flight has been cancelled."
+      },
+      {
+        "by": "maria",
+        "text": "The earliest is tomorrow at seven."
+      },
+      {
+        "by": "maria",
+        "text": "We can book you on that."
+      },
+      {
+        "by": "maria",
+        "text": "Here's a hotel voucher."
+      },
+      {
+        "by": "maria",
+        "text": "Your bag will be transferred."
+      }
+    ],
+    "hints": [
+      "问最早航班，不问“怎么办”",
+      "确认住宿/行李"
+    ]
+  },
+  {
+    "id": "a-security",
+    "cat": "airport",
+    "load": 2,
+    "title": "安检被要求开箱",
+    "goal": "配合检查并说清物品",
+    "place": "安检通道",
+    "role": "安检员 Tom",
+    "brief": "行李被要求开箱，里面有电子设备和药品。你要配合并解释。",
+    "opener": "Please open your bag, sir.",
+    "covers": [
+      "clarify-number",
+      "probe-detail",
+      "self-repair",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "安检员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.98
+        },
+        "stance": "例行检查，语速快。",
+        "opener": "Please open your bag, sir."
+      }
+    ],
+    "must": [
+      "Sure, it's in",
+      "That's for",
+      "Do you need me to"
+    ],
+    "phrases": [
+      "Sure, the laptop is in the front pocket.",
+      "That's prescription medicine for my allergy.",
+      "Do you need me to take it out?"
+    ],
+    "beats": [
+      {
+        "by": "tom",
+        "text": "Please open your bag, sir."
+      },
+      {
+        "by": "tom",
+        "text": "What's this device?"
+      },
+      {
+        "by": "tom",
+        "text": "And this medication?"
+      },
+      {
+        "by": "tom",
+        "text": "Please put it in this tray."
+      },
+      {
+        "by": "tom",
+        "text": "Thank you, you're good to go."
+      }
+    ],
+    "hints": [
+      "配合，主动说明物品",
+      "短句回答，不争辩"
+    ]
+  },
+  {
+    "id": "a-seat",
+    "cat": "airport",
+    "load": 2,
+    "title": "选座 / 升舱",
+    "goal": "争取靠过道或升舱，接受合理条件",
+    "place": "值机柜台",
+    "role": "值机员 Maria",
+    "brief": "你想换靠过道座位，或问升舱价格。",
+    "opener": "Window or aisle?",
+    "covers": [
+      "clarify-number",
+      "bargain",
+      "soft-no",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "maria",
+        "name": "Maria",
+        "role": "值机员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.02
+        },
+        "stance": "按规则，愿意告诉你价格/空位。",
+        "opener": "Window or aisle?"
+      }
+    ],
+    "must": [
+      "Is there an aisle seat",
+      "How much is the upgrade",
+      "What's available"
+    ],
+    "phrases": [
+      "Is there an aisle seat left?",
+      "How much is the upgrade to premium?",
+      "What's available in the exit row?"
+    ],
+    "beats": [
+      {
+        "by": "maria",
+        "text": "Window or aisle?"
+      },
+      {
+        "by": "maria",
+        "text": "Aisle is available for forty dollars."
+      },
+      {
+        "by": "maria",
+        "text": "Premium is a hundred and twenty."
+      },
+      {
+        "by": "maria",
+        "text": "The exit row is free."
+      },
+      {
+        "by": "maria",
+        "text": "Here's your boarding pass."
+      }
+    ],
+    "hints": [
+      "先问可用座位",
+      "比较升舱/选座价格"
+    ]
+  },
+  {
+    "id": "tr-taxi",
+    "cat": "transit",
+    "load": 2,
+    "title": "打车绕路争议",
+    "goal": "确认路线和费用，避免被多收",
+    "place": "出租车内",
+    "role": "司机 Tony",
+    "brief": "你发现路线明显绕远。要礼貌质疑并确认费用。",
+    "opener": "This is the fastest way, trust me.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "ask-commit",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "tony",
+        "name": "Tony",
+        "role": "出租车司机",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 1.0
+        },
+        "stance": "坚持自己路线最快，不愿改。",
+        "opener": "This is the fastest way, trust me."
+      }
+    ],
+    "must": [
+      "The meter is higher than",
+      "Can we take",
+      "Can you confirm the fare"
+    ],
+    "phrases": [
+      "The meter is higher than the last time.",
+      "Can we take the highway instead?",
+      "Can you confirm the fare before we arrive?"
+    ],
+    "beats": [
+      {
+        "by": "tony",
+        "text": "This is the fastest way, trust me."
+      },
+      {
+        "by": "tony",
+        "text": "Traffic is bad on the other road."
+      },
+      {
+        "by": "tony",
+        "text": "Fine, I'll take the highway."
+      },
+      {
+        "by": "tony",
+        "text": "The fare is thirty-two."
+      },
+      {
+        "by": "tony",
+        "text": "Here's your receipt."
+      }
+    ],
+    "hints": [
+      "用事实（上次价格/路线）质疑",
+      "到达前确认车费"
+    ]
+  },
+  {
+    "id": "tr-metro",
+    "cat": "transit",
+    "load": 1,
+    "title": "地铁问路换乘",
+    "goal": "问清方向、换乘和出口",
+    "place": "地铁站台",
+    "role": "站务员 Ben",
+    "brief": "你不确定换乘方向，需要问清线路、站台和出口。",
+    "opener": "Where are you trying to go?",
+    "covers": [
+      "clarify-number",
+      "ask-repeat",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "ben",
+        "name": "Ben",
+        "role": "站务员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "语速快，指路简短。",
+        "opener": "Where are you trying to go?"
+      }
+    ],
+    "must": [
+      "Which line goes to",
+      "Do I need to change",
+      "Which exit"
+    ],
+    "phrases": [
+      "Which line goes to the airport?",
+      "Do I need to change at Central?",
+      "Which exit is closest to the hotel?"
+    ],
+    "beats": [
+      {
+        "by": "ben",
+        "text": "Where are you trying to go?"
+      },
+      {
+        "by": "ben",
+        "text": "Take line two to Central."
+      },
+      {
+        "by": "ben",
+        "text": "Then change to line four."
+      },
+      {
+        "by": "ben",
+        "text": "Take exit B."
+      },
+      {
+        "by": "ben",
+        "text": "About twenty minutes."
+      }
+    ],
+    "hints": [
+      "复述线路/换乘站",
+      "确认出口"
+    ]
+  },
+  {
+    "id": "tr-rental",
+    "cat": "transit",
+    "load": 3,
+    "title": "租车还车争议",
+    "goal": "处理划痕/油量争议，避免被多扣",
+    "place": "租车还车点",
+    "role": "租车员 Victor",
+    "brief": "还车时对方说有一道新划痕，要收维修费。你要核对验车单。",
+    "opener": "There's a scratch on the rear door.",
+    "covers": [
+      "disagree",
+      "clarify-number",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "租车员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "按验车单办事，但可能没细看。",
+        "opener": "There's a scratch on the rear door."
+      }
+    ],
+    "must": [
+      "Can you check the check-out photos",
+      "That scratch was",
+      "Can we compare"
+    ],
+    "phrases": [
+      "Can you check the check-out photos?",
+      "That scratch was already there.",
+      "Can we compare the before and after?"
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "There's a scratch on the rear door."
+      },
+      {
+        "by": "victor",
+        "text": "It's not on the check-out sheet."
+      },
+      {
+        "by": "victor",
+        "text": "Let me pull the photos."
+      },
+      {
+        "by": "victor",
+        "text": "You're right, it's in the photo."
+      },
+      {
+        "by": "victor",
+        "text": "No charge then."
+      }
+    ],
+    "hints": [
+      "先要验车照片/单据",
+      "只谈证据"
+    ]
+  },
+  {
+    "id": "d-order",
+    "cat": "dining",
+    "load": 1,
+    "title": "点菜问推荐 / 忌口",
+    "goal": "问清推荐、口味和忌口，点到合适的菜",
+    "place": "餐厅，晚餐",
+    "role": "服务员 Luca",
+    "brief": "菜单看不懂，你有忌口。要问推荐并确认食材。",
+    "opener": "Are you ready to order?",
+    "covers": [
+      "clarify-number",
+      "probe-detail",
+      "ask-repeat",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "luca",
+        "name": "Luca",
+        "role": "服务员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.04
+        },
+        "stance": "热情，推荐招牌菜，语速快。",
+        "opener": "Are you ready to order?"
+      }
+    ],
+    "must": [
+      "What do you recommend",
+      "Does it contain",
+      "Can I have it without"
+    ],
+    "phrases": [
+      "What do you recommend for someone who doesn't eat pork?",
+      "Does the sauce contain dairy?",
+      "Can I have it without cilantro?"
+    ],
+    "beats": [
+      {
+        "by": "luca",
+        "text": "Are you ready to order?"
+      },
+      {
+        "by": "luca",
+        "text": "The pork belly is our best seller."
+      },
+      {
+        "by": "luca",
+        "text": "The fish is mild, no dairy."
+      },
+      {
+        "by": "luca",
+        "text": "We can remove the cilantro."
+      },
+      {
+        "by": "luca",
+        "text": "I'll put that in."
+      }
+    ],
+    "hints": [
+      "先问推荐，再说忌口",
+      "确认“含不含”而不是“能不能”"
+    ]
+  },
+  {
+    "id": "d-wrong",
+    "cat": "dining",
+    "load": 2,
+    "title": "上错菜",
+    "goal": "礼貌纠正并拿到正确的菜",
+    "place": "餐厅，菜刚上",
+    "role": "服务员 Luca",
+    "brief": "你点的是鱼，上来的是鸡。要纠正但别让气氛尴尬。",
+    "opener": "Here's your chicken.",
+    "covers": [
+      "self-repair",
+      "refuse-request",
+      "ask-commit",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "luca",
+        "name": "Luca",
+        "role": "服务员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.04
+        },
+        "stance": "忙，可能听错，愿意换。",
+        "opener": "Here's your chicken."
+      }
+    ],
+    "must": [
+      "I think there's a mix-up",
+      "I ordered",
+      "Can you check"
+    ],
+    "phrases": [
+      "I think there's a mix-up — I ordered the fish.",
+      "Can you check the order?",
+      "Could you bring the fish instead?"
+    ],
+    "beats": [
+      {
+        "by": "luca",
+        "text": "Here's your chicken."
+      },
+      {
+        "by": "luca",
+        "text": "Oh, did you order the fish?"
+      },
+      {
+        "by": "luca",
+        "text": "Let me check the ticket."
+      },
+      {
+        "by": "luca",
+        "text": "You're right, my mistake."
+      },
+      {
+        "by": "luca",
+        "text": "I'll bring the fish right away."
+      }
+    ],
+    "hints": [
+      "用“我想是弄错了”开头",
+      "明确你要的菜"
+    ]
+  },
+  {
+    "id": "d-bill",
+    "cat": "dining",
+    "load": 2,
+    "title": "账单多收",
+    "goal": "核对明细，去掉多收的项目",
+    "place": "餐厅结账",
+    "role": "服务员 Luca",
+    "brief": "账单多了一份你没点的菜。要核对并去掉。",
+    "opener": "Here's your bill.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "luca",
+        "name": "Luca",
+        "role": "服务员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.04
+        },
+        "stance": "按系统念单，愿意查。",
+        "opener": "Here's your bill."
+      }
+    ],
+    "must": [
+      "Can you show me this item",
+      "We didn't order",
+      "Can you remove it"
+    ],
+    "phrases": [
+      "Can you show me this item on the bill?",
+      "We didn't order the dessert.",
+      "Can you remove it and reprint?"
+    ],
+    "beats": [
+      {
+        "by": "luca",
+        "text": "Here's your bill."
+      },
+      {
+        "by": "luca",
+        "text": "The dessert is on the second page."
+      },
+      {
+        "by": "luca",
+        "text": "Let me check with the kitchen."
+      },
+      {
+        "by": "luca",
+        "text": "You're right, it was another table."
+      },
+      {
+        "by": "luca",
+        "text": "I'll take it off."
+      }
+    ],
+    "hints": [
+      "逐项核对，不笼统说“算错了”",
+      "要求重新打单"
+    ]
+  },
+  {
+    "id": "sh-return",
+    "cat": "shopping",
+    "load": 2,
+    "title": "退货被拒",
+    "goal": "在规则内争取退货或换货",
+    "place": "商场服务台",
+    "role": "店员 Emma",
+    "brief": "你买的外套不合适，想退，店员说“打折商品不退”。你要问清规则并争取换货。",
+    "opener": "Sorry, sale items can't be returned.",
+    "covers": [
+      "refuse-request",
+      "probe-detail",
+      "propose-alt",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "emma",
+        "name": "Emma",
+        "role": "店员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "按规则办事，但可以给换货。",
+        "opener": "Sorry, sale items can't be returned."
+      },
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "值班经理",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.98
+        },
+        "stance": "怕纠纷，愿意通融。"
+      }
+    ],
+    "must": [
+      "Can you show me the policy",
+      "Is exchange possible",
+      "Can I speak to"
+    ],
+    "phrases": [
+      "Can you show me the return policy?",
+      "Is exchange possible instead?",
+      "Can I speak to the manager?"
+    ],
+    "beats": [
+      {
+        "by": "emma",
+        "text": "Sorry, sale items can't be returned."
+      },
+      {
+        "by": "emma",
+        "text": "It's on the receipt."
+      },
+      {
+        "by": "tom",
+        "text": "We can do an exchange."
+      },
+      {
+        "by": "emma",
+        "text": "Same value only."
+      },
+      {
+        "by": "tom",
+        "text": "I'll approve it."
+      }
+    ],
+    "hints": [
+      "先看政策，再谈例外",
+      "把退货换成换货"
+    ]
+  },
+  {
+    "id": "sh-price",
+    "cat": "shopping",
+    "load": 2,
+    "title": "比价 / 要折扣",
+    "goal": "确认价格差异，争取匹配或赠品",
+    "place": "电子产品店",
+    "role": "店员 Victor",
+    "brief": "你在网上看到更低价，问店里能否匹配。",
+    "opener": "We don't price match, sorry.",
+    "covers": [
+      "bargain",
+      "clarify-number",
+      "propose-alt",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "店员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "说不能匹配，但可以送配件。",
+        "opener": "We don't price match, sorry."
+      }
+    ],
+    "must": [
+      "The online price is",
+      "Can you match",
+      "What can you include"
+    ],
+    "phrases": [
+      "The online price is twenty less.",
+      "Can you match that price?",
+      "What can you include instead?"
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "We don't price match, sorry."
+      },
+      {
+        "by": "victor",
+        "text": "Online stock is different."
+      },
+      {
+        "by": "victor",
+        "text": "I can include a case."
+      },
+      {
+        "by": "victor",
+        "text": "Or a two-year warranty."
+      },
+      {
+        "by": "victor",
+        "text": "Which do you prefer?"
+      }
+    ],
+    "hints": [
+      "先给具体差价",
+      "把折扣换成赠品/保修"
+    ]
+  },
+  {
+    "id": "sh-warranty",
+    "cat": "shopping",
+    "load": 2,
+    "title": "保修期内维修",
+    "goal": "确认保修范围和周转时间",
+    "place": "售后柜台",
+    "role": "店员 Sam",
+    "brief": "设备坏了，在保修期内。对方说要收费，你要确认条款和时间。",
+    "opener": "That's not covered under warranty.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "sam",
+        "name": "Sam",
+        "role": "售后",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "按条款判断，愿意查记录。",
+        "opener": "That's not covered under warranty."
+      }
+    ],
+    "must": [
+      "Can you check the warranty",
+      "What's the coverage",
+      "How long will it take"
+    ],
+    "phrases": [
+      "Can you check the warranty date?",
+      "What exactly is covered?",
+      "How long will the repair take?"
+    ],
+    "beats": [
+      {
+        "by": "sam",
+        "text": "That's not covered under warranty."
+      },
+      {
+        "by": "sam",
+        "text": "It's water damage."
+      },
+      {
+        "by": "sam",
+        "text": "Let me check the serial number."
+      },
+      {
+        "by": "sam",
+        "text": "Actually, it's still in coverage."
+      },
+      {
+        "by": "sam",
+        "text": "It'll take five days."
+      }
+    ],
+    "hints": [
+      "问清“哪条不保”",
+      "确认周转时间"
+    ]
+  },
+  {
+    "id": "md-symptom",
+    "cat": "medical",
+    "load": 3,
+    "title": "看诊描述症状",
+    "goal": "说清症状、时长、诱因和过敏史",
+    "place": "诊所",
+    "role": "医生 Miller",
+    "brief": "你不舒服要看诊。要用简单准确的句子说清症状和时间。",
+    "opener": "What brings you in today?",
+    "covers": [
+      "self-intro",
+      "clarify-number",
+      "probe-detail",
+      "ask-repeat"
+    ],
+    "cast": [
+      {
+        "id": "miller",
+        "name": "Miller",
+        "role": "医生",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.98
+        },
+        "stance": "问诊简短，会追问细节。",
+        "opener": "What brings you in today?"
+      }
+    ],
+    "must": [
+      "I've had",
+      "It started",
+      "I'm allergic to"
+    ],
+    "phrases": [
+      "I've had a sore throat for three days.",
+      "It started after I got back from a trip.",
+      "I'm allergic to penicillin."
+    ],
+    "beats": [
+      {
+        "by": "miller",
+        "text": "What brings you in today?"
+      },
+      {
+        "by": "miller",
+        "text": "How long has it been going on?"
+      },
+      {
+        "by": "miller",
+        "text": "Any fever?"
+      },
+      {
+        "by": "miller",
+        "text": "Any allergies?"
+      },
+      {
+        "by": "miller",
+        "text": "I'll prescribe something mild."
+      }
+    ],
+    "hints": [
+      "症状 + 时长 + 诱因",
+      "主动说过敏史"
+    ]
+  },
+  {
+    "id": "md-pharmacy",
+    "cat": "medical",
+    "load": 2,
+    "title": "药店买药",
+    "goal": "描述症状，问清用法和禁忌",
+    "place": "药店",
+    "role": "药剂师 Nina",
+    "brief": "你想买感冒药，需要问清剂量和是否影响开车。",
+    "opener": "What are you looking for?",
+    "covers": [
+      "probe-detail",
+      "clarify-number",
+      "ask-repeat",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "nina",
+        "name": "Nina",
+        "role": "药剂师",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "专业，会问症状和用药史。",
+        "opener": "What are you looking for?"
+      }
+    ],
+    "must": [
+      "I need something for",
+      "How often should I",
+      "Does it make you drowsy"
+    ],
+    "phrases": [
+      "I need something for a dry cough.",
+      "How often should I take it?",
+      "Does it make you drowsy?"
+    ],
+    "beats": [
+      {
+        "by": "nina",
+        "text": "What are you looking for?"
+      },
+      {
+        "by": "nina",
+        "text": "Is it a dry cough or with phlegm?"
+      },
+      {
+        "by": "nina",
+        "text": "Take one every eight hours."
+      },
+      {
+        "by": "nina",
+        "text": "It can make you drowsy."
+      },
+      {
+        "by": "nina",
+        "text": "Avoid driving after taking it."
+      }
+    ],
+    "hints": [
+      "说清症状类型",
+      "问副作用（犯困/开车）"
+    ]
+  },
+  {
+    "id": "md-insurance",
+    "cat": "medical",
+    "load": 3,
+    "title": "保险报销咨询",
+    "goal": "确认报销范围、材料和时限",
+    "place": "保险客服电话",
+    "role": "客服 Anna",
+    "brief": "你看完病想报销，需要确认哪些能报、要什么材料。",
+    "opener": "How can I help you today?",
+    "covers": [
+      "clarify-number",
+      "probe-detail",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "anna",
+        "name": "Anna",
+        "role": "保险客服",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "按条款回答，会说“以审核为准”。",
+        "opener": "How can I help you today?"
+      }
+    ],
+    "must": [
+      "Is this covered",
+      "What documents do you need",
+      "How long does it take"
+    ],
+    "phrases": [
+      "Is the specialist visit covered?",
+      "What documents do you need?",
+      "How long does reimbursement take?"
+    ],
+    "beats": [
+      {
+        "by": "anna",
+        "text": "How can I help you today?"
+      },
+      {
+        "by": "anna",
+        "text": "Is it in-network?"
+      },
+      {
+        "by": "anna",
+        "text": "You'll need the invoice and diagnosis."
+      },
+      {
+        "by": "anna",
+        "text": "It takes ten business days."
+      },
+      {
+        "by": "anna",
+        "text": "Keep the originals."
+      }
+    ],
+    "hints": [
+      "先问是否在保障范围",
+      "材料 + 时限一起确认"
+    ]
+  },
+  {
+    "id": "b-account",
+    "cat": "bank",
+    "load": 2,
+    "title": "开户被要求补材料",
+    "goal": "问清缺失材料和时间",
+    "place": "银行柜台",
+    "role": "柜员 Emma",
+    "brief": "你开户被拒，说材料不全。要问清具体缺什么。",
+    "opener": "We need another proof of address.",
+    "covers": [
+      "clarify-number",
+      "probe-detail",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "emma",
+        "name": "Emma",
+        "role": "柜员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "按清单办事，不会主动解释。",
+        "opener": "We need another proof of address."
+      }
+    ],
+    "must": [
+      "Which document exactly",
+      "Is a utility bill okay",
+      "When can I come back"
+    ],
+    "phrases": [
+      "Which document exactly is missing?",
+      "Is a utility bill acceptable?",
+      "When can I come back with it?"
+    ],
+    "beats": [
+      {
+        "by": "emma",
+        "text": "We need another proof of address."
+      },
+      {
+        "by": "emma",
+        "text": "A bank statement works."
+      },
+      {
+        "by": "emma",
+        "text": "It must be within three months."
+      },
+      {
+        "by": "emma",
+        "text": "You can come back today."
+      },
+      {
+        "by": "emma",
+        "text": "I'll hold your application."
+      }
+    ],
+    "hints": [
+      "问具体文件名称",
+      "确认时效（三个月内）"
+    ]
+  },
+  {
+    "id": "b-transfer",
+    "cat": "bank",
+    "load": 3,
+    "title": "国际转账被卡",
+    "goal": "问清原因、解冻时间和费用",
+    "place": "银行客服电话",
+    "role": "客服 Victor",
+    "brief": "你的国际转账被卡住，客户在催。要问清原因和解冻时间。",
+    "opener": "Your transfer is on hold for compliance review.",
+    "covers": [
+      "probe-detail",
+      "clarify-number",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "银行客服",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "按合规流程，不会给确定时间。",
+        "opener": "Your transfer is on hold for compliance review."
+      }
+    ],
+    "must": [
+      "What triggered the review",
+      "When will it clear",
+      "What can I provide"
+    ],
+    "phrases": [
+      "What triggered the review?",
+      "When will it clear?",
+      "What can I provide to speed it up?"
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "Your transfer is on hold for compliance review."
+      },
+      {
+        "by": "victor",
+        "text": "We need the invoice."
+      },
+      {
+        "by": "victor",
+        "text": "It usually takes two days."
+      },
+      {
+        "by": "victor",
+        "text": "Send it to this email."
+      },
+      {
+        "by": "victor",
+        "text": "I'll flag it as urgent."
+      }
+    ],
+    "hints": [
+      "问触发原因",
+      "给材料 + 时间"
+    ]
+  },
+  {
+    "id": "b-dispute",
+    "cat": "bank",
+    "load": 3,
+    "title": "信用卡盗刷申诉",
+    "goal": "挂失、申诉、确认退款时间",
+    "place": "银行客服电话",
+    "role": "客服 Anna",
+    "brief": "信用卡出现两笔境外盗刷。要挂失、申诉并确认时限。",
+    "opener": "I see two transactions from overseas.",
+    "covers": [
+      "bad-news",
+      "clarify-number",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "anna",
+        "name": "Anna",
+        "role": "银行客服",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "按流程处理，会说“调查中”。",
+        "opener": "I see two transactions from overseas."
+      }
+    ],
+    "must": [
+      "I didn't make those",
+      "Can you block the card",
+      "When will I get the refund"
+    ],
+    "phrases": [
+      "I didn't make those transactions.",
+      "Can you block the card now?",
+      "When will I get the refund?"
+    ],
+    "beats": [
+      {
+        "by": "anna",
+        "text": "I see two transactions from overseas."
+      },
+      {
+        "by": "anna",
+        "text": "I'll block the card now."
+      },
+      {
+        "by": "anna",
+        "text": "We'll open a dispute."
+      },
+      {
+        "by": "anna",
+        "text": "It takes seven to ten days."
+      },
+      {
+        "by": "anna",
+        "text": "You'll get a provisional credit."
+      }
+    ],
+    "hints": [
+      "先挂失，再申诉",
+      "确认临时退款/时限"
+    ]
+  },
+  {
+    "id": "rt-viewing",
+    "cat": "rent",
+    "load": 2,
+    "title": "看房问细节",
+    "goal": "问清租金、费用、设施和入住时间",
+    "place": "看房现场",
+    "role": "房东 Tom",
+    "brief": "你在看房，要问清租金包含什么、有没有额外费用。",
+    "opener": "So, what do you think?",
+    "covers": [
+      "clarify-number",
+      "probe-detail",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "房东",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "想尽快租出去，会模糊额外费用。",
+        "opener": "So, what do you think?"
+      }
+    ],
+    "must": [
+      "Is the rent inclusive of",
+      "What's the deposit",
+      "When is it available"
+    ],
+    "phrases": [
+      "Is the rent inclusive of utilities?",
+      "What's the deposit?",
+      "When is it available?"
+    ],
+    "beats": [
+      {
+        "by": "tom",
+        "text": "So, what do you think?"
+      },
+      {
+        "by": "tom",
+        "text": "Rent is two thousand a month."
+      },
+      {
+        "by": "tom",
+        "text": "Utilities are separate."
+      },
+      {
+        "by": "tom",
+        "text": "Deposit is one month."
+      },
+      {
+        "by": "tom",
+        "text": "It's available next week."
+      }
+    ],
+    "hints": [
+      "问“包含什么”",
+      "押金/杂费/入住日一起确认"
+    ]
+  },
+  {
+    "id": "rt-negotiate",
+    "cat": "rent",
+    "load": 3,
+    "title": "谈租金和押金",
+    "goal": "争取降租或减少押金",
+    "place": "看房后电话",
+    "role": "房东 Tom",
+    "brief": "你想租，但希望降 100 或押金减半。要用长租/一次性付款换。",
+    "opener": "The price is firm.",
+    "covers": [
+      "bargain",
+      "trade-offer",
+      "soft-no",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "房东",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "说价格很硬，但愿意谈长租。",
+        "opener": "The price is firm."
+      }
+    ],
+    "must": [
+      "If I sign for a year",
+      "Can we do",
+      "What if I pay"
+    ],
+    "phrases": [
+      "If I sign for a year, can we do eighteen hundred?",
+      "Can we split the deposit?",
+      "What if I pay three months upfront?"
+    ],
+    "beats": [
+      {
+        "by": "tom",
+        "text": "The price is firm."
+      },
+      {
+        "by": "tom",
+        "text": "I've had a lot of interest."
+      },
+      {
+        "by": "tom",
+        "text": "A one-year lease?"
+      },
+      {
+        "by": "tom",
+        "text": "I can do nineteen hundred."
+      },
+      {
+        "by": "tom",
+        "text": "Deal."
+      }
+    ],
+    "hints": [
+      "用长租/预付换价格",
+      "先问对方在意什么"
+    ]
+  },
+  {
+    "id": "rt-repair",
+    "cat": "rent",
+    "load": 3,
+    "title": "报修与责任划分",
+    "goal": "让房东安排维修并明确谁付钱",
+    "place": "电话/现场",
+    "role": "房东 Tom",
+    "brief": "热水器坏了。你要让房东尽快修，并确认费用谁出。",
+    "opener": "What's the problem now?",
+    "covers": [
+      "bad-news",
+      "probe-detail",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "房东",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "想拖，会说“你自己先看看”。",
+        "opener": "What's the problem now?"
+      }
+    ],
+    "must": [
+      "The water heater is broken",
+      "Can you send someone",
+      "Who covers the cost"
+    ],
+    "phrases": [
+      "The water heater is broken and we have no hot water.",
+      "Can you send someone today?",
+      "Who covers the cost?"
+    ],
+    "beats": [
+      {
+        "by": "tom",
+        "text": "What's the problem now?"
+      },
+      {
+        "by": "tom",
+        "text": "Maybe it's just the pilot light."
+      },
+      {
+        "by": "tom",
+        "text": "I can call a plumber tomorrow."
+      },
+      {
+        "by": "tom",
+        "text": "I'll cover the repair."
+      },
+      {
+        "by": "tom",
+        "text": "He'll come at ten."
+      }
+    ],
+    "hints": [
+      "说影响（没热水）",
+      "明确费用责任和上门时间"
+    ]
+  },
+  {
+    "id": "nb-parking",
+    "cat": "neighbor",
+    "load": 2,
+    "title": "车位被占",
+    "goal": "让邻居挪车，并约定以后规则",
+    "place": "地下车库",
+    "role": "邻居 Tom",
+    "brief": "你的固定车位被占。要礼貌但明确地让对方挪车。",
+    "opener": "Oh — is that your spot?",
+    "covers": [
+      "soft-no",
+      "ask-commit",
+      "propose-alt",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "tom",
+        "name": "Tom",
+        "role": "邻居",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 1.0
+        },
+        "stance": "不是故意，但怕麻烦，会说“就停一会儿”。",
+        "opener": "Oh — is that your spot?"
+      }
+    ],
+    "must": [
+      "That's my assigned spot",
+      "Could you move it",
+      "Can we agree on"
+    ],
+    "phrases": [
+      "That's my assigned spot, number 42.",
+      "Could you move it in the next ten minutes?",
+      "Can we agree on guest parking for visitors?"
+    ],
+    "beats": [
+      {
+        "by": "tom",
+        "text": "Oh — is that your spot?"
+      },
+      {
+        "by": "tom",
+        "text": "I'll just be twenty minutes."
+      },
+      {
+        "by": "tom",
+        "text": "I didn't see the sign."
+      },
+      {
+        "by": "tom",
+        "text": "Okay, I'll move it now."
+      },
+      {
+        "by": "tom",
+        "text": "Sorry about that."
+      }
+    ],
+    "hints": [
+      "先给台阶，再说固定车位",
+      "给明确挪车时间"
+    ]
+  },
+  {
+    "id": "nb-common",
+    "cat": "neighbor",
+    "load": 2,
+    "title": "公共区域堆放",
+    "goal": "让对方清理，保持关系",
+    "place": "楼道",
+    "role": "邻居 Mia",
+    "brief": "邻居把纸箱堆在楼道，影响通行和消防。要沟通清理。",
+    "opener": "I'm just leaving those there for a day.",
+    "covers": [
+      "soft-no",
+      "refuse-request",
+      "propose-alt",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "mia",
+        "name": "Mia",
+        "role": "邻居",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "觉得无所谓，会说“就一天”。",
+        "opener": "I'm just leaving those there for a day."
+      }
+    ],
+    "must": [
+      "I'm worried about the fire exit",
+      "Could you move them",
+      "Can we agree"
+    ],
+    "phrases": [
+      "I'm worried about the fire exit being blocked.",
+      "Could you move them by tonight?",
+      "Can we agree to keep the hallway clear?"
+    ],
+    "beats": [
+      {
+        "by": "mia",
+        "text": "I'm just leaving those there for a day."
+      },
+      {
+        "by": "mia",
+        "text": "It's not blocking anything."
+      },
+      {
+        "by": "mia",
+        "text": "The building doesn't care."
+      },
+      {
+        "by": "mia",
+        "text": "Fine, I'll move them."
+      },
+      {
+        "by": "mia",
+        "text": "Tonight, okay."
+      }
+    ],
+    "hints": [
+      "用安全/消防说事，不指责人",
+      "给清理截止时间"
+    ]
+  },
+  {
+    "id": "nb-pet",
+    "cat": "neighbor",
+    "load": 2,
+    "title": "宠物扰民",
+    "goal": "让对方管好宠物，避免升级",
+    "place": "楼下",
+    "role": "邻居 Ben",
+    "brief": "邻居的狗半夜一直叫。你要在不撕破脸的情况下解决。",
+    "opener": "Was it barking again last night?",
+    "covers": [
+      "soft-no",
+      "probe-detail",
+      "propose-alt",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "ben",
+        "name": "Ben",
+        "role": "邻居",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "有点不好意思，但会说“狗就这样”。",
+        "opener": "Was it barking again last night?"
+      }
+    ],
+    "must": [
+      "I don't want to make it a thing, but",
+      "Would you be able to",
+      "Can we agree"
+    ],
+    "phrases": [
+      "I don't want to make it a thing, but it woke us up at two.",
+      "Would you be able to keep him inside after eleven?",
+      "Can we agree to try that for a week?"
+    ],
+    "beats": [
+      {
+        "by": "ben",
+        "text": "Was it barking again last night?"
+      },
+      {
+        "by": "ben",
+        "text": "He's just anxious when I'm out."
+      },
+      {
+        "by": "ben",
+        "text": "I can try closing the window."
+      },
+      {
+        "by": "ben",
+        "text": "Okay, inside after eleven."
+      },
+      {
+        "by": "ben",
+        "text": "Let's see how it goes."
+      }
+    ],
+    "hints": [
+      "先说影响，不贴标签",
+      "给一个可试的方案"
+    ]
+  },
+  {
+    "id": "cp-service",
+    "cat": "complaint",
+    "load": 2,
+    "title": "服务态度投诉",
+    "goal": "要求道歉和改进，不退化成吵架",
+    "place": "客服中心",
+    "role": "客服主管 Dana",
+    "brief": "你被客服挂断电话。你要投诉，但要拿到处理结果。",
+    "opener": "I'm sorry you feel that way.",
+    "covers": [
+      "bad-news",
+      "probe-detail",
+      "ask-commit",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "dana",
+        "name": "Dana",
+        "role": "客服主管",
+        "tag": "boss",
+        "voice": {
+          "pitch": 1.05,
+          "rate": 1.0
+        },
+        "stance": "标准话术，容易说“会反馈”。",
+        "opener": "I'm sorry you feel that way."
+      }
+    ],
+    "must": [
+      "I don't want an apology, I want",
+      "Can you confirm",
+      "What's the next step"
+    ],
+    "phrases": [
+      "I don't want an apology — I want a callback from a manager.",
+      "Can you confirm the ticket number?",
+      "What's the next step and when?"
+    ],
+    "beats": [
+      {
+        "by": "dana",
+        "text": "I'm sorry you feel that way."
+      },
+      {
+        "by": "dana",
+        "text": "I'll pass it to the team."
+      },
+      {
+        "by": "dana",
+        "text": "Someone will call you."
+      },
+      {
+        "by": "dana",
+        "text": "Within 24 hours."
+      },
+      {
+        "by": "dana",
+        "text": "Here's your ticket number."
+      }
+    ],
+    "hints": [
+      "要具体处理，不接受泛泛道歉",
+      "工单号 + 回电时间"
+    ]
+  },
+  {
+    "id": "cp-refund",
+    "cat": "complaint",
+    "load": 3,
+    "title": "要求退款",
+    "goal": "在规则内拿到退款或明确拒绝理由",
+    "place": "客服电话",
+    "role": "客服 Victor",
+    "brief": "服务没达到承诺，你要求退款。对方会拿条款挡。",
+    "opener": "Our policy says no refunds after 14 days.",
+    "covers": [
+      "clarify-number",
+      "disagree",
+      "propose-alt",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "victor",
+        "name": "Victor",
+        "role": "客服",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.88,
+          "rate": 0.98
+        },
+        "stance": "按条款，习惯直接拒绝。",
+        "opener": "Our policy says no refunds after 14 days."
+      }
+    ],
+    "must": [
+      "The service wasn't delivered",
+      "Can you check the terms",
+      "What can you offer"
+    ],
+    "phrases": [
+      "The service wasn't delivered as promised.",
+      "Can you check what the terms actually say?",
+      "What can you offer instead of a full refund?"
+    ],
+    "beats": [
+      {
+        "by": "victor",
+        "text": "Our policy says no refunds after 14 days."
+      },
+      {
+        "by": "victor",
+        "text": "You agreed to the terms."
+      },
+      {
+        "by": "victor",
+        "text": "I can offer a credit."
+      },
+      {
+        "by": "victor",
+        "text": "Half refund is possible."
+      },
+      {
+        "by": "victor",
+        "text": "I'll process that today."
+      }
+    ],
+    "hints": [
+      "先指出“未按承诺交付”",
+      "把全退换成部分退/credit"
+    ]
+  },
+  {
+    "id": "cp-manager",
+    "cat": "complaint",
+    "load": 2,
+    "title": "要求见负责人",
+    "goal": "升级到有权限的人，并说清诉求",
+    "place": "门店/客服",
+    "role": "一线员工 Sam",
+    "brief": "一线解决不了，你要升级。要说清问题和诉求，不情绪化。",
+    "opener": "I'm the only one here right now.",
+    "covers": [
+      "ask-commit",
+      "clarify-number",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "sam",
+        "name": "Sam",
+        "role": "一线员工",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "没权限，会说“我帮你记录”。",
+        "opener": "I'm the only one here right now."
+      }
+    ],
+    "must": [
+      "I need someone with authority",
+      "The issue is",
+      "Can you confirm a callback"
+    ],
+    "phrases": [
+      "I need someone who can authorize a refund.",
+      "The issue is the wrong item plus a missed delivery.",
+      "Can you confirm a callback time?"
+    ],
+    "beats": [
+      {
+        "by": "sam",
+        "text": "I'm the only one here right now."
+      },
+      {
+        "by": "sam",
+        "text": "I can take a message."
+      },
+      {
+        "by": "sam",
+        "text": "The manager is back tomorrow."
+      },
+      {
+        "by": "sam",
+        "text": "I'll book a callback at ten."
+      },
+      {
+        "by": "sam",
+        "text": "Here's the reference."
+      }
+    ],
+    "hints": [
+      "明确要“有权处理的人”",
+      "约定回电时间"
+    ]
+  },
+  {
+    "id": "em-passport",
+    "cat": "emergency",
+    "load": 3,
+    "title": "护照丢失求助",
+    "goal": "报警/联系使馆，问清补办流程",
+    "place": "警局/使馆电话",
+    "role": "警官 Miller",
+    "brief": "护照丢了，你要说清时间地点，问下一步。",
+    "opener": "When did you last see your passport?",
+    "covers": [
+      "bad-news",
+      "clarify-number",
+      "probe-detail",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "miller",
+        "name": "Miller",
+        "role": "警官",
+        "tag": "boss",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.98
+        },
+        "stance": "按流程，问时间地点。",
+        "opener": "When did you last see your passport?"
+      }
+    ],
+    "must": [
+      "I last saw it",
+      "I need a police report",
+      "What's the next step"
+    ],
+    "phrases": [
+      "I last saw it at the hotel around noon.",
+      "I need a police report for the embassy.",
+      "What's the next step to replace it?"
+    ],
+    "beats": [
+      {
+        "by": "miller",
+        "text": "When did you last see your passport?"
+      },
+      {
+        "by": "miller",
+        "text": "Where were you at the time?"
+      },
+      {
+        "by": "miller",
+        "text": "We'll file a report."
+      },
+      {
+        "by": "miller",
+        "text": "Take this to your embassy."
+      },
+      {
+        "by": "miller",
+        "text": "Here's the case number."
+      }
+    ],
+    "hints": [
+      "时间/地点先说清",
+      "要报案号，方便使馆补办"
+    ]
+  },
+  {
+    "id": "em-police",
+    "cat": "emergency",
+    "load": 3,
+    "title": "报警描述事件",
+    "goal": "说清地点、发生了什么、是否有人受伤",
+    "place": "电话报警",
+    "role": "接线员 Anna",
+    "brief": "你目击一起事故。要短、清楚、按优先级说。",
+    "opener": "What's your emergency?",
+    "covers": [
+      "bad-news",
+      "clarify-number",
+      "self-repair",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "anna",
+        "name": "Anna",
+        "role": "接线员",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "训练有素，会按顺序问。",
+        "opener": "What's your emergency?"
+      }
+    ],
+    "must": [
+      "There's been an accident",
+      "I'm at",
+      "No one is hurt"
+    ],
+    "phrases": [
+      "There's been an accident at the corner of Fifth and Main.",
+      "I'm at the coffee shop on the corner.",
+      "One person is hurt but conscious."
+    ],
+    "beats": [
+      {
+        "by": "anna",
+        "text": "What's your emergency?"
+      },
+      {
+        "by": "anna",
+        "text": "Where exactly are you?"
+      },
+      {
+        "by": "anna",
+        "text": "Is anyone injured?"
+      },
+      {
+        "by": "anna",
+        "text": "Stay on the line."
+      },
+      {
+        "by": "anna",
+        "text": "Help is on the way."
+      }
+    ],
+    "hints": [
+      "地点 + 事件 + 伤情",
+      "按优先级说，不展开"
+    ]
+  },
+  {
+    "id": "em-hospital",
+    "cat": "emergency",
+    "load": 3,
+    "title": "急诊说明情况",
+    "goal": "说清症状、过敏和用药",
+    "place": "急诊分诊台",
+    "role": "护士 Nina",
+    "brief": "你陪朋友来急诊。要快速说清症状和过敏史。",
+    "opener": "What's the problem today?",
+    "covers": [
+      "self-intro",
+      "clarify-number",
+      "probe-detail",
+      "wrap-confirm"
+    ],
+    "cast": [
+      {
+        "id": "nina",
+        "name": "Nina",
+        "role": "分诊护士",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.03
+        },
+        "stance": "忙，问关键信息。",
+        "opener": "What's the problem today?"
+      }
+    ],
+    "must": [
+      "He has",
+      "It started",
+      "He's allergic to"
+    ],
+    "phrases": [
+      "He has chest pain and shortness of breath.",
+      "It started about an hour ago.",
+      "He's allergic to aspirin."
+    ],
+    "beats": [
+      {
+        "by": "nina",
+        "text": "What's the problem today?"
+      },
+      {
+        "by": "nina",
+        "text": "How long ago did it start?"
+      },
+      {
+        "by": "nina",
+        "text": "Any allergies?"
+      },
+      {
+        "by": "nina",
+        "text": "Any medication?"
+      },
+      {
+        "by": "nina",
+        "text": "We'll take him now."
+      }
+    ],
+    "hints": [
+      "症状 + 开始时间 + 过敏",
+      "先给最危险的信息"
+    ]
+  },
+  {
+    "id": "nw-intro",
+    "cat": "networking",
+    "load": 1,
+    "title": "活动自我介绍",
+    "goal": "30 秒说清你是谁、做什么、想认识谁",
+    "place": "行业活动签到台",
+    "role": "参会者 Rachel",
+    "brief": "你要在 30 秒内介绍自己，并让对方愿意继续聊。",
+    "opener": "Hi — what do you do?",
+    "covers": [
+      "self-intro",
+      "probe-detail",
+      "ask-commit",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "rachel",
+        "name": "Rachel",
+        "role": "参会者",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "开放，但时间有限。",
+        "opener": "Hi — what do you do?"
+      }
+    ],
+    "must": [
+      "I'm a",
+      "I work on",
+      "I'm here to"
+    ],
+    "phrases": [
+      "I'm a backend engineer at a payments company.",
+      "I work on fraud detection.",
+      "I'm here to meet people in fintech."
+    ],
+    "beats": [
+      {
+        "by": "rachel",
+        "text": "Hi — what do you do?"
+      },
+      {
+        "by": "rachel",
+        "text": "Oh, interesting. What kind of fraud?"
+      },
+      {
+        "by": "rachel",
+        "text": "We're looking at that too."
+      },
+      {
+        "by": "rachel",
+        "text": "Let's compare notes."
+      },
+      {
+        "by": "rachel",
+        "text": "I'll send you a message."
+      }
+    ],
+    "hints": [
+      "30 秒：身份 + 方向 + 目的",
+      "结尾给后续理由"
+    ]
+  },
+  {
+    "id": "nw-join",
+    "cat": "networking",
+    "load": 2,
+    "title": "加入一圈人的对话",
+    "goal": "自然切入，不被当成打断",
+    "place": "活动圆桌，三个人在聊",
+    "role": "参会者 Ben",
+    "brief": "你想加入一个小圈子。要先听、再认同、再提问。",
+    "opener": "Sorry, are you with us?",
+    "covers": [
+      "cut-in",
+      "probe-detail",
+      "disagree",
+      "close-conv"
+    ],
+    "cast": [
+      {
+        "id": "ben",
+        "name": "Ben",
+        "role": "参会者",
+        "tag": "peer",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 1.02
+        },
+        "stance": "圈子已形成，会礼貌但警惕。",
+        "opener": "Sorry, are you with us?"
+      },
+      {
+        "id": "mia",
+        "name": "Mia",
+        "role": "参会者",
+        "tag": "bystander",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 1.04
+        },
+        "stance": "愿意接纳新人，会帮你接话。"
+      }
+    ],
+    "must": [
+      "I overheard",
+      "That matches",
+      "Do you mind if I ask"
+    ],
+    "phrases": [
+      "I overheard you talking about latency — that's my area too.",
+      "That matches what we saw last quarter.",
+      "Do you mind if I ask how you measured it?"
+    ],
+    "beats": [
+      {
+        "by": "ben",
+        "text": "Sorry, are you with us?"
+      },
+      {
+        "by": "ben",
+        "text": "We were just talking about latency."
+      },
+      {
+        "by": "mia",
+        "text": "Oh, you work on that too?"
+      },
+      {
+        "by": "ben",
+        "text": "How did you measure it?"
+      },
+      {
+        "by": "mia",
+        "text": "Join us — we're comparing notes."
+      }
+    ],
+    "hints": [
+      "先认同对方观点，再切入",
+      "用问题加入，不用陈述打断"
+    ]
+  },
+  {
+    "id": "nw-followup",
+    "cat": "networking",
+    "load": 2,
+    "title": "活动后跟进",
+    "goal": "发出有信息量的跟进，拿到下一次见面",
+    "place": "活动后第二天",
+    "role": "参会者 Rachel",
+    "brief": "你在活动上认识了一个人。跟进消息要具体，不要只发“nice to meet you”。",
+    "opener": "Hey, good meeting you yesterday.",
+    "covers": [
+      "self-intro",
+      "probe-detail",
+      "set-time",
+      "ask-commit"
+    ],
+    "cast": [
+      {
+        "id": "rachel",
+        "name": "Rachel",
+        "role": "参会者",
+        "tag": "peer",
+        "voice": {
+          "pitch": 1.08,
+          "rate": 1.03
+        },
+        "stance": "愿意聊，但消息多，容易忘。",
+        "opener": "Hey, good meeting you yesterday."
+      }
+    ],
+    "must": [
+      "You mentioned",
+      "I looked into",
+      "Would you be open to"
+    ],
+    "phrases": [
+      "You mentioned you're evaluating vendors.",
+      "I looked into the tool you mentioned.",
+      "Would you be open to a 20-minute call?"
+    ],
+    "beats": [
+      {
+        "by": "rachel",
+        "text": "Hey, good meeting you yesterday."
+      },
+      {
+        "by": "rachel",
+        "text": "Remind me what you work on?"
+      },
+      {
+        "by": "rachel",
+        "text": "We're still evaluating."
+      },
+      {
+        "by": "rachel",
+        "text": "A short call could help."
+      },
+      {
+        "by": "rachel",
+        "text": "Thursday works."
+      }
+    ],
+    "hints": [
+      "提到对方说过的具体点",
+      "给一个 20 分钟的小请求"
+    ]
   }
 ]

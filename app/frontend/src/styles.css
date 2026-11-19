@@ -1000,3 +1000,6 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 .wk-stats{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.4}
 .wk-none{font-size:11px;color:#5b5349}
 @media(max-width:760px){.wk-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* 场景下拉：分类多时可滚动 */
+.scene-pop{max-height:320px;overflow-y:auto}
