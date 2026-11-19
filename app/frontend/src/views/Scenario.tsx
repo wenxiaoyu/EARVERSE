@@ -94,7 +94,7 @@ export default function Scenario({
     setShown({});
     setChatErr("");
     try {
-      const r = await api.scenarioStart(id);
+      const r = await api.scenarioStart(id, domain);
       (window as any).__sid = r.session_id;
       setSession(r.session);
       const opener = r.session.history?.[0];

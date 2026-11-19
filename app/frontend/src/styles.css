@@ -1003,3 +1003,20 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 
 /* 场景下拉：分类多时可滚动 */
 .scene-pop{max-height:320px;overflow-y:auto}
+
+/* 左侧训练场景：单下拉 */
+.sdrop{position:relative;display:flex;flex-direction:column;gap:6px}
+.sdrop label{margin:0}
+.sdrop-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  background:#191411;border:1px solid var(--hair);color:var(--ink);border-radius:10px;
+  padding:10px 12px;font-size:14px;font-family:var(--sans);cursor:pointer;transition:.15s}
+.sdrop-btn:hover{border-color:rgba(232,163,61,.45)}
+.sdrop-btn .chev{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.sdrop-pop{position:absolute;bottom:calc(100% + 6px);left:0;right:0;z-index:90;
+  max-height:360px;overflow-y:auto;padding:6px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid rgba(232,163,61,.30);
+  border-radius:12px;box-shadow:0 24px 50px -20px #000;animation:pop .14s ease}
+.sdrop-opt{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;
+  color:var(--muted);padding:8px 10px;border-radius:8px;font-size:13.5px;font-family:var(--sans);cursor:pointer}
+.sdrop-opt:hover{background:rgba(242,235,223,.05);color:var(--ink)}
+.sdrop-opt.on{background:rgba(232,163,61,.12);border-color:rgba(232,163,61,.4);color:var(--ink)}

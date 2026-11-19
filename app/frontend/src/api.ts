@@ -75,8 +75,8 @@ export const api = {
     json<any>(`/api/daily/detail?domain=${domain}&date=${date}`),
 
   scenarios: (domain?: string) => json<any>(`/api/scenarios${domain ? `?domain=${domain}` : ""}`),
-  scenarioStart: (scenario_id: string) =>
-    json<any>("/api/scenario/start", { method: "POST", body: JSON.stringify({ scenario_id }) }),
+  scenarioStart: (scenario_id: string, domain?: string) =>
+    json<any>("/api/scenario/start", { method: "POST", body: JSON.stringify({ scenario_id, domain }) }),
   scenarioSay: (session_id: string, text: string) =>
     json<any>("/api/scenario/say", { method: "POST", body: JSON.stringify({ session_id, text }) }),
   scenarioReview: (session_id: string) =>

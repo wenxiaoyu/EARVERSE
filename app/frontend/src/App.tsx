@@ -7,7 +7,7 @@ import Report from "./views/Report";
 import Settings from "./views/Settings";
 import About from "./views/About";
 import NavIcon from "./components/NavIcon";
-import SceneSelector from "./components/SceneSelector";
+import SceneDropdown from "./components/SceneDropdown";
 
 type Tab = "today" | "assess" | "scenario" | "report" | "settings" | "about";
 
@@ -134,7 +134,7 @@ export default function App() {
             </button>
           ))}
           <div className="rail-foot">
-            <SceneSelector items={SCENES} value={domain} onChange={setDomain} maxInline={4} />
+            <SceneDropdown items={SCENES} value={domain} onChange={setDomain} />
           </div>
         </nav>
 
