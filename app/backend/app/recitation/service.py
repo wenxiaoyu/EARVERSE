@@ -286,6 +286,31 @@ async def generate_passage(llm, domain: str, level: int,
             continue
     if last and validate_passage(last, level):
         return last
+    # 模型常写短：给一次“扩写”机会，保留原结构与语块
+    if last:
+        lo, hi, smin, smax = prompts.RECITATION_LENGTH.get(level, prompts.RECITATION_LENGTH[2])
+        try:
+            fix = await llm.chat([
+                {"role": "system",
+                 "content": "你是英文背诵材料编辑。只做扩写，不改变原意和语气。"
+                            "严格输出 JSON：{\"title\":\"...\",\"topic\":\"...\","
+                            "\"sentences\":[...],\"chunks\":[...],\"target_words\":[...],"
+                            "\"why\":\"...\"}"},
+                {"role": "user",
+                 "content": f"把下面这篇扩写到 {lo}–{hi} 词、{smin}–{smax} 句。"
+                            f"保留所有原有句子和语块，只补充具体细节，不要换主题。\n"
+                            f"当前 {last.get('word_count')} 词。\n"
+                            f"原文：{last.get('text')}\n"
+                            f"语块：{last.get('chunks')}"},
+            ], temperature=0.6, max_tokens=1200)
+            data = prompts.parse_json_reply(fix) or {}
+            p2 = normalize_passage(data, level, domain, source="ai")
+            p2["kind"] = kind
+            p2["date"] = models.local_date(0)
+            if validate_passage(p2, level):
+                return p2
+        except Exception:
+            pass
     return fallback_passage(level, domain, kind)
 
 
