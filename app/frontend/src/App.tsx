@@ -8,7 +8,7 @@ import Report from "./views/Report";
 import Settings from "./views/Settings";
 import About from "./views/About";
 import NavIcon from "./components/NavIcon";
-import SceneDropdown from "./components/SceneDropdown";
+import SceneDrawer, { type SceneGroup } from "./components/SceneDrawer";
 
 type Tab = "today" | "assess" | "recite" | "scenario" | "report" | "settings" | "about";
 
@@ -47,6 +47,21 @@ const SCENES = [
   { key: "emergency", label: "紧急" },
   { key: "networking", label: "活动" },
   { key: "social", label: "日常" },
+];
+
+const SCENE_GROUPS: SceneGroup[] = [
+  {
+    label: "职场沟通",
+    keys: ["work", "meeting", "client", "negotiate", "report", "phone", "email", "management", "collab", "interview"],
+  },
+  {
+    label: "出门在外",
+    keys: ["travel", "hotel", "airport", "transit", "dining", "shopping", "bank", "rent"],
+  },
+  {
+    label: "生活应急",
+    keys: ["medical", "neighbor", "complaint", "emergency", "networking", "social"],
+  },
 ];
 
 const BARS = Array.from({ length: 44 }, (_, i) => ({
@@ -136,7 +151,7 @@ export default function App() {
             </button>
           ))}
           <div className="rail-foot">
-            <SceneDropdown items={SCENES} value={domain} onChange={setDomain} />
+            <SceneDrawer items={SCENES} groups={SCENE_GROUPS} value={domain} onChange={setDomain} />
           </div>
         </nav>
 
