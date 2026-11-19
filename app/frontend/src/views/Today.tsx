@@ -121,7 +121,7 @@ export default function Today({
     tabPicked.current = false; setTab(0);
 
     if (saved && (saved.items?.length || saved.shadowItems?.length || saved.mpItems?.length)) {
-      setItems(saved.items || []);
+      setItems((saved.items || []).slice(0, 8));
       setResults(saved.results || {});
       setRevealed(saved.revealed || {});
       setRoundId(saved.roundId || Date.now());
@@ -141,7 +141,7 @@ export default function Today({
     setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1); setShadowSeen(1);
     setRoundId(Date.now());
     let alive = true;
-    api.generate(domain, "cards", 10)
+    api.generate(domain, "cards", 8)
       .then((r) => { if (alive) setItems(r.items || []); })
       .catch(() => {});
     api.pronunciationItems(domain, 5)
@@ -181,7 +181,7 @@ export default function Today({
   const session = useSessionClock(`aicoach.session.v2:${todayKey}`, total || 60);
 
   const practice = async () => {
-    const r = await api.generate(domain, "cards", 10);
+    const r = await api.generate(domain, "cards", 8);
     setItems(r.items);
     setResults({});
     setRevealed({});
