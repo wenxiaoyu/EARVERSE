@@ -81,7 +81,7 @@ if [ -z "$ROOT" ]; then
     fi
     rm -rf "$TMP"
   else
-    log "已安装：$DEST（加 --update 更新代码）"
+    log "已安装：${DEST}（加 --update 更新代码）"
   fi
   ROOT="$DEST"
 fi

@@ -49,7 +49,7 @@ if (-not $Root) {
     }
     Remove-Item $zip, $tmp -Recurse -Force -ErrorAction SilentlyContinue
   } else {
-    Log "已安装：$Dest（加 --update 更新代码）"
+    Log "已安装：${Dest}（加 --update 更新代码）"
   }
   $Root = $Dest
 }
