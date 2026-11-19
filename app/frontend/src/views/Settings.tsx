@@ -12,6 +12,7 @@ import {
   saveSettings,
   speak,
   subscribe,
+  voiceKey,
   voiceTag,
   type VoiceSettings,
 } from "../tts";
@@ -109,6 +110,13 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
   };
 
   const reduceOn = Number(v.reduce) > 0;
+  const selectedVoiceKey = (() => {
+    if (!v.voiceURI) return "";
+    const byKey = voices.find((x) => voiceKey(x) === v.voiceURI);
+    if (byKey) return voiceKey(byKey);
+    const byUri = voices.find((x) => x.voiceURI === v.voiceURI);
+    return byUri ? voiceKey(byUri) : "";
+  })();
 
   return (
     <section>
@@ -134,11 +142,11 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
         <h2>声音</h2>
 
         <label>音色</label>
-        <select value={v.voiceURI} onChange={(e) => { saveSettings({ voiceURI: e.target.value }); toast("音色已切换"); }} style={{ width: "100%" }}>
+        <select value={selectedVoiceKey} onChange={(e) => { saveSettings({ voiceURI: e.target.value }); toast("音色已切换"); }} style={{ width: "100%" }}>
           <option value="">自动选择（推荐）</option>
           {voices.length === 0 && <option value="">正在检测音色…</option>}
           {voices.map((voice) => (
-            <option key={voice.voiceURI} value={voice.voiceURI}>
+            <option key={voiceKey(voice)} value={voiceKey(voice)}>
               {voice.name}{voiceTag(voice) ? `（${voiceTag(voice)}）` : ""} · {voice.lang}
             </option>
           ))}

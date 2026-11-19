@@ -107,10 +107,20 @@ export function loadVoices(): SpeechSynthesisVoice[] {
   return getVoices();
 }
 
+/** 音色的稳定 key：有些浏览器 voiceURI 为空或重复，用 name+lang 兜底。 */
+export function voiceKey(v: SpeechSynthesisVoice): string {
+  return `${v.name}|${v.lang}|${v.voiceURI || ""}`;
+}
+
 function pickVoice(): SpeechSynthesisVoice | null {
   if (!voiceList.length) loadVoices();
-  if (settings.voiceURI) {
-    const found = voiceList.find((v) => v.voiceURI === settings.voiceURI);
+  const key = settings.voiceURI;
+  if (key) {
+    const found =
+      voiceList.find((v) => voiceKey(v) === key) ||
+      voiceList.find((v) => v.voiceURI === key) ||
+      voiceList.find((v) => `${v.name}|${v.lang}` === key) ||
+      voiceList.find((v) => v.name === key);
     // 跳过 Whisper / Bells 这类几乎听不清或纯音效的音色，避免“调用成功但没声音”
     if (found && !VOICE_BAD.test(voiceMeta(found))) return found;
   }
@@ -271,10 +281,11 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
       }
     };
 
-    // 800ms 内没有 onstart，视为这次朗读没真正启动
+    // 给系统语音引擎足够的启动时间；只有确实没有在播时才重试。
+    // 太短会把用户选中的音色误判为失败，统一退回默认音色。
     watchdog = window.setTimeout(() => {
-      if (!started) retry();
-    }, 800);
+      if (!started && gen === speakGen && !synth.speaking && !synth.pending) retry();
+    }, 2200);
 
     u.onstart = () => {
       started = true;
