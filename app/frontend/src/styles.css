@@ -915,3 +915,9 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 .hearing-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .hchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1;color:var(--ink);border:1px solid var(--hair);border-radius:999px;padding:5px 10px;background:rgba(242,235,223,.03)}
 .hchip b{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--amber)}
+
+/* 左侧导航图标 */
+.nav .ico{width:18px;height:18px;display:grid;place-items:center;color:var(--muted);transition:color .15s}
+.nav .ico svg{display:block}
+.nav:hover .ico{color:var(--ink)}
+.nav.active .ico{color:var(--amber)}

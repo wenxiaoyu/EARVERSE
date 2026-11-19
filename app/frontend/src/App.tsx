@@ -6,17 +6,18 @@ import Scenario from "./views/Scenario";
 import Report from "./views/Report";
 import Settings from "./views/Settings";
 import About from "./views/About";
+import NavIcon from "./components/NavIcon";
 import SceneSelector from "./components/SceneSelector";
 
 type Tab = "today" | "assess" | "scenario" | "report" | "settings" | "about";
 
-const TABS: { key: Tab; label: string; ico: string }[] = [
-  { key: "today", label: "今天", ico: "01" },
-  { key: "assess", label: "测验", ico: "02" },
-  { key: "scenario", label: "实战", ico: "03" },
-  { key: "report", label: "报告", ico: "04" },
-  { key: "settings", label: "设置", ico: "05" },
-  { key: "about", label: "关于", ico: "06" },
+const TABS: { key: Tab; label: string }[] = [
+  { key: "today", label: "今天" },
+  { key: "assess", label: "测验" },
+  { key: "scenario", label: "实战" },
+  { key: "report", label: "报告" },
+  { key: "settings", label: "设置" },
+  { key: "about", label: "关于" },
 ];
 
 const SCENES = [
@@ -103,7 +104,7 @@ export default function App() {
               className={`nav ${tab === t.key ? "active" : ""}`}
               onClick={() => setTab(t.key)}
             >
-              <span className="ico">{t.ico}</span>
+              <span className="ico"><NavIcon name={t.key} /></span>
               {t.label}
               {t.key === "assess" && !confirmed && <span className="nd" />}
             </button>
