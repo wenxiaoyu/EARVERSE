@@ -18,7 +18,7 @@ from typing import Any
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import models, seeddata
@@ -28,6 +28,7 @@ from .config import LLMConfig, load_config, public_view, save_config
 from .generation import service as generation
 from .llm import prompts
 from .llm.client import LLMClient
+from .recitation import service as recitation
 from .reports import service as reports
 from .scenarios import engine as scenarios
 from .speech import asr as speech_asr
@@ -38,6 +39,7 @@ from .training import loop as training
 DB_PATH = Path(__file__).resolve().parents[2] / "backend" / "data" / "profiles.db"
 ROOT = Path(__file__).resolve().parents[2]          # app/
 FRONTEND_DIST = ROOT / "frontend" / "dist"
+RECITATION_AUDIO_DIR = DB_PATH.parent / "recitation_audio"
 
 app = FastAPI(title="AI English Coach")
 app.add_middleware(
@@ -736,6 +738,219 @@ async def _daily_diagnose(domain: str, blocks: dict, listening: list[dict],
         "tomorrow_plan": "先补今天错的同类，再练哑巴词汇与连读。",
         "source": "local",
     }
+
+
+# ---------------------------------------------------------------- 每日背诵
+
+def _recitation_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
+    d = profile.get("domains", {}).get(domain, {})
+    return {
+        "level": models.recitation_level(profile, domain),
+        "weak_chunks": models.recitation_weak_chunks(profile, domain, limit=8),
+        "recent_pron_issues": models.recent_pron_issues(profile, domain, limit=5),
+        "deaf_words": models.deaf_words(d)[:10],
+        "weak_hearing": models.weakest_hearing(d, limit=3),
+    }
+
+
+def _recitation_public(p: dict[str, Any]) -> dict[str, Any]:
+    keys = ("id", "title", "topic", "text", "sentences", "chunks", "target_words",
+            "why", "hints", "word_count", "level", "date", "kind", "source")
+    return {k: p.get(k) for k in keys}
+
+
+def _recitation_summary(attempt: dict[str, Any]) -> dict[str, Any]:
+    keys = ("id", "date", "title", "level", "hint", "score", "coverage", "accuracy",
+            "fluency", "independence", "wpm", "words", "created_at")
+    out = {k: attempt.get(k) for k in keys}
+    out["audio_url"] = f"/api/recitation/attempts/{attempt.get('id')}/audio" \
+        if attempt.get("audio_path") else ""
+    return out
+
+
+def _prune_recitation_audio(max_age_days: int = 7) -> None:
+    import time
+    if not RECITATION_AUDIO_DIR.exists():
+        return
+    cutoff = time.time() - max_age_days * 86400
+    for f in RECITATION_AUDIO_DIR.glob("*.wav"):
+        try:
+            if f.stat().st_mtime < cutoff:
+                f.unlink()
+        except OSError:
+            pass
+
+
+@app.get("/api/recitation/today")
+async def recitation_today(domain: str = "work"):
+    cfg = _config()
+    profile = _profile()
+    level = models.recitation_level(profile, domain)
+    day = models.local_date(0)
+    passage = storage.find_recitation(domain, level, day, "daily")
+    if not passage:
+        goal = _goal_for_today(profile, domain)
+        titles = [a.get("title", "") for a in storage.list_attempts(domain, 5)]
+        passage = await recitation.generate_passage(
+            _llm(), domain, level, _recitation_excerpt(profile, domain),
+            goal=goal, avoid_titles=titles, kind="daily",
+        )
+        passage["date"] = day
+        storage.save_recitation(passage)
+    b = models.recitation_bucket(profile, domain)
+    return {
+        "passage": _recitation_public(passage),
+        "level": level,
+        "streak": int(b.get("streak") or 0),
+        "attempts": int(b.get("attempts") or 0),
+        "history": [_recitation_summary(a) for a in storage.list_attempts(domain, 10)],
+        "weak_chunks": models.recitation_weak_chunks(profile, domain, limit=5),
+        "audio_ready": bool(cfg.audio.base_url and cfg.audio.api_key),
+        "llm_ready": _llm() is not None,
+        "source": passage.get("source", "seed"),
+    }
+
+
+@app.post("/api/recitation/generate")
+async def recitation_generate(request: Request):
+    body = await request.json()
+    domain = str(body.get("domain") or "work")
+    profile = _profile()
+    level = models.recitation_level(profile, domain)
+    titles = [a.get("title", "") for a in storage.list_attempts(domain, 5)]
+    passage = await recitation.generate_passage(
+        _llm(), domain, level, _recitation_excerpt(profile, domain),
+        goal=_goal_for_today(profile, domain), avoid_titles=titles, kind="manual",
+    )
+    storage.save_recitation(passage)
+    return {"passage": _recitation_public(passage), "level": level}
+
+
+@app.post("/api/recitation/score")
+async def recitation_score(file: UploadFile = File(...),
+                           recitation_id: str = Form(...),
+                           domain: str = Form("work"),
+                           hint_level: int = Form(0),
+                           duration_ms: int = Form(0)):
+    cfg = _config()
+    passage = storage.get_recitation(recitation_id)
+    if not passage:
+        return JSONResponse({"error": "文章不存在或已过期，请换一篇"}, status_code=404)
+    _prune_recitation_audio(7)
+    if not cfg.audio.base_url or not cfg.audio.api_key:
+        return JSONResponse({"error": "还没配置语音识别，请到设置里填写音频 Key"}, status_code=409)
+
+    data = await file.read()
+    if len(data) < 1200 or int(duration_ms or 0) < 2000:
+        return JSONResponse({"error": "录音太短，请完整背完再提交"}, status_code=400)
+    try:
+        transcript = await speech_asr.transcribe(
+            data, cfg.audio.base_url, cfg.audio.api_key,
+            model=cfg.audio.asr_model, filename=file.filename or "recitation.wav",
+        )
+    except Exception as e:
+        msg = str(e)
+        low = msg.lower()
+        if "401" in msg or "unauthorized" in low:
+            msg = "语音识别密钥无效，请到设置里检查 DeepSeek Key"
+        elif "402" in msg or "quota" in low or "insufficient" in low:
+            msg = "语音识别额度不足，请检查账户余额"
+        elif "429" in msg:
+            msg = "请求太频繁，请稍后重试"
+        elif "550" in msg or "reset" in low:
+            msg = "语音服务连接被重置，请重试"
+        else:
+            msg = f"语音识别失败：{msg}"
+        return JSONResponse({"error": msg}, status_code=502)
+
+    hint = max(0, min(2, int(hint_level or 0)))
+    scores = recitation.score_attempt(passage, transcript, hint=hint,
+                                      duration_ms=max(0, int(duration_ms or 0)))
+    review = await recitation.review_attempt(_llm(), passage.get("domain", domain),
+                                             passage, transcript, scores)
+
+    aid = uuid.uuid4().hex
+    RECITATION_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    audio_path = RECITATION_AUDIO_DIR / f"{aid}.wav"
+    audio_ok = True
+    try:
+        audio_path.write_bytes(data)
+    except OSError:
+        audio_ok = False
+
+    attempt = {
+        "id": aid,
+        "recitation_id": recitation_id,
+        "domain": passage.get("domain", domain),
+        "date": models.local_date(0),
+        "title": passage.get("title", ""),
+        "level": int(passage.get("level") or 2),
+        "hint": hint,
+        "duration_ms": scores["duration_ms"],
+        "wpm": scores["wpm"],
+        "words": scores["words"],
+        "transcript": transcript,
+        "coverage": scores["coverage"],
+        "accuracy": scores["accuracy"],
+        "fluency": scores["fluency"],
+        "independence": scores["independence"],
+        "score": scores["score"],
+        "diff": scores["diff"],
+        "diff_truncated": scores["diff_truncated"],
+        "missed_sentences": scores["missed_sentences"],
+        "missed_chunks": scores["missed_chunks"],
+        "substitutions": scores["substitutions"],
+        "review": review,
+        "audio_path": str(audio_path) if audio_ok else "",
+        "created_at": models.now_iso(),
+    }
+    storage.save_attempt(attempt, keep=30)
+    _prune_recitation_audio(7)
+
+    profile = _profile()
+    target_domain = attempt["domain"]
+    models.record_recitation(profile, target_domain, attempt)
+    for iss in (review.get("pron_issues") or []):
+        if isinstance(iss, dict):
+            models.record_pron_issue(profile, target_domain,
+                                     sound=str(iss.get("sound") or ""),
+                                     heard_as=str(iss.get("heard_as") or ""),
+                                     word=str(iss.get("word") or ""),
+                                     tip=str(iss.get("tip") or ""))
+    storage.save(profile)
+    b = models.recitation_bucket(profile, target_domain)
+    return {
+        "attempt": attempt,
+        "level": models.recitation_level(profile, target_domain),
+        "streak": int(b.get("streak") or 0),
+    }
+
+
+@app.get("/api/recitation/history")
+def recitation_history(domain: str = "work", limit: int = 30):
+    profile = _profile()
+    items = [_recitation_summary(a) for a in storage.list_attempts(domain, limit)]
+    b = models.recitation_bucket(profile, domain)
+    return {
+        "items": items,
+        "level": models.recitation_level(profile, domain),
+        "streak": int(b.get("streak") or 0),
+        "attempts": int(b.get("attempts") or 0),
+        "weak_chunks": models.recitation_weak_chunks(profile, domain, limit=8),
+        "wpm_trend": (b.get("wpm_trend") or [])[-30:],
+    }
+
+
+@app.get("/api/recitation/attempts/{aid}/audio")
+def recitation_audio(aid: str):
+    attempt = storage.get_attempt(aid)
+    if not attempt:
+        return JSONResponse({"error": "记录不存在"}, status_code=404)
+    raw = str(attempt.get("audio_path") or "")
+    path = Path(raw)
+    if not raw or not path.exists() or not path.is_file():
+        return JSONResponse({"error": "录音已过期"}, status_code=404)
+    return FileResponse(str(path), media_type="audio/wav", filename=f"{aid}.wav")
 
 
 # ---------------------------------------------------------------- 场景实战

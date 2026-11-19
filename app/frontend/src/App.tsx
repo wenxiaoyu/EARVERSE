@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api, onInflight } from "./api";
 import Assessment from "./views/Assessment";
 import Today from "./views/Today";
+import Recitation from "./views/Recitation";
 import Scenario from "./views/Scenario";
 import Report from "./views/Report";
 import Settings from "./views/Settings";
@@ -9,11 +10,12 @@ import About from "./views/About";
 import NavIcon from "./components/NavIcon";
 import SceneDropdown from "./components/SceneDropdown";
 
-type Tab = "today" | "assess" | "scenario" | "report" | "settings" | "about";
+type Tab = "today" | "assess" | "recite" | "scenario" | "report" | "settings" | "about";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "today", label: "今天" },
   { key: "assess", label: "测验" },
+  { key: "recite", label: "背诵" },
   { key: "scenario", label: "实战" },
   { key: "report", label: "报告" },
   { key: "settings", label: "设置" },
@@ -156,6 +158,7 @@ export default function App() {
           {tab === "assess" && (
             <Assessment domain={domain} onConfirmed={() => { setConfirmed(true); setTab("today"); }} />
           )}
+          {tab === "recite" && <Recitation domain={domain} />}
           {tab === "scenario" && <Scenario domain={domain} />}
           {tab === "report" && <Report domain={domain} />}
           {tab === "settings" && <Settings onSaved={refresh} />}

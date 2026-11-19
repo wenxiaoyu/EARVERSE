@@ -1,0 +1,87 @@
+[
+  {
+    "id": "seed-l1",
+    "level": 1,
+    "title": "A Small Favor",
+    "topic": "neighbors",
+    "text": "Yesterday I asked my neighbor for a small favor. I needed to leave early, so I asked her to water my plants. She said yes right away. I gave her the key and showed her where the plants were. When I came back, the plants looked great. I thanked her and asked if I could do something for her. She laughed and said, \"Just water mine next week.\" I like living here. People help each other, and it makes the building feel like a home.",
+    "chunks": [
+      "asked for a small favor",
+      "right away",
+      "showed her where",
+      "came back",
+      "help each other",
+      "feel like a home"
+    ],
+    "target_words": ["favor", "neighbor", "plants", "water", "building"],
+    "why": "用最日常的邻里小事，练「请求—答应—感谢」的完整语流。"
+  },
+  {
+    "id": "seed-l2",
+    "level": 2,
+    "title": "The Late Train",
+    "topic": "commute",
+    "text": "I take the same train to work every morning. Last Tuesday it was twenty minutes late. At first I was annoyed, because I had a meeting at nine. Then I heard an announcement: a signal problem near the station. I sent a quick message to my team and told them I would be late. To my surprise, everyone replied with the same word: \"No problem.\" When I finally arrived, the meeting had not started yet. We spent the first ten minutes talking about the delay. It turned out that three other people were on the same train. We laughed about it, and the meeting felt a little warmer than usual. Now I leave ten minutes earlier, just in case.",
+    "chunks": [
+      "at first",
+      "to my surprise",
+      "turned out",
+      "just in case",
+      "spent the first ten minutes",
+      "felt a little warmer"
+    ],
+    "target_words": ["announcement", "delay", "arrived", "signal", "usual"],
+    "why": "通勤延误 + 会议场景，练时间表达和「意外转折」的语块。"
+  },
+  {
+    "id": "seed-l3",
+    "level": 3,
+    "title": "Pushing Back Politely",
+    "topic": "meetings",
+    "text": "In meetings, saying no is often harder than saying yes. A colleague asks you to take on one more task, and you want to help. But if you accept everything, your own work slips. The trick is to push back without sounding difficult. Start by acknowledging the request: \"I see why this matters.\" Then be clear about the trade-off: \"If I take this on, the report will move to Friday.\" Finally, offer an option: \"I can do a short version today, or the full version next week.\" This way, you are not refusing. You are helping the other person choose. Most people respect that. They may even thank you for being honest. The next time someone asks for too much, try this three-step reply. It keeps the relationship strong and your work on track.",
+    "chunks": [
+      "push back",
+      "take on",
+      "be clear about the trade-off",
+      "offer an option",
+      "respect that",
+      "on track"
+    ],
+    "target_words": ["acknowledge", "trade-off", "refusing", "relationship", "honest"],
+    "why": "会议里礼貌拒绝的三步表达，可直接搬进实战。"
+  },
+  {
+    "id": "seed-l4",
+    "level": 4,
+    "title": "The Quiet Cost of Yes",
+    "topic": "boundaries",
+    "text": "We often say yes because we want to be helpful. It feels good in the moment. But every yes is also a no to something else. If you agree to join a call at seven, you are saying no to dinner with your family. If you accept a new project, you are saying no to the deep work you planned. The problem is that the cost is quiet. Nobody sees the thing you did not do, so nobody reminds you of it. Over time, those quiet costs add up. You feel busy but not effective. You finish the day with nothing important done. One way out is to ask a simple question before you agree: \"What will I not do if I say yes?\" If the answer is easy to accept, say yes. If it makes you uncomfortable, take another day to decide. Boundaries are not walls; they are choices you make on purpose.",
+    "chunks": [
+      "in the moment",
+      "say no to",
+      "add up",
+      "one way out",
+      "on purpose",
+      "take another day"
+    ],
+    "target_words": ["boundaries", "effective", "uncomfortable", "accept", "reminds"],
+    "why": "抽象的边界感话题，练因果、对比和长句组织。"
+  },
+  {
+    "id": "seed-l5",
+    "level": 5,
+    "title": "What We Owe the Future",
+    "topic": "responsibility",
+    "text": "Every generation inherits a world it did not build. We learn the language, the rules, and the habits of the people who came before us, and we rarely stop to ask what we owe them. But the question matters, because the answer shapes what we pass on. Some people think the past deserves loyalty: we should protect what worked and avoid unnecessary change. Others believe the future deserves our courage: we should question old habits and take risks for people we will never meet. Both instincts are reasonable. The real challenge is holding them at the same time. We need enough respect for the past to understand why things are the way they are, and enough responsibility for the future to change what no longer serves us. That balance is never perfect. It is a conversation, not a decision. And every generation has to have it again.",
+    "chunks": [
+      "stop to ask",
+      "what we owe",
+      "pass on",
+      "take risks",
+      "at the same time",
+      "no longer serves us"
+    ],
+    "target_words": ["inherits", "loyalty", "instincts", "responsibility", "generation"],
+    "why": "接近演讲的抽象段落，练重音、停顿和长句的抗卡壳。"
+  }
+]

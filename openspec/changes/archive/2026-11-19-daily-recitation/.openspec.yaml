@@ -1,0 +1,20 @@
+schema: spec-driven
+created: 2026-11-19
+workflow:
+  current_phase: doc
+  schema: spec-driven
+  schema_selection_reason: "独立能力新增，spec-driven 足够"
+  phases:
+    explore: { status: passed, completed_at: "2026-11-19T06:37:11Z" }
+    propose: { status: passed, completed_at: "2026-11-19T06:45:00Z" }
+    apply: { status: passed, completed_at: "2026-11-19T07:20:00Z" }
+    review: { status: passed, completed_at: "2026-11-19T07:25:00Z" }
+    verify: { status: passed, completed_at: "2026-11-19T07:30:00Z" }
+    doc: { status: in_progress, started_at: "2026-11-19T07:31:00Z" }
+    archive: { status: pending }
+  review_results:
+    explore: { passed: true, retries: 0 }
+    propose: { passed: true, retries: 0 }
+    apply: { passed: true, retries: 0 }
+    review: { passed: true, retries: 0 }
+    verify: { passed: true, retries: 0 }

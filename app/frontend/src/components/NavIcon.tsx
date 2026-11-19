@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 
-type Name = "today" | "assess" | "scenario" | "report" | "settings" | "about";
+type Name = "today" | "assess" | "recite" | "scenario" | "report" | "settings" | "about";
 
 const PATHS: Record<Name, ReactElement> = {
   // 今天：日出 / 当天
@@ -16,6 +16,14 @@ const PATHS: Record<Name, ReactElement> = {
       <path d="M4 17a8 8 0 1 1 16 0" />
       <path d="M12 17l4.4-5.2" />
       <circle cx="12" cy="17" r="1.5" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // 背诵：书页 + 声波
+  recite: (
+    <>
+      <path d="M4.5 5.5h5.2a2.3 2.3 0 0 1 2.3 2.3v11a1.8 1.8 0 0 0-1.8-1.8H4.5Z" />
+      <path d="M19.5 5.5h-5.2A2.3 2.3 0 0 0 12 7.8v11a1.8 1.8 0 0 1 1.8-1.8h5.7Z" />
+      <path d="M7.2 9h2M7.2 12h2M14.8 9h2M14.8 12h2" />
     </>
   ),
   // 实战：群聊气泡

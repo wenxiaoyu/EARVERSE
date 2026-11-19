@@ -328,3 +328,72 @@ def minimal_pairs_messages(domain: str, count: int = 8,
             f"最近错音（最高优先）: {_dump(focus_errors)}\n"
             "必须优先针对这些错音出最小对立对；其余再覆盖不同音素对比。")
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+# ---------------------------------------------------------------- 背诵
+
+RECITATION_LENGTH = {
+    1: (90, 110, 6, 8),
+    2: (110, 130, 8, 9),
+    3: (130, 150, 9, 10),
+    4: (150, 170, 10, 11),
+    5: (170, 190, 11, 13),
+}
+
+
+def recitation_passage_messages(domain: str, level: int,
+                                profile_excerpt: dict,
+                                goal: dict | None = None,
+                                avoid_titles: list | None = None) -> list[dict]:
+    lo, hi, smin, smax = RECITATION_LENGTH.get(int(level), RECITATION_LENGTH[2])
+    system = (
+        SHARED_RULES + "\n\n角色：背诵材料作者。写一篇可以直接开口背出来的英文短文。\n"
+        "硬性要求：\n"
+        "- 口语体，不是书面散文；一句话一个意思，长短交错；\n"
+        "- 允许自然口语缩减（gonna / kinda / I'd / that's），但不要俚语堆砌；\n"
+        "- 不要出现人名、公司名、真实品牌、政治/宗教内容；\n"
+        "- 必须自然包含给定的 weak_chunks（漏过的语块）和 focus_words（错音词）；\n"
+        "- 语块要能在会议/客户/日常里直接复用，不要为了塞词而造句；\n"
+        f"- 长度是硬性指标：{lo}–{hi} 词，{smin}–{smax} 句；不足 {lo} 词视为不合格；\n"
+        "- 写完自己数一遍：词数少了就补一个具体细节，多了就删重复；\n"
+        "- chunks 必须是文中真实出现的连续短语（2–5 词），6–8 条；\n"
+        "- target_words 是文中 4–6 个值得练发音/重音的词。\n"
+        '输出 JSON: {"title":"≤6 个英文词","topic":"2-3 个英文词",'
+        '"sentences":["句子1","句子2"],"chunks":["..."],'
+        '"target_words":["..."],"why":"一句中文，说明为什么今天选这篇"}'
+    )
+    user = (
+        f"场景: {domain}\n等级: L{level}（1 最易，5 最难）\n"
+        f"今日目标: {_dump(goal)}\n"
+        f"画像摘要: {_dump(profile_excerpt)}\n"
+        f"避免重复的近期标题: {_dump(avoid_titles or [])}\n"
+        f"请优先复用 weak_chunks，并把 focus_words 放进自然句子里。\n"
+        f"硬性要求：必须 {lo}–{hi} 词、{smin}–{smax} 句，少于此范围会被退回。"
+    )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def recitation_review_messages(domain: str, passage: dict, transcript: str,
+                               scores: dict, missed: dict) -> list[dict]:
+    system = (
+        SHARED_RULES + "\n\n角色：背诵教练。用户刚背完一段英文，你要给具体、可执行的复盘。\n"
+        "规则：\n"
+        "- summary ≤40 个汉字，先说结果，再说一个最关键的原因；\n"
+        "- wins 1–2 条，必须引用用户真的说对的内容；\n"
+        "- misses 1–3 条，每条带原文片段和一句说明，优先漏掉的语块；\n"
+        "- pron_issues 0–2 条，只在转写差异能支撑时给（如 think→sink）；\n"
+        "- drill 只给一个练习，items 是可直接朗读的短语；\n"
+        "- next 给下一次的重点语块和建议，不要空泛。\n"
+        '输出 JSON: {"summary":"...","wins":["..."],'
+        '"misses":[{"source":"...","note":"..."}],'
+        '"pron_issues":[{"sound":"θ","heard_as":"s","word":"think","tip":"..."}],'
+        '"drill":{"focus":"...","items":["..."]},'
+        '"next":{"focus_chunks":["..."],"advice":"..."}}'
+    )
+    user = (
+        f"场景: {domain}\n文章: {_dump({'title': passage.get('title'), 'text': passage.get('text')})}\n"
+        f"ASR 转写: {transcript}\n"
+        f"评分: {_dump(scores)}\n"
+        f"漏点: {_dump(missed)}"
+    )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]

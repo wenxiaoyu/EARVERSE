@@ -85,6 +85,25 @@ export const api = {
   generate: (domain: string, kind = "cards", count = 10) =>
     json<any>("/api/generate", { method: "POST", body: JSON.stringify({ domain, kind, count }) }),
   report: (domain: string, period = "week") => json<any>(`/api/report?domain=${domain}&period=${period}`),
+  recitationToday: (domain: string) =>
+    json<any>(`/api/recitation/today?domain=${encodeURIComponent(domain)}`),
+  recitationGenerate: (domain: string) =>
+    json<any>("/api/recitation/generate", { method: "POST", body: JSON.stringify({ domain }) }),
+  recitationHistory: (domain: string, limit = 30) =>
+    json<any>(`/api/recitation/history?domain=${encodeURIComponent(domain)}&limit=${limit}`),
+  recitationScore: (audio: Blob, recitation_id: string, domain: string,
+                    hint_level: number, duration_ms: number) =>
+    track((async () => {
+      const fd = new FormData();
+      fd.append("file", audio, "recitation.wav");
+      fd.append("recitation_id", recitation_id);
+      fd.append("domain", domain);
+      fd.append("hint_level", String(hint_level));
+      fd.append("duration_ms", String(Math.max(0, Math.round(duration_ms))));
+      const res = await fetch("/api/recitation/score", { method: "POST", body: fd });
+      return res.json();
+    })()),
+
   seed: (name: string) => json<any>(`/api/seed/${name}`),
   minimalPairs: (domain: string, count = 8) => json<any>(`/api/minimal-pairs?domain=${domain}&count=${count}`),
   speechAsr: (audio: Blob) =>

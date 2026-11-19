@@ -19,6 +19,7 @@ _FILES = {
     "listening_sources": "listening-sources.json",
     "scenarios": "scenarios.json",
     "cat_names": "cat-names.json",
+    "recitations": "recitations.json",
 }
 
 
@@ -50,6 +51,10 @@ def skills() -> list[dict]:
 
 def scenarios() -> list[dict]:
     return load("scenarios")
+
+
+def recitations() -> list[dict]:
+    return load("recitations")
 
 
 def scenario_by_id(scenario_id: str) -> dict | None:

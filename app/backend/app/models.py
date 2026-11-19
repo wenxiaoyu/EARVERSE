@@ -121,7 +121,119 @@ def _empty_domain() -> dict[str, Any]:
         "daily": {},            # date -> {listening:{key:rec}, minimal_pairs:{ok,total}}
         "goal": None,           # 今日目标（来自昨日复盘，for_date 当天有效）
         "recent_pron_issues": [],  # 最近发音/听辨错点（供下一组题定向）
+        "recitation": _recitation_default(),
     }
+
+
+def _recitation_default() -> dict[str, Any]:
+    """背诵维度的初始结构（独立能力，不参与 Today 进度）。"""
+    return {
+        "level": 2,              # L1–L5，自动升降
+        "streak": 0,             # 连续背诵天数
+        "last_date": "",         # 最近一次完成日期
+        "attempts": 0,
+        "history": [],           # 最近 30 次摘要
+        "weak_chunks": [],       # [{text, misses, last_at, source}]
+        "wpm_trend": [],         # 最近 30 次 wpm
+    }
+
+
+def recitation_bucket(profile: dict[str, Any], domain: str) -> dict[str, Any]:
+    d = ensure_domain(profile, domain)
+    b = d.setdefault("recitation", _recitation_default())
+    for k, v in _recitation_default().items():
+        b.setdefault(k, v)
+    return b
+
+
+def recitation_level(profile: dict[str, Any], domain: str) -> int:
+    try:
+        level = int(recitation_bucket(profile, domain).get("level", 2))
+    except (TypeError, ValueError):
+        level = 2
+    return max(1, min(5, level))
+
+
+def adapt_recitation_level(history: list[dict], current: int = 2) -> int:
+    """按最近表现升降等级：连续两次高且低提示 → +1；最近一次完整度过低 → -1。"""
+    cur = max(1, min(5, int(current or 2)))
+    if not history:
+        return cur
+    last = history[-1]
+    cov = float(last.get("coverage") or 0)
+    hint = int(last.get("hint") or 0)
+    recent = history[-2:]
+    if len(recent) >= 2 and all(float(x.get("coverage") or 0) >= 0.85
+                                and int(x.get("hint") or 0) <= 1 for x in recent):
+        return min(5, cur + 1)
+    if cov < 0.6:
+        return max(1, cur - 1)
+    return cur
+
+
+def record_recitation(profile: dict[str, Any], domain: str,
+                      attempt: dict[str, Any]) -> dict[str, Any]:
+    """记录一次背诵：连续天数、历史、漏词语块、wpm 趋势、等级自适应。"""
+    b = recitation_bucket(profile, domain)
+    today = local_date(0)
+    last = str(b.get("last_date") or "")
+    if last != today:
+        b["streak"] = int(b.get("streak") or 0) + 1 if last == local_date(-1) else 1
+        b["last_date"] = today
+    b["attempts"] = int(b.get("attempts") or 0) + 1
+
+    summary = {
+        "date": today,
+        "at": now_iso(),
+        "recitation_id": attempt.get("recitation_id", ""),
+        "attempt_id": attempt.get("id", ""),
+        "title": attempt.get("title", ""),
+        "level": int(attempt.get("level") or recitation_level(profile, domain)),
+        "hint": int(attempt.get("hint") or 0),
+        "coverage": float(attempt.get("coverage") or 0),
+        "accuracy": float(attempt.get("accuracy") or 0),
+        "fluency": float(attempt.get("fluency") or 0),
+        "independence": float(attempt.get("independence") or 0),
+        "score": float(attempt.get("score") or 0),
+        "wpm": float(attempt.get("wpm") or 0),
+        "words": int(attempt.get("words") or 0),
+    }
+    hist = b.setdefault("history", [])
+    hist.append(summary)
+    b["history"] = hist[-30:]
+
+    if summary["wpm"] > 0:
+        trend = b.setdefault("wpm_trend", [])
+        trend.append(round(summary["wpm"], 1))
+        b["wpm_trend"] = trend[-30:]
+
+    # 漏词语块：合并去重、累计 miss、保留最近 20 条
+    for chunk in (attempt.get("missed_chunks") or []):
+        text = str((chunk or {}).get("text") if isinstance(chunk, dict) else chunk).strip()
+        if not text:
+            continue
+        lst = b.setdefault("weak_chunks", [])
+        found = next((x for x in lst if str(x.get("text", "")).lower() == text.lower()), None)
+        if found:
+            found["misses"] = int(found.get("misses") or 0) + 1
+            found["last_at"] = now_iso()
+        else:
+            lst.append({"text": text, "misses": 1, "last_at": now_iso(),
+                        "source": "recitation"})
+        b["weak_chunks"] = lst[-20:]
+
+    b["level"] = adapt_recitation_level(b["history"], recitation_level(profile, domain))
+    _touch(profile)
+    return summary
+
+
+def recitation_weak_chunks(profile: dict[str, Any], domain: str,
+                           limit: int = 8) -> list[str]:
+    b = recitation_bucket(profile, domain)
+    items = sorted((b.get("weak_chunks") or []),
+                   key=lambda x: str(x.get("last_at") or ""), reverse=True)
+    items = sorted(items, key=lambda x: -int(x.get("misses") or 0))
+    return [str(x.get("text")) for x in items[:limit] if x.get("text")]
 
 
 def empty_profile(user_id: str = "default") -> dict[str, Any]:

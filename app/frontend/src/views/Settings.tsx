@@ -97,6 +97,9 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
             填入 DeepSeek Key 后，AI 会读懂你的短板，实时出题、判卷、纠正发音，并在场景里陪你演练。
             未接入时，页面只展示预设的演示内容。
           </p>
+          <a className="ds-link" href="https://platform.deepseek.com/sign_in" target="_blank" rel="noreferrer noopener">
+            还没有 Key？去 DeepSeek 平台注册并获取 →
+          </a>
         </div>
       )}
 
@@ -185,6 +188,15 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
           </button>
           <span className="hint">自动填入接口地址与模型名</span>
         </div>
+
+        <a className="ds-cta" href="https://platform.deepseek.com/sign_in" target="_blank" rel="noreferrer noopener">
+          <span className="ds-badge">DeepSeek</span>
+          <span className="ds-text">
+            <b>还没有 Key？去 DeepSeek 开放平台获取</b>
+            <small>打开后登录 → 左侧「API keys」→ 创建密钥 → 复制以 sk- 开头的字符串，粘贴到下面。</small>
+          </span>
+          <span className="ds-arrow">↗</span>
+        </a>
 
         <label>接口地址</label>
         <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} placeholder="https://api.deepseek.com/v1" style={{ width: "100%" }} />
