@@ -988,3 +988,15 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 .cal-legend .l-today{background:transparent;border:1px solid var(--amber)}
 .cal-detail{margin-top:0}
 @media(max-width:640px){.cal-cell{font-size:11px;border-radius:8px}}
+
+/* 日历周视图 */
+.wk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.wk-day{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 10px;background:#191411;border:1px solid var(--hair);border-radius:12px;cursor:pointer;color:var(--muted);text-align:left;transition:border-color .15s,background .15s}
+.wk-day:hover{border-color:rgba(232,163,61,.4)}
+.wk-day.practiced{background:rgba(127,176,105,.08);border-color:rgba(127,176,105,.35);color:var(--ink)}
+.wk-day.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(232,163,61,.18)}
+.wk-dow{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.wk-num{font-family:var(--serif);font-size:20px;font-weight:900;color:var(--ink)}
+.wk-stats{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.4}
+.wk-none{font-size:11px;color:#5b5349}
+@media(max-width:760px){.wk-grid{grid-template-columns:repeat(2,1fr)}}

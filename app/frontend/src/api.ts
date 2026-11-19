@@ -69,6 +69,8 @@ export const api = {
     json<any>("/api/daily/recap", { method: "POST", body: JSON.stringify({ domain }) }),
   dailyCalendar: (domain: string, month: string) =>
     json<any>(`/api/daily/calendar?domain=${domain}&month=${month}`),
+  dailyRange: (domain: string, start: string, end: string) =>
+    json<any>(`/api/daily/range?domain=${domain}&start=${start}&end=${end}`),
   dailyDetail: (domain: string, date: string) =>
     json<any>(`/api/daily/detail?domain=${domain}&date=${date}`),
 

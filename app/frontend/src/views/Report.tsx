@@ -4,6 +4,19 @@ import { api } from "../api";
 import RichText from "../components/RichText";
 import Tip from "../components/Tip";
 
+function ymd(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function addDays(date: string, n: number) {
+  const d = new Date(date + "T00:00:00");
+  d.setDate(d.getDate() + n);
+  return ymd(d);
+}
+function mondayOf(date: string) {
+  const d = new Date(date + "T00:00:00");
+  return addDays(date, -((d.getDay() + 6) % 7));
+}
+
 const VOCAB = [
   { key: "automatic", label: "已自动化", color: "#7FB069" },
   { key: "recognized", label: "能懂但慢", color: "#E8A33D" },
@@ -44,6 +57,9 @@ export default function Report({ domain }: { domain: string }) {
   const [selDate, setSelDate] = useState(todayStr);
   const [detail, setDetail] = useState<any>(null);
   const [detailBusy, setDetailBusy] = useState(false);
+  const [subTab, setSubTab] = useState<"overview" | "calendar">("overview");
+  const [calMode, setCalMode] = useState<"day" | "week" | "month">("month");
+  const [weekMap, setWeekMap] = useState<Record<string, any>>({});
 
   const loadReport = async () => {
     setLoading(true);
@@ -72,6 +88,17 @@ export default function Report({ domain }: { domain: string }) {
     api.dailyDetail(domain, selDate).then(setDetail).catch(() => setDetail(null))
       .finally(() => setDetailBusy(false));
   }, [domain, selDate]);
+
+  useEffect(() => {
+    if (calMode !== "week") return;
+    const start = mondayOf(selDate);
+    const end = addDays(start, 6);
+    api.dailyRange(domain, start, end).then((r) => {
+      const map: Record<string, any> = {};
+      (r.days || []).forEach((d: any) => { map[d.date] = d; });
+      setWeekMap(map);
+    }).catch(() => setWeekMap({}));
+  }, [domain, selDate, calMode]);
 
   useEffect(() => {
     api.seed("skills").then((r) => {
@@ -125,82 +152,16 @@ export default function Report({ domain }: { domain: string }) {
     total: h.total || 0,
   }));
 
-  return (
-    <section>
-      <p className="screen-tag">Screen 04 — 教练报告 · Field Print</p>
-      <h1>你在变好吗？</h1>
-      <p className="sub">掌握构成、盲区、发音、毕业进度，一眼看清。</p>
+  const weekStartDate = mondayOf(selDate);
+  const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStartDate, i));
+  const calTitle = calMode === "month" ? calMonth : calMode === "week" ? `${weekDates[0]} ~ ${weekDates[6]}` : selDate;
+  const navCal = (delta: number) => {
+    if (calMode === "month") shiftMonth(delta);
+    else if (calMode === "week") setSelDate(addDays(selDate, delta * 7));
+    else setSelDate(addDays(selDate, delta));
+  };
 
-      <div className="row" style={{ marginBottom: 16 }}>
-        <div className="seg">
-          <button className={period === "week" ? "on" : ""} onClick={() => setPeriod("week")}>本周</button>
-          <button className={period === "month" ? "on" : ""} onClick={() => setPeriod("month")}>本月</button>
-        </div>
-        <AsyncButton className="btn sm" onClick={async () => { await loadReport(); loadProfile(); }} loadingText="生成中…">
-          刷新
-        </AsyncButton>
-      </div>
-
-      {/* KPI */}
-      <div className="kpi-grid">
-        <div className="stat-card">
-          <div className="k">趋势</div>
-          <div className="v" style={{ fontSize: 22 }}>
-            {report ? <span className={`trend ${report.trend}`}>{report.trend}</span> : "—"}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="k">词汇掌握率</div>
-          <div className="v" style={{ color: "var(--green)" }}>{masteryRate}%</div>
-        </div>
-        <div className="stat-card">
-          <div className="k">哑巴词汇 <Tip text="看着认识、但听不出来的词：文字能懂，声音对不上意思。" /></div>
-          <div className="v" style={{ color: "var(--red)" }}>{counts.deaf}</div>
-        </div>
-        <div className="stat-card">
-          <div className="k">待毕业技能 <Tip text="一项技能要在 3 个不同真实场合用成功，才算真正掌握（毕业）。" /></div>
-          <div className="v" style={{ color: "var(--amber)" }}>{ungraduated}</div>
-        </div>
-      </div>
-
-      {/* 练习日历 */}
-      <div className="panel">
-        <div className="block-head">
-          <h2 style={{ margin: 0 }}>练习日历</h2>
-          <div className="row" style={{ gap: 6 }}>
-            <button className="mini" onClick={() => shiftMonth(-1)}>‹</button>
-            <span className="cal-month">{calMonth}</span>
-            <button className="mini" onClick={() => shiftMonth(1)}>›</button>
-          </div>
-        </div>
-        <div className="cal-week">
-          {["一", "二", "三", "四", "五", "六", "日"].map((w) => <span key={w}>{w}</span>)}
-        </div>
-        <div className="cal-grid">
-          {calCells.map((date, i) => {
-            if (!date) return <span key={`e${i}`} />;
-            const info = calDays[date];
-            const day = Number(date.slice(8));
-            return (
-              <button
-                key={date}
-                className={`cal-cell ${info?.practiced ? "practiced" : ""} ${date === todayStr ? "today" : ""} ${date === selDate ? "sel" : ""}`}
-                onClick={() => setSelDate(date)}
-                title={info?.practiced ? `${date} · 已练习` : date}
-              >
-                <span className="cal-d">{day}</span>
-                {info?.practiced && <span className="cal-dot" />}
-              </button>
-            );
-          })}
-        </div>
-        <div className="cal-legend">
-          <span><i className="l-done" /> 已练习</span>
-          <span><i className="l-today" /> 今天</span>
-        </div>
-      </div>
-
-      {/* 当天复盘详情 */}
+  const dayDetail = (
       <div className="panel cal-detail">
         <div className="block-head">
           <h2 style={{ margin: 0 }}>{selDate} · 当日复盘</h2>
@@ -275,6 +236,52 @@ export default function Report({ domain }: { domain: string }) {
         ) : (
           <p className="empty">这一天还没有练习记录。</p>
         )}
+      </div>
+  );
+
+  return (
+    <section>
+      <p className="screen-tag">Screen 04 — 教练报告 · Field Print</p>
+      <h1>你在变好吗？</h1>
+      <p className="sub">掌握构成、盲区、发音、毕业进度，一眼看清。</p>
+
+      <div className="seg" style={{ marginBottom: 16 }}>
+        <button className={subTab === "overview" ? "on" : ""} onClick={() => setSubTab("overview")}>概览</button>
+        <button className={subTab === "calendar" ? "on" : ""} onClick={() => setSubTab("calendar")}>日历</button>
+      </div>
+
+      {subTab === "overview" && (
+      <>
+      <div className="row" style={{ marginBottom: 16 }}>
+        <div className="seg">
+          <button className={period === "week" ? "on" : ""} onClick={() => setPeriod("week")}>本周</button>
+          <button className={period === "month" ? "on" : ""} onClick={() => setPeriod("month")}>本月</button>
+        </div>
+        <AsyncButton className="btn sm" onClick={async () => { await loadReport(); loadProfile(); }} loadingText="生成中…">
+          刷新
+        </AsyncButton>
+      </div>
+
+      {/* KPI */}
+      <div className="kpi-grid">
+        <div className="stat-card">
+          <div className="k">趋势</div>
+          <div className="v" style={{ fontSize: 22 }}>
+            {report ? <span className={`trend ${report.trend}`}>{report.trend}</span> : "—"}
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="k">词汇掌握率</div>
+          <div className="v" style={{ color: "var(--green)" }}>{masteryRate}%</div>
+        </div>
+        <div className="stat-card">
+          <div className="k">哑巴词汇 <Tip text="看着认识、但听不出来的词：文字能懂，声音对不上意思。" /></div>
+          <div className="v" style={{ color: "var(--red)" }}>{counts.deaf}</div>
+        </div>
+        <div className="stat-card">
+          <div className="k">待毕业技能 <Tip text="一项技能要在 3 个不同真实场合用成功，才算真正掌握（毕业）。" /></div>
+          <div className="v" style={{ color: "var(--amber)" }}>{ungraduated}</div>
+        </div>
       </div>
 
       {/* 近 7 天趋势 */}
@@ -403,6 +410,81 @@ export default function Report({ domain }: { domain: string }) {
             </div>
           )}
         </div>
+      )}
+
+      </>
+      )}
+
+      {subTab === "calendar" && (
+      <>
+        <div className="row" style={{ justifyContent: "space-between", marginBottom: 14 }}>
+          <div className="seg">
+            <button className={calMode === "day" ? "on" : ""} onClick={() => setCalMode("day")}>日</button>
+            <button className={calMode === "week" ? "on" : ""} onClick={() => setCalMode("week")}>周</button>
+            <button className={calMode === "month" ? "on" : ""} onClick={() => setCalMode("month")}>月</button>
+          </div>
+          <div className="row" style={{ gap: 6 }}>
+            <button className="mini" onClick={() => navCal(-1)}>‹</button>
+            <span className="cal-month">{calTitle}</span>
+            <button className="mini" onClick={() => navCal(1)}>›</button>
+          </div>
+        </div>
+
+        {calMode === "month" && (
+          <div className="panel">
+            <div className="cal-week">
+              {["一", "二", "三", "四", "五", "六", "日"].map((w) => <span key={w}>{w}</span>)}
+            </div>
+            <div className="cal-grid">
+              {calCells.map((date, i) => {
+                if (!date) return <span key={`e${i}`} />;
+                const info = calDays[date];
+                return (
+                  <button
+                    key={date}
+                    className={`cal-cell ${info?.practiced ? "practiced" : ""} ${date === todayStr ? "today" : ""} ${date === selDate ? "sel" : ""}`}
+                    onClick={() => setSelDate(date)}
+                    title={info?.practiced ? `${date} · 已练习` : date}
+                  >
+                    <span className="cal-d">{Number(date.slice(8))}</span>
+                    {info?.practiced && <span className="cal-dot" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="cal-legend">
+              <span><i className="l-done" /> 已练习</span>
+              <span><i className="l-today" /> 今天</span>
+            </div>
+          </div>
+        )}
+
+        {calMode === "week" && (
+          <div className="panel">
+            <div className="wk-grid">
+              {weekDates.map((date) => {
+                const info = weekMap[date];
+                const dow = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"][(new Date(date + "T00:00:00").getDay() + 6) % 7];
+                return (
+                  <button
+                    key={date}
+                    className={`wk-day ${info?.practiced ? "practiced" : ""} ${date === selDate ? "sel" : ""}`}
+                    onClick={() => { setSelDate(date); setCalMode("day"); }}
+                  >
+                    <span className="wk-dow">{dow}</span>
+                    <span className="wk-num">{Number(date.slice(8))}</span>
+                    {info?.practiced ? (
+                      <span className="wk-stats">{info.correct}/{info.listening} · {info.shadow}句{info.scenario ? " · 实战" : ""}</span>
+                    ) : <span className="wk-none">未练习</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {dayDetail}
+      </>
       )}
     </section>
   );

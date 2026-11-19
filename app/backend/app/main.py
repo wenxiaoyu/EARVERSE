@@ -497,10 +497,7 @@ def _day_blocks(d: dict[str, Any], date: str) -> dict[str, Any]:
     }
 
 
-@app.get("/api/daily/calendar")
-def daily_calendar(domain: str = "work", month: str = ""):
-    d = models.ensure_domain(_profile(), domain)
-    month = month or models.local_date(0)[:7]
+def _collect_days(d: dict[str, Any], start: str, end: str) -> list[dict[str, Any]]:
     days: dict[str, dict[str, Any]] = {}
 
     def touch(date: str) -> dict[str, Any]:
@@ -511,7 +508,7 @@ def daily_calendar(domain: str = "work", month: str = ""):
         })
 
     for date, b in (d.get("daily") or {}).items():
-        if not date.startswith(month):
+        if not (start <= date <= end):
             continue
         li = b.get("listening") or {}
         it = touch(date)
@@ -523,29 +520,44 @@ def daily_calendar(domain: str = "work", month: str = ""):
 
     for h in (d.get("history") or []):
         date = str(h.get("date") or "")
-        if date.startswith(month):
+        if start <= date <= end:
             touch(date)["practiced"] = True
 
     for v in (d.get("pronunciation") or {}).values():
         date = models.local_date_of(v.get("at", ""))
-        if date.startswith(month):
+        if start <= date <= end:
             it = touch(date)
             it["practiced"] = True
             it["shadow"] += 1
 
     for r in (d.get("scenario_record") or []):
         date = models.local_date_of(r.get("at", ""))
-        if date.startswith(month):
+        if start <= date <= end:
             it = touch(date)
             it["practiced"] = True
             it["scenario"] = True
 
     for e in (d.get("errors") or []):
         date = models.local_date_of(e.get("at", ""))
-        if date.startswith(month):
+        if start <= date <= end:
             touch(date)["practiced"] = True
 
-    return {"month": month, "days": sorted(days.values(), key=lambda x: x["date"])}
+    return sorted(days.values(), key=lambda x: x["date"])
+
+
+@app.get("/api/daily/calendar")
+def daily_calendar(domain: str = "work", month: str = ""):
+    d = models.ensure_domain(_profile(), domain)
+    month = month or models.local_date(0)[:7]
+    return {"month": month, "days": _collect_days(d, f"{month}-01", f"{month}-31")}
+
+
+@app.get("/api/daily/range")
+def daily_range(domain: str = "work", start: str = "", end: str = ""):
+    d = models.ensure_domain(_profile(), domain)
+    start = start or models.local_date(0)
+    end = end or start
+    return {"start": start, "end": end, "days": _collect_days(d, start, end)}
 
 
 @app.get("/api/daily/detail")
