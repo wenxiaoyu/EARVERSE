@@ -99,29 +99,41 @@ english-trainer/
 
 ---
 
-## 快速开始
+## 快速开始（一键安装）
 
-### 1. 依赖
+> 需要：**Python 3.10+**、**Node.js 18+**。脚本会自动创建虚拟环境、装依赖、构建前端并启动。
 
-- Python 3.10+
-- Node.js 18+
+### macOS / Linux / WSL
 
 ```bash
-# 后端
-python3 -m pip install -r app/backend/requirements.txt
-
-# 前端
-cd app/frontend && npm install && npm run build && cd ../..
+chmod +x install.sh
+./install.sh                 # 安装并启动
+./install.sh --no-start      # 只安装
+./start.sh                   # 之后启动
 ```
 
-### 2. 启动
+### Windows
+
+双击 **`install.bat`**（推荐），或在 PowerShell 中：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+powershell -ExecutionPolicy Bypass -File .\install.ps1 --no-start
+```
+
+之后双击 **`start.bat`** 启动。
+
+打开 **http://127.0.0.1:8000**
+
+### 手动方式（可选）
 
 ```bash
+python3 -m pip install -r app/backend/requirements.txt
+cd app/frontend && npm install && npm run build && cd ../..
+
 ./app/start.command          # 或
 ./app/scripts/restart.sh     # 构建 + 重启 + 健康检查
 ```
-
-打开 **http://127.0.0.1:8000**
 
 ### 3. 配置模型（推荐）
 
