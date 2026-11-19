@@ -228,8 +228,8 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
   const synth = window.speechSynthesis;
   const gen = ++speakGen;
 
-  // macOS Chrome/Safari 的已知问题：cancel 后立刻 speak 会把队列卡在 paused，
-  // 之后所有朗读都“调用成功但没声音”。先 cancel，再 resume，再重新入队。
+  // macOS Chrome/Safari 的已知问题：cancel 后立刻 speak 会把队列卡在 paused。
+  // 先 cancel，再 resume，再重新入队。
   try {
     synth.cancel();
     synth.resume();
@@ -242,10 +242,17 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
   if (!voiceList.length) loadVoices();
   const preferred = pickVoice();
 
-  let watchdog = 0;
+  let seq = 0;
 
-  const run = (attempt: number) => {
+  const finish = () => {
+    if (gen === speakGen && opt.onend) opt.onend();
+  };
+
+  // attempt 0/1 用用户选的音色，attempt 2 退回系统默认音色。
+  // 不依赖 synth.speaking：macOS 有时 speaking=true 但永远不出声。
+  const run = (attempt: number, useDefault: boolean) => {
     if (gen !== speakGen) return;
+    const my = ++seq;
     try {
       synth.resume();
     } catch {
@@ -253,7 +260,7 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
     }
 
     const u = new SpeechSynthesisUtterance(spoken);
-    const v = attempt === 0 ? preferred : null;  // 重试时交给系统默认音色
+    const v = useDefault ? null : preferred;
     u.lang = (v && v.lang) || "en-US";
     u.rate = clamp(opt.rate != null ? opt.rate : settings.rate, 0.5, 2);
     u.pitch = clamp(opt.pitch != null ? opt.pitch : settings.pitch, 0.5, 2);
@@ -262,44 +269,49 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
 
     let started = false;
     let settled = false;
+    let watchdog = 0;
 
     const retry = () => {
-      if (settled || gen !== speakGen) return;
+      if (settled || my !== seq || gen !== speakGen) return;
       settled = true;
       window.clearTimeout(watchdog);
+      seq += 1; // 让本次 attempt 的旧回调失效
       try {
         synth.cancel();
         synth.resume();
       } catch {
         /* ignore */
       }
-      if (attempt === 0) {
-        // 换系统默认音色再试一次；给 cancel 一点时间落地
-        window.setTimeout(() => run(1), 40);
-      } else if (opt.onend) {
-        opt.onend();
+      if (attempt < 2) {
+        // 先重试同一音色，最后一次才退回默认，避免“永远只有一种声音”
+        window.setTimeout(() => run(attempt + 1, attempt + 1 >= 2), 60);
+      } else {
+        finish();
       }
     };
 
-    // 给系统语音引擎足够的启动时间；只有确实没有在播时才重试。
-    // 太短会把用户选中的音色误判为失败，统一退回默认音色。
+    // 给语音引擎足够的启动时间；超时没 onstart 才重试
     watchdog = window.setTimeout(() => {
-      if (!started && gen === speakGen && !synth.speaking && !synth.pending) retry();
-    }, 2200);
+      if (!started) retry();
+    }, 1800);
 
     u.onstart = () => {
+      if (my !== seq || gen !== speakGen) return;
       started = true;
       window.clearTimeout(watchdog);
     };
     u.onend = () => {
+      if (my !== seq || gen !== speakGen || settled) return;
       window.clearTimeout(watchdog);
-      if (gen === speakGen) {
-        settled = true;
-        if (opt.onend) opt.onend();
+      if (!started) {
+        retry();
+        return;
       }
+      settled = true;
+      finish();
     };
     u.onerror = () => {
-      if (gen === speakGen) retry();
+      if (my === seq && gen === speakGen) retry();
     };
 
     try {
@@ -309,9 +321,8 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
     }
   };
 
-  run(0);
+  run(0, false);
 }
-
 export function stopSpeech(): void {
   speakGen += 1;
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
