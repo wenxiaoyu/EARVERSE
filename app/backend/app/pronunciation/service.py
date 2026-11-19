@@ -40,8 +40,8 @@ async def assess(audio: bytes, target: str, audio_cfg: AudioConfig,
                  llm, domain: str = "work",
                  filename: str = "oral.webm") -> dict[str, Any]:
     """转写 + 评分。返回 {transcript, score, issues, confidence, summary, source}。"""
-    if not audio_cfg.base_url:
-        raise RuntimeError("未配置音频供应商（ASR）")
+    if not audio_cfg.base_url or not audio_cfg.api_key:
+        raise RuntimeError("未配置音频供应商（ASR 需要 base_url + api_key）")
     transcript = await asr.transcribe(
         audio, audio_cfg.base_url, audio_cfg.api_key,
         model=audio_cfg.asr_model, filename=filename,

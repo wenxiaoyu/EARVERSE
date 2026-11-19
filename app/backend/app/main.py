@@ -58,7 +58,8 @@ def _config():
 
 def _llm() -> LLMClient | None:
     cfg = _config()
-    if cfg.llm.base_url and cfg.llm.model:
+    # 三者齐全才算可用：缺 key 时直接走降级，避免无效请求
+    if cfg.llm.base_url and cfg.llm.model and cfg.llm.api_key:
         return LLMClient(cfg.llm)
     return None
 
@@ -74,7 +75,7 @@ def health():
     cfg = _config()
     return {
         "ok": True,
-        "llm_configured": bool(cfg.llm.base_url and cfg.llm.model),
+        "llm_configured": bool(cfg.llm.base_url and cfg.llm.model and cfg.llm.api_key),
         "model": cfg.llm.model,
     }
 
@@ -288,7 +289,7 @@ async def pronunciation_items(domain: str = "work", count: int = 5):
     focus_errors = models.recent_pron_issues(profile, domain)
     items, source = await pronunciation.generate_items(_llm(), domain, count, goal=goal,
                                                        focus_errors=focus_errors)
-    return {"items": items, "source": source, "audio_ready": bool(cfg.audio.base_url)}
+    return {"items": items, "source": source, "audio_ready": bool(cfg.audio.base_url and cfg.audio.api_key)}
 
 
 @app.get("/api/minimal-pairs")
@@ -307,7 +308,7 @@ async def pronunciation_target(domain: str = "work"):
     items, source = await pronunciation.generate_items(_llm(), domain, 1)
     it = items[0] if items else {"text": "", "focus": "", "tip": ""}
     return {"target": it["text"], "focus": it.get("focus"), "tip": it.get("tip"),
-            "source": source, "audio_ready": bool(cfg.audio.base_url)}
+            "source": source, "audio_ready": bool(cfg.audio.base_url and cfg.audio.api_key)}
 
 
 @app.post("/api/pronunciation")
