@@ -70,6 +70,7 @@ export default function Today({
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [roundId, setRoundId] = useState<number>(() => Date.now());
   const [diagnosis, setDiagnosis] = useState<any>(null);
+  const [recapStale, setRecapStale] = useState(false);
 
   const [shadowItems, setShadowItems] = useState<any[]>([]);
   const [shadowIdx, setShadowIdx] = useState(0);
@@ -132,6 +133,7 @@ export default function Today({
       setShadowAudioReady(saved.shadowAudioReady !== false);
       setShadowResult(null);
       setDiagnosis(null);
+      setRecapStale(Boolean(saved.recapStale));
       return;
     }
 
@@ -184,7 +186,8 @@ export default function Today({
     setResults({});
     setRevealed({});
     setRoundId(Date.now());
-    toast("已开始新一轮 10 张");
+    setRecapStale(true);
+    toast("已开始新一轮，练完可重新复盘");
   };
 
   // 第 1 步：边做边存（不生成诊断，诊断在第 4 步汇总）
@@ -199,6 +202,7 @@ export default function Today({
   const genRecap = async () => {
     const r = await api.dailyRecap(domain);
     setDiagnosis(r.diagnosis);
+    setRecapStale(false);
     refreshScenarioDone();
     toast("今日复盘已生成");
   };
@@ -299,12 +303,12 @@ export default function Today({
     const key = `aicoach.today.v1:${todayKey}:${domain}`;
     try {
       localStorage.setItem(key, JSON.stringify({
-        items, results, revealed, roundId,
+        items, results, revealed, roundId, recapStale,
         shadowItems, shadowIdx, shadowGroup, shadowSeen, shadowScores, shadowAudioReady,
         mpItems, mpIdx, mpPair, mpTarget, mpPick, mpStat, mpSource,
       }));
     } catch { /* ignore */ }
-  }, [todayKey, domain, items, results, revealed, roundId, shadowItems, shadowIdx,
+  }, [todayKey, domain, items, results, revealed, roundId, recapStale, shadowItems, shadowIdx,
       shadowGroup, shadowSeen, shadowScores, shadowAudioReady, mpItems, mpIdx,
       mpPair, mpTarget, mpPick, mpStat, mpSource]);
 
@@ -693,7 +697,7 @@ export default function Today({
         <TaskHead
           step="04" title="复盘收尾"
           goal="汇总今天四块，生成今日诊断"
-          right={<span className="th-progress">{diagnosis ? "已生成" : "待生成"}</span>}
+          right={<span className="th-progress">{diagnosis ? (recapStale ? "待更新" : "已生成") : "待生成"}</span>}
         />
         <div className="recap-grid">
           <div className="recap-item"><b>{correctCount}/{items.length || "—"}</b><span>听辨</span></div>
@@ -755,6 +759,13 @@ export default function Today({
             )}
             <p className="hint">明天重点：{(diagnosis.next_focus || []).join("、") || "—"}</p>
             <p className="hint"><RichText text={diagnosis.tomorrow_plan} /></p>
+            <div className="row" style={{ marginTop: 10 }}>
+              {recapStale && <span className="badge warn">上一轮复盘</span>}
+              <AsyncButton className="btn sm" onClick={genRecap} loadingText="重新生成中…">
+                重新生成复盘
+              </AsyncButton>
+              <span className="hint">新一轮练习后，重新汇总今天的数据</span>
+            </div>
           </>
         ) : (
           <div className="task-bar">
