@@ -52,6 +52,18 @@ _probe_sessions: dict[str, dict[str, Any]] = {}
 _scenario_sessions: dict[str, dict[str, Any]] = {}
 
 
+def _load_scenario_session(sid: str | None) -> dict[str, Any] | None:
+    """内存优先；重启后从 SQLite 恢复。"""
+    if not sid:
+        return None
+    sess = _scenario_sessions.get(sid)
+    if sess is None:
+        sess = storage.get_session(sid)
+        if sess:
+            _scenario_sessions[sid] = sess
+    return sess
+
+
 def _config():
     return load_config(DB_PATH.parent)
 
@@ -749,6 +761,7 @@ async def scenario_start(request: Request):
     session = scenarios.start_session(body["scenario_id"], body.get("domain"))
     sid = uuid.uuid4().hex
     _scenario_sessions[sid] = session
+    storage.save_session(sid, session)
     return {"session_id": sid, "session": _public_session(session)}
 
 
@@ -757,7 +770,7 @@ async def scenario_hint(request: Request):
     """实战卡住时：结合场景目标 + 今天重点，给一句可直接说的英文。"""
     body = await request.json()
     sid = body.get("session_id")
-    sess = _scenario_sessions.get(sid)
+    sess = _load_scenario_session(sid)
     if not sess:
         return JSONResponse({"error": "会话不存在或已结束"}, status_code=404)
     domain = sess.get("domain", "work")
@@ -789,10 +802,11 @@ async def scenario_hint(request: Request):
 async def scenario_say(request: Request):
     body = await request.json()
     sid = body["session_id"]
-    session = _scenario_sessions.get(sid)
+    session = _load_scenario_session(sid)
     if not session:
         return JSONResponse({"error": "会话不存在"}, status_code=404)
     reply = await scenarios.actor_reply(_llm(), session, body.get("text", ""))
+    storage.save_session(sid, session)
     return {"reply": reply, "session": _public_session(session)}
 
 
@@ -800,7 +814,7 @@ async def scenario_say(request: Request):
 async def scenario_say_stream(request: Request):
     body = await request.json()
     sid = body["session_id"]
-    session = _scenario_sessions.get(sid)
+    session = _load_scenario_session(sid)
     if not session:
         return JSONResponse({"error": "会话不存在"}, status_code=404)
     llm = _llm()
@@ -809,6 +823,7 @@ async def scenario_say_stream(request: Request):
         import json as _json
         if llm is None:
             reply = await scenarios.actor_reply(None, session, body.get("text", ""))
+            storage.save_session(sid, session)
             yield f"data: {_json.dumps({'type': 'reply', 'reply': reply}, ensure_ascii=False)}\n\n"
             yield "data: [DONE]\n\n"
             return
@@ -826,6 +841,7 @@ async def scenario_say_stream(request: Request):
         full = "".join(collected)
         session["history"].append({"role": "assistant", "by": speaker.get("id"),
                                     "by_name": speaker.get("name", ""), "text": full})
+        storage.save_session(sid, session)
         yield f"data: {_json.dumps({'type': 'done', 'text': full}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
 
@@ -836,7 +852,7 @@ async def scenario_say_stream(request: Request):
 async def scenario_review(request: Request):
     body = await request.json()
     sid = body["session_id"]
-    session = _scenario_sessions.get(sid)
+    session = _load_scenario_session(sid)
     if not session:
         return JSONResponse({"error": "会话不存在"}, status_code=404)
     review = await scenarios.review_session(_llm(), session)
@@ -844,6 +860,7 @@ async def scenario_review(request: Request):
     scenarios.apply_review_to_profile(profile, session, review)
     storage.save(profile)
     _scenario_sessions.pop(sid, None)
+    storage.delete_session(sid)
     return {"review": review}
 
 

@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS profiles (
     data       TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS sessions (
+    id         TEXT PRIMARY KEY,
+    data       TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
 """
 
 
@@ -101,6 +106,44 @@ class ProfileStorage:
                 cur = conn.execute("DELETE FROM profiles WHERE user_id = ?", (user_id,))
                 conn.commit()
                 return cur.rowcount > 0
+            finally:
+                if self._mem_conn is None:
+                    conn.close()
+
+    # ------------------------------------------------------------ 场景会话
+
+    def save_session(self, sid: str, data: dict[str, Any]) -> None:
+        payload = json.dumps(data, ensure_ascii=False)
+        with self._lock:
+            conn = self._connect()
+            try:
+                conn.execute(
+                    "INSERT INTO sessions (id, data, updated_at) VALUES (?, ?, ?) "
+                    "ON CONFLICT(id) DO UPDATE SET data = excluded.data, "
+                    "updated_at = excluded.updated_at",
+                    (sid, payload, models.now_iso()),
+                )
+                conn.commit()
+            finally:
+                if self._mem_conn is None:
+                    conn.close()
+
+    def get_session(self, sid: str) -> dict[str, Any] | None:
+        with self._lock:
+            conn = self._connect()
+            try:
+                row = conn.execute("SELECT data FROM sessions WHERE id = ?", (sid,)).fetchone()
+            finally:
+                if self._mem_conn is None:
+                    conn.close()
+        return json.loads(row["data"]) if row else None
+
+    def delete_session(self, sid: str) -> None:
+        with self._lock:
+            conn = self._connect()
+            try:
+                conn.execute("DELETE FROM sessions WHERE id = ?", (sid,))
+                conn.commit()
             finally:
                 if self._mem_conn is None:
                     conn.close()

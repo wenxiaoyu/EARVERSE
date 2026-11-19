@@ -85,6 +85,18 @@ export default function Scenario({
     }
   };
 
+  const sessionGone = (e: any) => {
+    const m = String(e?.message || "");
+    return m.includes("404") || m.includes("会话");
+  };
+  const resetBroken = (msg: string) => {
+    toast(msg);
+    setSession(null);
+    setReview(null);
+    setChatErr("");
+    (window as any).__sid = null;
+  };
+
   const sendText = async (text: string) => {
     const t = text.trim();
     if (!t || !session || busy) return;
@@ -92,8 +104,12 @@ export default function Scenario({
     setSession((s: any) => ({ ...s, history: [...s.history, { role: "user", text: t }] }));
     try {
       const r = await api.scenarioSay((window as any).__sid, t);
+      if (r?.error) { resetBroken("会话已失效，请重新选择场景"); return; }
       setSession(r.session);
       if (r.reply?.text) speak(r.reply.text, "real");
+    } catch (e) {
+      if (sessionGone(e)) resetBroken("会话已失效（服务可能重启过），请重新选择场景");
+      else toast("发送失败，请重试");
     } finally {
       setBusy(false);
     }
@@ -129,10 +145,16 @@ export default function Scenario({
   };
 
   const finish = async () => {
-    const r = await api.scenarioReview((window as any).__sid);
-    setReview(r.review);
-    onReviewed?.(r.review);
-    toast("已复盘");
+    try {
+      const r = await api.scenarioReview((window as any).__sid);
+      if (r?.error) { resetBroken("会话已失效，请重新选择场景"); return; }
+      setReview(r.review);
+      onReviewed?.(r.review);
+      toast("已复盘");
+    } catch (e) {
+      if (sessionGone(e)) resetBroken("会话已失效（服务可能重启过），请重新选择场景");
+      else toast("复盘失败，请重试");
+    }
   };
 
   const startPhraseRec = async (i: number) => {
