@@ -111,9 +111,10 @@ function pickVoice(): SpeechSynthesisVoice | null {
   if (!voiceList.length) loadVoices();
   if (settings.voiceURI) {
     const found = voiceList.find((v) => v.voiceURI === settings.voiceURI);
-    if (found) return found;
+    // 跳过 Whisper / Bells 这类几乎听不清或纯音效的音色，避免“调用成功但没声音”
+    if (found && !VOICE_BAD.test(voiceMeta(found))) return found;
   }
-  return voiceList[0] || null;
+  return voiceList.find((v) => !VOICE_BAD.test(voiceMeta(v))) || voiceList[0] || null;
 }
 
 /* ---------------- 口语化改写 ---------------- */
@@ -214,24 +215,90 @@ export function speak(text: string, opt: SpeakOpt = {}): void {
   if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
     return;
   }
+  const synth = window.speechSynthesis;
   const gen = ++speakGen;
-  window.speechSynthesis.cancel();
+
+  // macOS Chrome/Safari 的已知问题：cancel 后立刻 speak 会把队列卡在 paused，
+  // 之后所有朗读都“调用成功但没声音”。先 cancel，再 resume，再重新入队。
+  try {
+    synth.cancel();
+    synth.resume();
+  } catch {
+    /* ignore */
+  }
 
   const spoken = prepareText(text, opt.reduce);
-  const u = new SpeechSynthesisUtterance(spoken);
-  const v = pickVoice();
-  u.lang = (v && v.lang) || "en-US";
-  u.rate = clamp(opt.rate != null ? opt.rate : settings.rate, 0.5, 2);
-  u.pitch = clamp(opt.pitch != null ? opt.pitch : settings.pitch, 0.5, 2);
-  u.volume = 1;
-  if (v) u.voice = v;
-  u.onend = () => {
-    if (gen === speakGen && opt.onend) opt.onend();
+  if (!spoken) return;
+  if (!voiceList.length) loadVoices();
+  const preferred = pickVoice();
+
+  let watchdog = 0;
+
+  const run = (attempt: number) => {
+    if (gen !== speakGen) return;
+    try {
+      synth.resume();
+    } catch {
+      /* ignore */
+    }
+
+    const u = new SpeechSynthesisUtterance(spoken);
+    const v = attempt === 0 ? preferred : null;  // 重试时交给系统默认音色
+    u.lang = (v && v.lang) || "en-US";
+    u.rate = clamp(opt.rate != null ? opt.rate : settings.rate, 0.5, 2);
+    u.pitch = clamp(opt.pitch != null ? opt.pitch : settings.pitch, 0.5, 2);
+    u.volume = 1;
+    if (v) u.voice = v;
+
+    let started = false;
+    let settled = false;
+
+    const retry = () => {
+      if (settled || gen !== speakGen) return;
+      settled = true;
+      window.clearTimeout(watchdog);
+      try {
+        synth.cancel();
+        synth.resume();
+      } catch {
+        /* ignore */
+      }
+      if (attempt === 0) {
+        // 换系统默认音色再试一次；给 cancel 一点时间落地
+        window.setTimeout(() => run(1), 40);
+      } else if (opt.onend) {
+        opt.onend();
+      }
+    };
+
+    // 800ms 内没有 onstart，视为这次朗读没真正启动
+    watchdog = window.setTimeout(() => {
+      if (!started) retry();
+    }, 800);
+
+    u.onstart = () => {
+      started = true;
+      window.clearTimeout(watchdog);
+    };
+    u.onend = () => {
+      window.clearTimeout(watchdog);
+      if (gen === speakGen) {
+        settled = true;
+        if (opt.onend) opt.onend();
+      }
+    };
+    u.onerror = () => {
+      if (gen === speakGen) retry();
+    };
+
+    try {
+      synth.speak(u);
+    } catch {
+      retry();
+    }
   };
-  u.onerror = () => {
-    if (gen === speakGen && opt.onend) opt.onend();
-  };
-  window.speechSynthesis.speak(u);
+
+  run(0);
 }
 
 export function stopSpeech(): void {

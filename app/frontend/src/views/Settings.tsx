@@ -135,6 +135,7 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
 
         <label>音色</label>
         <select value={v.voiceURI} onChange={(e) => { saveSettings({ voiceURI: e.target.value }); toast("音色已切换"); }} style={{ width: "100%" }}>
+          <option value="">自动选择（推荐）</option>
           {voices.length === 0 && <option value="">正在检测音色…</option>}
           {voices.map((voice) => (
             <option key={voice.voiceURI} value={voice.voiceURI}>
