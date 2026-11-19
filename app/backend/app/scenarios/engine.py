@@ -8,10 +8,15 @@
 """
 from __future__ import annotations
 
+import re
+
 from typing import Any
 
 from .. import seeddata
 from ..llm import prompts
+
+
+_CJK = re.compile(r"[\u4e00-\u9fff]")
 
 
 def start_session(scenario_id: str, domain: str | None = None) -> dict[str, Any]:
@@ -118,6 +123,21 @@ async def actor_reply(llm, session: dict, user_text: str) -> dict[str, Any]:
     messages = build_actor_messages(session, speaker, user_text)
     text = await llm.chat(messages, temperature=0.9, max_tokens=160)
     text = (text or "").strip()
+    # 兜底：NPC 只能用英文；检测到中文则重试一次
+    if _CJK.search(text):
+        try:
+            retry = messages + [{
+                "role": "system",
+                "content": "Your last reply contained Chinese characters. Reply again, in English only, with no Chinese.",
+            }]
+            again = await llm.chat(retry, temperature=0.7, max_tokens=160)
+            again = (again or "").strip()
+            if again and not _CJK.search(again):
+                text = again
+        except Exception:
+            pass
+        if _CJK.search(text):
+            text = "Sorry, I didn't quite catch that — could you say it again?"
     session["history"].append({"role": "assistant", "by": speaker.get("id"),
                                 "by_name": speaker.get("name", ""), "text": text})
     return {"by": speaker.get("id"), "by_name": speaker.get("name", ""), "text": text}
