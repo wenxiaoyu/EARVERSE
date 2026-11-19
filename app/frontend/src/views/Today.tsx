@@ -179,6 +179,20 @@ export default function Today({
   const mins = (kind: string) => schedule.find((b) => b.kind === kind)?.minutes;
 
   const session = useSessionClock(`aicoach.session.v2:${todayKey}`, total || 60);
+  const [clockNow, setClockNow] = useState(() => new Date());
+  const autoClockStarted = useRef(false);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setClockNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // 首次进入「今天」自动起表；暂停/重置仍由用户控制
+  useEffect(() => {
+    if (autoClockStarted.current) return;
+    autoClockStarted.current = true;
+    if (!session.running && !session.finished && session.elapsed === 0) session.start();
+  }, [session.running, session.finished, session.elapsed]);
 
   const practice = async () => {
     const r = await api.generate(domain, "cards", 8);
@@ -362,6 +376,10 @@ export default function Today({
   }, [s1, s2, s3, s4, items.length, shadowItems.length]);
 
 
+  const clockMinuteDeg = (clockNow.getMinutes() + clockNow.getSeconds() / 60) * 6;
+  const clockHourDeg = ((clockNow.getHours() % 12) + clockNow.getMinutes() / 60 + clockNow.getSeconds() / 3600) * 30;
+  const clockText = `${String(clockNow.getHours()).padStart(2, "0")}:${String(clockNow.getMinutes()).padStart(2, "0")}`;
+
   return (
     <section>
       <p className="screen-tag">Screen 01 — 今天</p>
@@ -369,13 +387,17 @@ export default function Today({
       {/* ===== 总览 ===== */}
       <div className="console">
         <div className="panel rail-box">
-          <div className="knob" style={{ ["--deg" as any]: "-38deg" }}>
-            <div className="pointer" />
-            <div className="cap">PHASE</div>
+          <div className="knob clock-knob" title={`本地时间 ${clockText}`}>
+            <div className="hour-hand" style={{ ["--deg" as any]: `${clockHourDeg}deg` }} />
+            <div className="pointer" style={{ ["--deg" as any]: `${clockMinuteDeg}deg` }} />
+            <div className="cap">
+              <b>{clockText}</b>
+              <span>LOCAL</span>
+            </div>
           </div>
           <div className="readout">今日已练</div>
           <div className="big" title={`${fmtClock(session.elapsed)} / ${fmtClock(session.total)}`}>
-            {Math.floor(session.elapsed / 60)}<small> / {Math.round(session.total / 60)} min</small>
+            {fmtClock(session.elapsed)}<small> / {Math.round(session.total / 60)} min</small>
           </div>
           <div className="vu"><i /><i /><i /><i /><i /><i /></div>
           <div className="state-switch">
@@ -445,7 +467,7 @@ export default function Today({
       <div className="work-head">
         <h2>今日工作台</h2>
         <div className="session-clock">
-          <span className="sc-label">已练 {Math.floor(session.elapsed / 60)}′ / {Math.round(session.total / 60)}′</span>
+          <span className="sc-label">已练 {fmtClock(session.elapsed)}</span>
           <div className="sc-track">
             <i style={{ width: `${Math.min(100, (session.elapsed / session.total) * 100)}%` }} />
           </div>
@@ -665,7 +687,7 @@ export default function Today({
               <>
                 <div className="row" style={{ justifyContent: "space-between" }}>
                   <span className="badge">{mpPair.focus}</span>
-                  <button className="p-play wide" onClick={playMp}>▶ 重听</button>
+                  <button className="p-play" onClick={playMp} aria-label="重听" title="重听">▶</button>
                 </div>
                 <div className="mp-grid">
                   {(["a", "b"] as const).map((k) => {

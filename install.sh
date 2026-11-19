@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # 耳界 EARVERSE · 跨平台安装
 #
-# 远端一键（推荐）：
-#   curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash
+# 远端一键：
+#   国内：curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | bash
+#   海外：curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash
 #   加参数：curl -fsSL ... | bash -s -- --no-start
 #   指定目录：curl -fsSL ... | EARVERSE_DIR="$HOME/apps/earverse" bash
+#   国内加速：curl -fsSL ... | EARVERSE_CN=1 bash
 #
 # 本地仓库：
 #   ./install.sh [--no-start] [--update]
@@ -13,15 +15,24 @@ set -euo pipefail
 REPO_OWNER="wenxiaoyu"
 REPO_NAME="EARVERSE"
 BRANCH="main"
-TARBALL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.tar.gz"
+GITEE_OWNER="fish"
+GITEE_REPO="earverse"
+GITHUB_TARBALL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.tar.gz"
+GITEE_TARBALL="https://gitee.com/${GITEE_OWNER}/${GITEE_REPO}/repository/archive/${BRANCH}.tar.gz"
 
 START=1
 UPDATE=0
+SOURCE="${EARVERSE_SOURCE:-auto}"
+CN="${EARVERSE_CN:-0}"
+CUSTOM_TARBALL="${EARVERSE_TARBALL:-}"
 for arg in "$@"; do
   case "$arg" in
     --no-start) START=0 ;;
     --start) START=1 ;;
     --update) UPDATE=1 ;;
+    --cn) CN=1 ;;
+    --source=*) SOURCE="${arg#*=}" ;;
+    --tarball=*) CUSTOM_TARBALL="${arg#*=}" ;;
     -h|--help)
       cat <<'EOF'
 耳界 EARVERSE 安装器
@@ -30,11 +41,16 @@ for arg in "$@"; do
   ./install.sh                 本地安装并启动
   ./install.sh --no-start      只安装
   ./install.sh --update        更新代码（保留画像/设置）
+  ./install.sh --cn            使用国内 pip/npm 镜像
+  ./install.sh --source=gitee  强制从 Gitee 下载
   curl -fsSL <install.sh> | bash
-  curl -fsSL <install.sh> | bash -s -- --no-start
+  curl -fsSL <install.sh> | bash -s -- --no-start --cn
 
 环境变量：
-  EARVERSE_DIR   安装目录（默认 ~/earverse）
+  EARVERSE_DIR      安装目录（默认 ~/earverse）
+  EARVERSE_SOURCE   auto | gitee | github | custom（默认 auto）
+  EARVERSE_TARBALL  自定义代码包 URL（配合 source=custom）
+  EARVERSE_CN       1 = 使用国内 pip/npm 镜像
 EOF
       exit 0 ;;
   esac
@@ -45,6 +61,14 @@ if [ -t 1 ]; then BOLD="\033[1m"; AMBER="\033[33m"; RED="\033[31m"; RESET="\033[
 log()  { printf "${AMBER}[earverse]${RESET} %s\n" "$*"; }
 ok()   { printf "${BOLD}[earverse]${RESET} %s\n" "$*"; }
 die()  { printf "${RED}[earverse] %s${RESET}\n" "$*" >&2; exit 1; }
+
+case "$SOURCE" in
+  auto|gitee|github|custom) ;;
+  *) die "EARVERSE_SOURCE 只支持 auto / gitee / github / custom" ;;
+esac
+if [ "$SOURCE" = "custom" ] && [ -z "$CUSTOM_TARBALL" ]; then
+  die "EARVERSE_SOURCE=custom 时必须同时设置 EARVERSE_TARBALL"
+fi
 
 # ---------- 定位代码：本地目录 或 远端下载 ----------
 ROOT=""
@@ -62,10 +86,31 @@ if [ -z "$ROOT" ]; then
   if [ ! -d "$DEST/app/backend" ] || [ "$UPDATE" = "1" ]; then
     log "下载最新代码 → $DEST"
     TMP="$(mktemp -d)"
-    curl -fsSL "$TARBALL" -o "$TMP/repo.tgz" || die "下载失败：$TARBALL"
-    tar -xzf "$TMP/repo.tgz" -C "$TMP"
-    SRC_DIR="$(find "$TMP" -maxdepth 1 -type d -name "${REPO_NAME}-*" | head -n 1)"
-    [ -n "$SRC_DIR" ] || die "解压失败。"
+    mkdir -p "$TMP/x"
+
+    CANDIDATES=()
+    case "$SOURCE" in
+      gitee)  CANDIDATES=("$GITEE_TARBALL") ;;
+      github) CANDIDATES=("$GITHUB_TARBALL") ;;
+      custom) CANDIDATES=("$CUSTOM_TARBALL") ;;
+      auto)   CANDIDATES=("$GITEE_TARBALL" "$GITHUB_TARBALL") ;;
+    esac
+
+    SRC_DIR=""
+    for url in "${CANDIDATES[@]}"; do
+      [ -n "$url" ] || continue
+      log "尝试：$url"
+      rm -rf "$TMP/x"; mkdir -p "$TMP/x"
+      if curl -fsSL --connect-timeout 8 --max-time 180 "$url" -o "$TMP/repo.tgz" 2>/dev/null \
+         && tar -tzf "$TMP/repo.tgz" >/dev/null 2>&1; then
+        tar -xzf "$TMP/repo.tgz" -C "$TMP/x"
+        SRC_DIR="$(find "$TMP/x" -maxdepth 1 -mindepth 1 -type d | head -n 1)"
+        [ -n "$SRC_DIR" ] && break
+      fi
+      log "该源不可用，换下一个…"
+    done
+    [ -n "$SRC_DIR" ] || die "下载失败。请检查网络，或设置 EARVERSE_SOURCE / EARVERSE_TARBALL 指定源。"
+    rm -f "$TMP/repo.tgz"
 
     mkdir -p "$DEST"
     # 更新时保留画像与设置
@@ -119,6 +164,13 @@ command -v npm >/dev/null 2>&1 || die "未找到 npm（通常随 Node 一起安�
 node -e 'const v=process.versions.node.split(".").map(Number); process.exit(v[0]>=18?0:1)' \
   || die "Node 版本过低，需要 18+（当前 $(node -v)）。"
 log "Node：$(node -v)  npm：$(npm -v)"
+
+# ---------- 国内镜像 ----------
+if [ "$CN" = "1" ]; then
+  export PIP_INDEX_URL="${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}"
+  export npm_config_registry="${npm_config_registry:-https://registry.npmmirror.com}"
+  log "使用国内镜像：pip / npm"
+fi
 
 # ---------- 虚拟环境 ----------
 if [ -x ".venv/Scripts/python.exe" ]; then

@@ -10,12 +10,25 @@ try {
 
 $NoStart = ($args -contains "--no-start") -or ($env:EARVERSE_NO_START -eq "1")
 $Update = $args -contains "--update"
-
+$Source = if ($env:EARVERSE_SOURCE) { $env:EARVERSE_SOURCE.ToLower() } else { "auto" }
+$Cn = ($args -contains "--cn") -or ($env:EARVERSE_CN -eq "1")
+$CustomTarball = $env:EARVERSE_TARBALL
+foreach ($a in $args) {
+  if ($a -like "--source=*") { $Source = $a.Substring(9).ToLower() }
+  if ($a -like "--tarball=*") { $CustomTarball = $a.Substring(10) }
+}
 function Log($m) { Write-Host "[earverse] $m" -ForegroundColor Yellow }
 function Ok($m) { Write-Host "[earverse] $m" -ForegroundColor Green }
 function Die($m) {
   Write-Host "[earverse] $m" -ForegroundColor Red
   exit 1
+}
+
+if (@("auto","gitee","github","custom") -notcontains $Source) {
+  Die "EARVERSE_SOURCE 只支持 auto / gitee / github / custom"
+}
+if ($Source -eq "custom" -and -not $CustomTarball) {
+  Die "EARVERSE_SOURCE=custom 时必须同时设置 EARVERSE_TARBALL"
 }
 
 # ---------- 定位代码：本地目录 或 远端下载 ----------
@@ -31,10 +44,30 @@ if (-not $Root) {
     $stamp = [guid]::NewGuid().ToString("N")
     $zip = Join-Path $env:TEMP "earverse-$stamp.zip"
     $tmp = Join-Path $env:TEMP "earverse-$stamp"
-    Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/wenxiaoyu/EARVERSE/archive/refs/heads/main.zip" -OutFile $zip
-    Expand-Archive -Path $zip -DestinationPath $tmp -Force
-    $src = Get-ChildItem $tmp -Directory | Select-Object -First 1
-    if (-not $src) { Die "下载包解压失败。" }
+    $giteeZip = "https://gitee.com/fish/earverse/repository/archive/main.zip"
+    $githubZip = "https://github.com/wenxiaoyu/EARVERSE/archive/refs/heads/main.zip"
+    $candidates = switch ($Source) {
+      "gitee"  { @($giteeZip) }
+      "github" { @($githubZip) }
+      "custom" { @($CustomTarball) }
+      default  { @($giteeZip, $githubZip) }
+    }
+    $src = $null
+    foreach ($url in $candidates) {
+      if (-not $url) { continue }
+      Log "尝试下载：$url"
+      try {
+        Remove-Item $zip -Force -ErrorAction SilentlyContinue
+        if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
+        Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $zip -TimeoutSec 180
+        Expand-Archive -Path $zip -DestinationPath $tmp -Force
+        $src = Get-ChildItem $tmp -Directory | Select-Object -First 1
+        if ($src) { break }
+      } catch {
+        Log "该源不可用，换下一个…"
+      }
+    }
+    if (-not $src) { Die "下载失败。请检查网络，或设置 EARVERSE_SOURCE / EARVERSE_TARBALL 指定源。" }
     New-Item -ItemType Directory -Force -Path $Dest | Out-Null
     $backup = Join-Path $Dest ".earverse-data-preserve"
     if (Test-Path (Join-Path $Dest "app\backend\data")) {
@@ -56,6 +89,13 @@ if (-not $Root) {
 Set-Location $Root
 Log "目录：$Root"
 Log "平台：Windows"
+
+# ---------- 国内镜像 ----------
+if ($Cn) {
+  if (-not $env:PIP_INDEX_URL) { $env:PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+  if (-not $env:npm_config_registry) { $env:npm_config_registry = "https://registry.npmmirror.com" }
+  Log "使用国内镜像：pip / npm"
+}
 
 # ---------- Python ----------
 $PythonExe = $null

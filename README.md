@@ -112,6 +112,27 @@ english-trainer/
 curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash
 ```
 
+### 国内网络（Gitee 镜像，推荐）
+
+```bash
+curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | bash
+```
+
+- 同时使用国内 pip / npm 镜像：
+  ```bash
+  curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | EARVERSE_CN=1 bash
+  ```
+- 安装器会优先从 Gitee 下载代码，失败时自动回退 GitHub。
+- 也可以强制指定源：
+  ```bash
+  # 只走 Gitee
+  curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | bash -s -- --source=gitee
+  # 只走 GitHub
+  curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | bash -s -- --source=github
+  # 自有 CDN 代码包
+  curl -fsSL https://gitee.com/fish/earverse/raw/main/install.sh | EARVERSE_TARBALL="https://cdn.example.com/earverse.tar.gz" bash -s -- --source=custom
+  ```
+
 - 只安装不启动：
   ```bash
   curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh | bash -s -- --no-start
@@ -126,8 +147,17 @@ curl -fsSL https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.sh 
 ### Windows（PowerShell）
 
 ```powershell
+# 国内
+irm https://gitee.com/fish/earverse/raw/main/install.ps1 | iex
+
+# 海外
 irm https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.ps1 | iex
 ```
+
+- 国内镜像加速：
+  ```powershell
+  $env:EARVERSE_CN="1"; irm https://gitee.com/fish/earverse/raw/main/install.ps1 | iex
+  ```
 
 - 只安装不启动：
   ```powershell
