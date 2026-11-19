@@ -474,7 +474,7 @@ export default function Today({
       <Step status={s1} hidden={tab !== 0} active={tab === 0}>
         <TaskHead
           step="01" title="激活复习"
-          goal="先听发音，选出中文意思"
+          goal="先听发音，选择是否听出来"
           right={<>
             <span className="th-progress">已标 {marked}/{items.length || "—"}</span>
             <AsyncButton className="btn sm" onClick={practice} loadingText="生成中…">再来一轮</AsyncButton>
@@ -495,7 +495,7 @@ export default function Today({
                       </span>
                     </div>
                     <div className="p-body">
-                      {rev ? (<><div className="w">{it.w}</div><div className="z">{it.zh || "—"}</div></>) : (<span className="mask">听发音猜意思</span>)}
+                      {rev ? (<><div className="w">{it.w}</div><div className="z">{it.zh || "—"}</div></>) : (<span className="mask">听发音，判断听没听出</span>)}
                     </div>
                     <div className="p-foot">
                       <button className="p-view" onClick={() => setRevealed((r) => ({ ...r, [it.id]: !r[it.id] }))}>{rev ? "隐藏" : "查看"}</button>
