@@ -921,3 +921,35 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 .nav .ico svg{display:block}
 .nav:hover .ico{color:var(--ink)}
 .nav.active .ico{color:var(--amber)}
+
+/* ============ 未配置模型：醒目提示 ============ */
+.model-led{background:none;border:0;cursor:pointer;padding:0;font:inherit}
+.model-led.warn{color:var(--amber)}
+.model-led.warn .dot{background:var(--amber);box-shadow:0 0 10px var(--amber);animation:dotpulse 1.4s infinite}
+.model-led:hover{color:var(--ink)}
+
+.model-warn{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;margin:0 0 18px;border-radius:14px;
+  border:1px solid rgba(232,163,61,.5);
+  background:linear-gradient(100deg,rgba(232,163,61,.16),rgba(232,163,61,.04));
+  box-shadow:0 10px 30px -18px rgba(232,163,61,.6), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.mw-bang{
+  flex:0 0 28px;width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+  color:#231703;background:linear-gradient(180deg,#f0b45a,var(--amber));
+  box-shadow:0 0 0 4px rgba(232,163,61,.14);
+}
+.mw-text{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.mw-text b{color:var(--ink);font-size:14.5px}
+.mw-text span{color:var(--muted);font-size:12.5px;line-height:1.5}
+.model-warn .btn{white-space:nowrap}
+
+.model-setup{border-color:rgba(232,163,61,.5);background:linear-gradient(100deg,rgba(232,163,61,.12),transparent)}
+.ms-head{display:flex;align-items:center;gap:10px}
+.ms-head b{font-size:15px}
+@media(max-width:640px){
+  .model-warn{flex-wrap:wrap}
+  .model-warn .btn{width:100%;justify-content:center}
+}

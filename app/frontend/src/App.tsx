@@ -89,10 +89,14 @@ export default function App() {
           <span className={`dot ${inflight > 0 ? "pulse" : ""}`} />
           {inflight > 0 ? "请求中…" : "就绪"}
         </span>
-        <span className="led">
-          <span className={`dot ${health?.llm_configured ? "g" : ""}`} />
-          {health?.llm_configured ? "MODEL ✓" : "MODEL —"}
-        </span>
+        <button
+          className={`led model-led ${health?.llm_configured ? "" : "warn"}`}
+          onClick={() => setTab("settings")}
+          title={health?.llm_configured ? "模型已配置" : "未配置模型，点击去配置"}
+        >
+          <span className={`dot ${health?.llm_configured ? "g" : "pulse"}`} />
+          {health?.llm_configured ? "MODEL ✓" : "配置模型 →"}
+        </button>
         <span className="led">DAY {confirmed ? "ON" : "NEW"}</span>
       </header>
 
@@ -115,6 +119,17 @@ export default function App() {
         </nav>
 
         <main className="stage">
+          {health && !health.llm_configured && tab !== "settings" && (
+            <div className="model-warn" role="alert">
+              <span className="mw-bang">!</span>
+              <div className="mw-text">
+                <b>还没配置模型，当前是降级体验</b>
+                <span>种子题 / 本地规则 / 离线剧本。填入 DeepSeek Key 才能体验真正的 AI 出题、判卷、发音评分与场景对话。</span>
+              </div>
+              <button className="btn primary sm" onClick={() => setTab("settings")}>去配置 →</button>
+            </div>
+          )}
+
           {tab === "today" && (
             <Today domain={domain} confirmed={confirmed} goto={(t) => setTab(t as Tab)} />
           )}
