@@ -72,6 +72,7 @@ export default function Today({
 
   const [shadowItems, setShadowItems] = useState<any[]>([]);
   const [shadowIdx, setShadowIdx] = useState(0);
+  const [shadowGroup, setShadowGroup] = useState(1);
   const [shadowResult, setShadowResult] = useState<any>(null);
   const [shadowDetail, setShadowDetail] = useState(false);
   const [shadowScores, setShadowScores] = useState<number[]>([]);
@@ -105,7 +106,7 @@ export default function Today({
   // 切换场景：清空并重新生成练习 + 跟读
   useEffect(() => {
     setItems([]); setResults({}); setRevealed({}); setDiagnosis(null);
-    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]);
+    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1);
     tabPicked.current = false; setTab(0);
     let alive = true;
     api.generate(domain, "cards", 10)
@@ -168,6 +169,7 @@ export default function Today({
 
   const loadShadow = async () => {
     setShadowLoading(true); setShadowResult(null); setShadowIdx(0);
+    setShadowGroup((g) => g + 1);
     try {
       const r = await api.pronunciationItems(domain, 5);
       setShadowItems(r.items || []);
@@ -191,8 +193,12 @@ export default function Today({
   const nextShadow = () => {
     setShadowResult(null);
     setShadowDetail(false);
-    if (shadowIdx + 1 < shadowItems.length) setShadowIdx(shadowIdx + 1);
-    else loadShadow();
+    if (shadowIdx + 1 < shadowItems.length) {
+      setShadowIdx(shadowIdx + 1);
+    } else {
+      toast("本组 5 句完成，开始下一组");
+      loadShadow();
+    }
   };
 
   // 首次进入不自动播放；用户点过播放/做过选择后，后续新题自动播放
@@ -436,13 +442,27 @@ export default function Today({
             {shadow ? (
               <>
                 <div className="row" style={{ justifyContent: "space-between" }}>
-                  <span className="hint">第 {shadowIdx + 1} / {shadowItems.length} 句</span>
+                  <span className="hint">第 {shadowGroup} 组 · {shadowIdx + 1}/{shadowItems.length} 句</span>
                   <div className="row">
                     {shadow.focus && <span className="badge">{shadow.focus}</span>}
                     <button className="p-play" onClick={() => speak(shadow.text, "real")}>▶</button>
                   </div>
                 </div>
-                <div className="pron-target">{shadow.text}</div>
+                <div
+                  className="pron-target clickable"
+                  role="button"
+                  tabIndex={0}
+                  title="点击朗读"
+                  onClick={() => speak(shadow.text, "real")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      speak(shadow.text, "real");
+                    }
+                  }}
+                >
+                  {shadow.text}
+                </div>
                 {shadow.tip && <p className="hint">{shadow.tip}</p>}
                 {!shadowAudioReady && <p className="hint">⚠ 需配置音频供应商（DeepSeek）才能评分。</p>}
                 {!shadowResult && shadowAudioReady && (

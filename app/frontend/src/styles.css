@@ -953,3 +953,9 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
   .model-warn{flex-wrap:wrap}
   .model-warn .btn{width:100%;justify-content:center}
 }
+
+
+/* 跟读句子：点击朗读 */
+.pron-target.clickable{cursor:pointer;transition:border-color .15s,color .15s}
+.pron-target.clickable:hover{border-color:rgba(232,163,61,.5);color:var(--ink)}
+.pron-target.clickable:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
