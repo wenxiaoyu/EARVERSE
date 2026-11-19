@@ -272,6 +272,9 @@ export default function Today({
     : (s1 === "done" && s2 === "done" && s3 === "done") ? "active" : "idle";
 
   const shadow = shadowItems[Math.min(shadowIdx, Math.max(shadowItems.length - 1, 0))];
+  const sceneSuccess = scenarioReview ? Boolean(scenarioReview.success)
+    : scenarioRecord ? Boolean(scenarioRecord.success) : null;
+  const sceneMark = sceneSuccess === null ? (scenarioDone ? "—" : "—") : sceneSuccess ? "✓" : "✗";
   const correctCount = items.filter((it) => results[it.id] === true).length;
   const avgScore = shadowScores.length
     ? Math.round(shadowScores.reduce((a, b) => a + b, 0) / shadowScores.length) : null;
@@ -631,7 +634,10 @@ export default function Today({
           <div className="recap-item"><b>{correctCount}/{items.length || "—"}</b><span>听辨</span></div>
           <div className="recap-item"><b>{avgScore ?? "—"}</b><span>跟读均分</span></div>
           <div className="recap-item"><b>{mpStat.total ? `${mpStat.ok}/${mpStat.total}` : "—"}</b><span>最小对立对</span></div>
-          <div className="recap-item"><b>{scenarioDone ? "✓" : "—"}</b><span>场景实战</span></div>
+          <div className="recap-item">
+            <b style={{ color: sceneSuccess === false ? "var(--red)" : sceneSuccess === true ? "var(--green)" : undefined }}>{sceneMark}</b>
+            <span>场景实战</span>
+          </div>
         </div>
 
         <div className="divider">场景实战复盘</div>
