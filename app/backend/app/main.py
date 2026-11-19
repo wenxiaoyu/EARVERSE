@@ -532,7 +532,15 @@ async def daily_recap(request: Request):
         "shadow": {"count": len(scores),
                    "avg": round(sum(scores) / len(scores)) if scores else None},
         "minimal_pairs": {"ok": int(mp.get("ok", 0)), "total": int(mp.get("total", 0))},
-        "scenario": {"done": bool(scen), "success": any(r.get("success") for r in scen)},
+        "scenario": {
+            "done": bool(scen),
+            "success": any(r.get("success") for r in scen),
+            "records": [
+                {"scenario_id": r.get("scenario_id"), "success": r.get("success"),
+                 "skills": r.get("skills") or [], "stuck": r.get("stuck_at") or ""}
+                for r in scen[-3:]
+            ],
+        },
     }
     excerpt = {"weak_hearing": models.weakest_hearing(d),
                "deaf_words": models.deaf_words(d)[:10]}

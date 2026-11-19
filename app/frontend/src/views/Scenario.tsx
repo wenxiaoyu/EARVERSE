@@ -33,11 +33,10 @@ function LoadLeds({ n }: { n: number }) {
 export default function Scenario({
   domain, embedded = false, onReviewed,
 }: {
-  domain: string; embedded?: boolean; onReviewed?: () => void;
+  domain: string; embedded?: boolean; onReviewed?: (review: any) => void;
 }) {
   const [list, setList] = useState<Scenario[]>([]);
   const [session, setSession] = useState<any>(null);
-  const [input, setInput] = useState("");
   const [review, setReview] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const [starting, setStarting] = useState<string | null>(null);
@@ -48,6 +47,11 @@ export default function Scenario({
   const [pronRes, setPronRes] = useState<Record<number, any>>({});
   const [shown, setShown] = useState<Record<number, boolean>>({});
   const scenRec = useRef(createWavRecorder());
+  const chatRecorder = useRef(createWavRecorder());
+  const [chatRec, setChatRec] = useState(false);
+  const [chatBusy, setChatBusy] = useState(false);
+  const [chatSec, setChatSec] = useState(0);
+  const [chatErr, setChatErr] = useState("");
 
   useEffect(() => {
     api.scenarios(domain).then((r) => setList(r.items));
@@ -56,11 +60,19 @@ export default function Scenario({
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [session]);
 
+  useEffect(() => {
+    if (!chatRec) return;
+    setChatSec(0);
+    const id = window.setInterval(() => setChatSec((v) => v + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [chatRec]);
+
   const startWith = async (id: string) => {
     if (starting) return;
     setStarting(id);
     setReview(null);
     setShown({});
+    setChatErr("");
     try {
       const r = await api.scenarioStart(id);
       (window as any).__sid = r.session_id;
@@ -73,14 +85,13 @@ export default function Scenario({
     }
   };
 
-  const say = async () => {
-    if (!input.trim() || !session || busy) return;
+  const sendText = async (text: string) => {
+    const t = text.trim();
+    if (!t || !session || busy) return;
     setBusy(true);
-    const text = input.trim();
-    setInput("");
-    setSession((s: any) => ({ ...s, history: [...s.history, { role: "user", text }] }));
+    setSession((s: any) => ({ ...s, history: [...s.history, { role: "user", text: t }] }));
     try {
-      const r = await api.scenarioSay((window as any).__sid, text);
+      const r = await api.scenarioSay((window as any).__sid, t);
       setSession(r.session);
       if (r.reply?.text) speak(r.reply.text, "real");
     } finally {
@@ -88,10 +99,39 @@ export default function Scenario({
     }
   };
 
+  const startChatRec = async () => {
+    if (busy || chatBusy || chatRec) return;
+    setChatErr("");
+    try {
+      await chatRecorder.current.start();
+      setChatRec(true);
+    } catch {
+      toast("无法打开麦克风");
+    }
+  };
+  const stopChatRec = async () => {
+    if (!chatRec) return;
+    setChatRec(false);
+    setChatBusy(true);
+    try {
+      const blob = await chatRecorder.current.stop();
+      if (blob.size < 1200) { toast("录音太短，请说完再停"); return; }
+      const r = await api.speechAsr(blob);
+      if (r?.error) { setChatErr(String(r.error)); toast("语音识别失败"); return; }
+      const text = String(r?.text || "").trim();
+      if (!text) { toast("没听清，再说一遍"); return; }
+      await sendText(text);
+    } catch {
+      toast("语音发送失败，请重试");
+    } finally {
+      setChatBusy(false);
+    }
+  };
+
   const finish = async () => {
     const r = await api.scenarioReview((window as any).__sid);
     setReview(r.review);
-    onReviewed?.();
+    onReviewed?.(r.review);
     toast("已复盘");
   };
 
@@ -186,16 +226,20 @@ export default function Scenario({
             <div ref={endRef} />
           </div>
 
-          <div className="compose">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="用英语回应…（回车发送）"
-              onKeyDown={(e) => e.key === "Enter" && say()}
-            />
-            <AsyncButton className="btn primary" onClick={say} loadingText="发送中…">说</AsyncButton>
+          <div className="compose voice-compose">
+            {chatRec ? (
+              <button className="btn primary rec" onClick={stopChatRec}>
+                <span className="rec-dot" /> 录音中 {Math.floor(chatSec / 60)}:{String(chatSec % 60).padStart(2, "0")} · 点此结束
+              </button>
+            ) : (
+              <button className="btn primary" disabled={busy || chatBusy} onClick={startChatRec}>
+                {chatBusy ? "识别中…" : busy ? "发送中…" : "🎤 点击说话"}
+              </button>
+            )}
             <AsyncButton className="btn ghost" onClick={finish} loadingText="复盘中…">结束复盘</AsyncButton>
           </div>
+          {chatErr && <p className="hint" style={{ color: "var(--red)" }}>{chatErr}</p>}
+          <p className="hint" style={{ marginTop: 6 }}>直接说英语，再点一次结束并发送。</p>
         </div>
       )}
 

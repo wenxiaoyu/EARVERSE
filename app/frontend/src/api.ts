@@ -81,6 +81,13 @@ export const api = {
   report: (domain: string, period = "week") => json<any>(`/api/report?domain=${domain}&period=${period}`),
   seed: (name: string) => json<any>(`/api/seed/${name}`),
   minimalPairs: (domain: string, count = 8) => json<any>(`/api/minimal-pairs?domain=${domain}&count=${count}`),
+  speechAsr: (audio: Blob) =>
+    track((async () => {
+      const fd = new FormData();
+      fd.append("file", audio, "speech.wav");
+      const res = await fetch("/api/speech/asr", { method: "POST", body: fd });
+      return res.json();
+    })()),
 };
 
 import { getSettings, speak as ttsSpeak } from "./tts";

@@ -91,6 +91,8 @@ export default function Today({
   const [mpSource, setMpSource] = useState("");
   const [mpIdx, setMpIdx] = useState(0);
   const [scenarioDone, setScenarioDone] = useState(false);
+  const [scenarioRecord, setScenarioRecord] = useState<any>(null);
+  const [scenarioReview, setScenarioReview] = useState<any>(null);
   const [tab, setTab] = useState(0);
   const tabPicked = useRef(false);
   const tabMounted = useRef(false);
@@ -108,6 +110,7 @@ export default function Today({
   useEffect(() => {
     setItems([]); setResults({}); setRevealed({}); setDiagnosis(null);
     setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1); setShadowSeen(1);
+    setScenarioReview(null); setScenarioRecord(null);
     tabPicked.current = false; setTab(0);
     let alive = true;
     api.generate(domain, "cards", 10)
@@ -124,7 +127,9 @@ export default function Today({
     api.profile(domain).then((r) => {
       const recs = r.domain_view?.scenario_record || [];
       const today = new Date().toDateString();
-      setScenarioDone(recs.some((x: any) => x.at && new Date(x.at).toDateString() === today));
+      const todays = recs.filter((x: any) => x.at && new Date(x.at).toDateString() === today);
+      setScenarioDone(todays.length > 0);
+      setScenarioRecord(todays.length ? todays[todays.length - 1] : null);
     }).catch(() => {});
   };
   useEffect(() => {
@@ -612,7 +617,7 @@ export default function Today({
           goal="进一个现场，把一件事办成"
           right={<span className="th-progress">{scenarioDone ? "已复盘" : "未开始"}</span>}
         />
-        <Scenario domain={domain} embedded onReviewed={refreshScenarioDone} />
+        <Scenario domain={domain} embedded onReviewed={(rev) => { setScenarioReview(rev); refreshScenarioDone(); }} />
       </Step>
 
       {/* ④ 复盘收尾 */}
@@ -628,6 +633,44 @@ export default function Today({
           <div className="recap-item"><b>{mpStat.total ? `${mpStat.ok}/${mpStat.total}` : "—"}</b><span>最小对立对</span></div>
           <div className="recap-item"><b>{scenarioDone ? "✓" : "—"}</b><span>场景实战</span></div>
         </div>
+
+        <div className="divider">场景实战复盘</div>
+        {scenarioReview ? (
+          <div className="scene-review">
+            <div className="row" style={{ gap: 10, marginBottom: 6 }}>
+              <span className={`verdict ${scenarioReview.success ? "ok" : "bad"}`}>
+                {scenarioReview.success ? "办成了" : "没办成"}
+              </span>
+              <span className="badge">{scenarioReview.source === "llm" ? "AI 复盘" : "本地复盘"}</span>
+            </div>
+            {scenarioReview.advice && <p className="hint"><RichText text={scenarioReview.advice} /></p>}
+            {(scenarioReview.stuck || []).length > 0 && (
+              <ul className="weak">
+                {(scenarioReview.stuck || []).map((x: any, i: number) => (
+                  <li key={i}><b>{x.type || "卡点"}</b>：{x.issue}{x.quote ? `（${x.quote}）` : ""}</li>
+                ))}
+              </ul>
+            )}
+            {(scenarioReview.achieved_skills || []).length > 0 && (
+              <div className="row" style={{ marginTop: 6 }}>
+                {scenarioReview.achieved_skills.map((k: string) => <span className="skill-chip" key={k}>{k}</span>)}
+              </div>
+            )}
+          </div>
+        ) : scenarioRecord ? (
+          <div className="scene-review">
+            <div className="row" style={{ gap: 10 }}>
+              <span className={`verdict ${scenarioRecord.success ? "ok" : "bad"}`}>
+                {scenarioRecord.success ? "办成了" : "没办成"}
+              </span>
+              {(scenarioRecord.skills || []).map((k: string) => <span className="skill-chip" key={k}>{k}</span>)}
+            </div>
+            {scenarioRecord.stuck_at && <p className="hint">卡点：{scenarioRecord.stuck_at}</p>}
+          </div>
+        ) : (
+          <p className="hint">今天还没有完成场景实战复盘。</p>
+        )}
+
         {diagnosis ? (
           <>
             <h3 style={{ marginTop: 0 }}>今日诊断 · {diagnosis.verdict}</h3>

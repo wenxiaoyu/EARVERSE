@@ -959,3 +959,12 @@ button:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
 .pron-target.clickable{cursor:pointer;transition:border-color .15s,color .15s}
 .pron-target.clickable:hover{border-color:rgba(232,163,61,.5);color:var(--ink)}
 .pron-target.clickable:focus-visible{outline:2px solid rgba(232,163,61,.6);outline-offset:2px}
+
+
+/* 场景实战：语音输入区 */
+.voice-compose{display:flex;align-items:center;gap:10px}
+.voice-compose .btn.primary{min-width:180px}
+
+/* 场景实战复盘卡 */
+.scene-review{background:#191411;border:1px solid var(--hair);border-radius:12px;padding:14px;margin-bottom:14px}
+.scene-review .verdict{font-size:14px}
