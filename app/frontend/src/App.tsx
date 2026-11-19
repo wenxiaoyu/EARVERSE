@@ -95,7 +95,7 @@ export default function App() {
           title={health?.llm_configured ? "模型已配置" : "未配置模型，点击去配置"}
         >
           <span className={`dot ${health?.llm_configured ? "g" : "pulse"}`} />
-          {health?.llm_configured ? "MODEL ✓" : "配置模型 →"}
+          {health?.llm_configured ? "MODEL ✓" : "接入 AI →"}
         </button>
         <span className="led">DAY {confirmed ? "ON" : "NEW"}</span>
       </header>
@@ -123,10 +123,10 @@ export default function App() {
             <div className="model-warn" role="alert">
               <span className="mw-bang">!</span>
               <div className="mw-text">
-                <b>还没配置模型，当前是降级体验</b>
-                <span>种子题 / 本地规则 / 离线剧本。填入 DeepSeek Key 才能体验真正的 AI 出题、判卷、发音评分与场景对话。</span>
+                <b>还没接入 AI 教练</b>
+                <span>现在看到的是演示内容，不会随你变化。填入 DeepSeek Key，AI 会读懂你的短板，为你出题、判卷、纠正发音，并在场景里陪你对话。</span>
               </div>
-              <button className="btn primary sm" onClick={() => setTab("settings")}>去配置 →</button>
+              <button className="btn primary sm" onClick={() => setTab("settings")}>接入 AI →</button>
             </div>
           )}
 

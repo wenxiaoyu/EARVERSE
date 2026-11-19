@@ -92,10 +92,10 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
 
       {cfg && !cfg.llm?.api_key_set && (
         <div className="panel model-setup">
-          <div className="ms-head"><span className="mw-bang">!</span><b>先配置模型 Key（1 分钟）</b></div>
+          <div className="ms-head"><span className="mw-bang">!</span><b>接入 AI 教练 · 约 1 分钟</b></div>
           <p className="hint" style={{ margin: "6px 0 0" }}>
-            填入 DeepSeek Key 后，AI 出题 / 判卷 / 发音评分 / 场景对话立即生效。
-            没有 Key 时只能使用种子题与本地规则的降级体验。
+            填入 DeepSeek Key 后，AI 会读懂你的短板，实时出题、判卷、纠正发音，并在场景里陪你演练。
+            未接入时，页面只展示预设的演示内容。
           </p>
         </div>
       )}
