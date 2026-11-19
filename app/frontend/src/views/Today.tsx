@@ -373,8 +373,10 @@ export default function Today({
             <div className="pointer" />
             <div className="cap">PHASE</div>
           </div>
-          <div className="readout">今日总时长</div>
-          <div className="big">{total || 60}<small> min</small></div>
+          <div className="readout">今日已练</div>
+          <div className="big" title={`${fmtClock(session.elapsed)} / ${fmtClock(session.total)}`}>
+            {Math.floor(session.elapsed / 60)}<small> / {Math.round(session.total / 60)} min</small>
+          </div>
           <div className="vu"><i /><i /><i /><i /><i /><i /></div>
           <div className="state-switch">
             <SceneSelector items={STATE_ITEMS} value={state} onChange={setState} maxInline={3} label="状态" />
@@ -423,6 +425,7 @@ export default function Today({
               className="start"
               onClick={() => {
                 if (!confirmed) { goto("assess"); return; }
+                if (!session.running && !session.finished) session.start();
                 setTab(0);
                 document.querySelector(".tabbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
@@ -442,7 +445,7 @@ export default function Today({
       <div className="work-head">
         <h2>今日工作台</h2>
         <div className="session-clock">
-          <span className="sc-label">60′ 参考</span>
+          <span className="sc-label">已练 {Math.floor(session.elapsed / 60)}′ / {Math.round(session.total / 60)}′</span>
           <div className="sc-track">
             <i style={{ width: `${Math.min(100, (session.elapsed / session.total) * 100)}%` }} />
           </div>
