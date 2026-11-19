@@ -68,6 +68,7 @@ export default function Today({
   const [items, setItems] = useState<Item[]>([]);
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [roundId, setRoundId] = useState<number>(() => Date.now());
   const [diagnosis, setDiagnosis] = useState<any>(null);
 
   const [shadowItems, setShadowItems] = useState<any[]>([]);
@@ -97,6 +98,9 @@ export default function Today({
   const tabPicked = useRef(false);
   const tabMounted = useRef(false);
 
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
   const load = () => {
     api.plan(domain, state).then((r) => {
       setSchedule(r.schedule);
@@ -106,12 +110,34 @@ export default function Today({
   };
   useEffect(load, [domain, state]);
 
-  // 切换场景：清空并重新生成练习 + 跟读
+  // 切换场景：优先恢复今天的进度，否则重新生成
   useEffect(() => {
-    setItems([]); setResults({}); setRevealed({}); setDiagnosis(null);
-    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1); setShadowSeen(1);
+    const key = `aicoach.today.v1:${todayKey}:${domain}`;
+    let saved: any = null;
+    try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch { saved = null; }
+
     setScenarioReview(null); setScenarioRecord(null);
     tabPicked.current = false; setTab(0);
+
+    if (saved && (saved.items?.length || saved.shadowItems?.length || saved.mpItems?.length)) {
+      setItems(saved.items || []);
+      setResults(saved.results || {});
+      setRevealed(saved.revealed || {});
+      setRoundId(saved.roundId || Date.now());
+      setShadowItems(saved.shadowItems || []);
+      setShadowIdx(saved.shadowIdx || 0);
+      setShadowGroup(saved.shadowGroup || 1);
+      setShadowSeen(saved.shadowSeen || 1);
+      setShadowScores(saved.shadowScores || []);
+      setShadowAudioReady(saved.shadowAudioReady !== false);
+      setShadowResult(null);
+      setDiagnosis(null);
+      return;
+    }
+
+    setItems([]); setResults({}); setRevealed({}); setDiagnosis(null);
+    setShadowItems([]); setShadowResult(null); setShadowIdx(0); setShadowScores([]); setShadowGroup(1); setShadowSeen(1);
+    setRoundId(Date.now());
     let alive = true;
     api.generate(domain, "cards", 10)
       .then((r) => { if (alive) setItems(r.items || []); })
@@ -120,6 +146,14 @@ export default function Today({
       .then((r) => { if (alive) { setShadowItems(r.items || []); setShadowAudioReady(Boolean(r.audio_ready)); } })
       .catch(() => {});
     return () => { alive = false; };
+  }, [domain]);
+
+  // 今天已生成过复盘：刷新后继续显示
+  useEffect(() => {
+    api.dailyDetail(domain, todayKey)
+      .then((d) => { if (d?.recap?.diagnosis) setDiagnosis(d.recap.diagnosis); })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [domain]);
 
   // 今天是否已完成过场景实战（用于复盘收尾判断）
@@ -142,8 +176,6 @@ export default function Today({
   const total = schedule.reduce((s, b) => s + b.minutes, 0);
   const mins = (kind: string) => schedule.find((b) => b.kind === kind)?.minutes;
 
-  const now = new Date();
-  const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   const session = useSessionClock(`aicoach.session.v2:${todayKey}`, total || 60);
 
   const practice = async () => {
@@ -151,15 +183,15 @@ export default function Today({
     setItems(r.items);
     setResults({});
     setRevealed({});
-    setDiagnosis(null);
-    toast("已按你的画像生成 10 张");
+    setRoundId(Date.now());
+    toast("已开始新一轮 10 张");
   };
 
   // 第 1 步：边做边存（不生成诊断，诊断在第 4 步汇总）
   const markItem = (it: Item, correct: boolean) => {
     setResults((r) => ({ ...r, [it.id]: correct }));
     api.trainingRecord({
-      domain, kind: "listening", item_key: it.id, text: it.w,
+      domain, kind: "listening", item_key: `${roundId}-${it.id}`, text: it.w,
       correct, detail: `难度${it.difficulty}`, difficulty: it.difficulty,
     }).catch(() => {});
   };
@@ -242,7 +274,40 @@ export default function Today({
     pickMp(mpItems[next], mpArmed.current);
   };
   // 进入页面/切换场景时按场景生成（首屏静默）
-  useEffect(() => { mpArmed.current = false; loadMp(true); /* eslint-disable-next-line */ }, [domain]);
+  useEffect(() => {
+    const key = `aicoach.today.v1:${todayKey}:${domain}`;
+    let saved: any = null;
+    try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch { saved = null; }
+    if (saved?.mpItems?.length) {
+      setMpItems(saved.mpItems);
+      setMpIdx(saved.mpIdx || 0);
+      setMpPair(saved.mpPair || null);
+      setMpTarget(saved.mpTarget === "b" ? "b" : "a");
+      setMpPick(saved.mpPick === "a" || saved.mpPick === "b" ? saved.mpPick : null);
+      setMpStat(saved.mpStat || { ok: 0, total: 0 });
+      setMpSource(saved.mpSource || "");
+      mpArmed.current = Boolean(saved.mpPick);
+      return;
+    }
+    mpArmed.current = false;
+    loadMp(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domain]);
+
+  // 持久化今天的练习进度（刷新恢复）
+  useEffect(() => {
+    const key = `aicoach.today.v1:${todayKey}:${domain}`;
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        items, results, revealed, roundId,
+        shadowItems, shadowIdx, shadowGroup, shadowSeen, shadowScores, shadowAudioReady,
+        mpItems, mpIdx, mpPair, mpTarget, mpPick, mpStat, mpSource,
+      }));
+    } catch { /* ignore */ }
+  }, [todayKey, domain, items, results, revealed, roundId, shadowItems, shadowIdx,
+      shadowGroup, shadowSeen, shadowScores, shadowAudioReady, mpItems, mpIdx,
+      mpPair, mpTarget, mpPick, mpStat, mpSource]);
+
   const playMp = () => {
     if (!mpPair) return;
     mpArmed.current = true; speak(mpPair[mpTarget], "real");
@@ -408,7 +473,7 @@ export default function Today({
           goal="先听发音，选出中文意思"
           right={<>
             <span className="th-progress">已标 {marked}/{items.length || "—"}</span>
-            <AsyncButton className="btn sm" onClick={practice} loadingText="生成中…">换一组</AsyncButton>
+            <AsyncButton className="btn sm" onClick={practice} loadingText="生成中…">再来一轮</AsyncButton>
           </>}
         />
         {items.length > 0 ? (
