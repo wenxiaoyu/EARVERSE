@@ -67,6 +67,10 @@ export const api = {
     json<any>("/api/daily/minimal-pair", { method: "POST", body: JSON.stringify({ domain, correct, focus, target }) }),
   dailyRecap: (domain: string) =>
     json<any>("/api/daily/recap", { method: "POST", body: JSON.stringify({ domain }) }),
+  dailyCalendar: (domain: string, month: string) =>
+    json<any>(`/api/daily/calendar?domain=${domain}&month=${month}`),
+  dailyDetail: (domain: string, date: string) =>
+    json<any>(`/api/daily/detail?domain=${domain}&date=${date}`),
 
   scenarios: (domain?: string) => json<any>(`/api/scenarios${domain ? `?domain=${domain}` : ""}`),
   scenarioStart: (scenario_id: string) =>

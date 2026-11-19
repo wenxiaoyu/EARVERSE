@@ -432,7 +432,7 @@ async def training_result(request: Request):
     d["calibration"] = {"last_accuracy": summary["accuracy"], "at": models.now_iso()}
     hist = d.setdefault("history", [])
     hist.append({
-        "date": models.now_iso()[:10],
+        "date": models.local_date(0),
         "accuracy": round(summary["accuracy"], 3),
         "total": summary["total"],
     })
@@ -467,6 +467,113 @@ async def _diagnose(domain: str, results: list, profile: dict) -> dict:
         "tomorrow_plan": "优先补今天错的同类，再练哑巴词汇。",
         "source": "local",
     }
+
+
+# ---------------------------------------------------------------- 每日日历 / 详情
+
+def _day_blocks(d: dict[str, Any], date: str) -> dict[str, Any]:
+    bucket = (d.get("daily") or {}).get(date) or {}
+    listening = list((bucket.get("listening") or {}).values())
+    mp = bucket.get("minimal_pairs") or {"ok": 0, "total": 0}
+    pron = [v for v in (d.get("pronunciation") or {}).values()
+            if models.local_date_of(v.get("at", "")) == date]
+    scores = [v.get("score") for v in pron if isinstance(v.get("score"), (int, float))]
+    scen = [r for r in (d.get("scenario_record") or [])
+            if models.local_date_of(r.get("at", "")) == date]
+    errors = [e for e in (d.get("errors") or [])
+              if models.local_date_of(e.get("at", "")) == date]
+    issues = [x for v in pron for x in (v.get("issues") or []) if isinstance(x, dict)]
+    correct = sum(1 for r in listening if r.get("correct"))
+    return {
+        "listening": {"total": len(listening), "correct": correct, "items": listening},
+        "shadow": {"count": len(scores),
+                   "avg": round(sum(scores) / len(scores)) if scores else None,
+                   "issues": issues},
+        "minimal_pairs": {"ok": int(mp.get("ok", 0)), "total": int(mp.get("total", 0))},
+        "scenario": {"done": bool(scen),
+                     "success": any(r.get("success") for r in scen),
+                     "records": scen[-3:]},
+        "errors": errors,
+    }
+
+
+@app.get("/api/daily/calendar")
+def daily_calendar(domain: str = "work", month: str = ""):
+    d = models.ensure_domain(_profile(), domain)
+    month = month or models.local_date(0)[:7]
+    days: dict[str, dict[str, Any]] = {}
+
+    def touch(date: str) -> dict[str, Any]:
+        return days.setdefault(date, {
+            "date": date, "practiced": False, "has_recap": False,
+            "listening": 0, "correct": 0, "shadow": 0, "minimal_pairs": 0,
+            "scenario": False,
+        })
+
+    for date, b in (d.get("daily") or {}).items():
+        if not date.startswith(month):
+            continue
+        li = b.get("listening") or {}
+        it = touch(date)
+        it["practiced"] = bool(li or b.get("minimal_pairs") or b.get("recap"))
+        it["listening"] = len(li)
+        it["correct"] = sum(1 for r in li.values() if r.get("correct"))
+        it["minimal_pairs"] = int((b.get("minimal_pairs") or {}).get("total", 0))
+        it["has_recap"] = bool(b.get("recap"))
+
+    for h in (d.get("history") or []):
+        date = str(h.get("date") or "")
+        if date.startswith(month):
+            touch(date)["practiced"] = True
+
+    for v in (d.get("pronunciation") or {}).values():
+        date = models.local_date_of(v.get("at", ""))
+        if date.startswith(month):
+            it = touch(date)
+            it["practiced"] = True
+            it["shadow"] += 1
+
+    for r in (d.get("scenario_record") or []):
+        date = models.local_date_of(r.get("at", ""))
+        if date.startswith(month):
+            it = touch(date)
+            it["practiced"] = True
+            it["scenario"] = True
+
+    for e in (d.get("errors") or []):
+        date = models.local_date_of(e.get("at", ""))
+        if date.startswith(month):
+            touch(date)["practiced"] = True
+
+    return {"month": month, "days": sorted(days.values(), key=lambda x: x["date"])}
+
+
+@app.get("/api/daily/detail")
+def daily_detail(domain: str = "work", date: str = ""):
+    date = date or models.local_date(0)
+    d = models.ensure_domain(_profile(), domain)
+    blocks = _day_blocks(d, date)
+    bucket = (d.get("daily") or {}).get(date) or {}
+    recap = bucket.get("recap")
+    advice: list[str] = []
+    wrong = [r for r in blocks["listening"]["items"] if not r.get("correct")]
+    if wrong:
+        words = "、".join(str(r.get("text") or "") for r in wrong[:5])
+        advice.append(f"重点复盘 {len(wrong)} 个没听出的词：{words}")
+    sounds = sorted({str(i.get("sound") or i.get("word") or "")
+                     for i in blocks["shadow"]["issues"]
+                     if (i.get("sound") or i.get("word"))})
+    if sounds:
+        advice.append("跟读需纠正：" + "、".join(sounds[:4]))
+    mp = blocks["minimal_pairs"]
+    if mp["total"] and mp["ok"] < mp["total"]:
+        advice.append("最小对立对正确率偏低，下一组继续专练易混音。")
+    if blocks["scenario"]["done"] and not blocks["scenario"]["success"]:
+        advice.append("实战没办成，回看卡点并重练同一场景。")
+    practiced = bool(blocks["listening"]["total"] or blocks["shadow"]["count"]
+                     or blocks["scenario"]["done"] or recap or blocks["errors"])
+    return {"date": date, "practiced": practiced, "blocks": blocks,
+            "recap": recap, "advice": advice}
 
 
 # ---------------------------------------------------------------- 今日复盘（汇总）
@@ -515,8 +622,8 @@ async def daily_recap(request: Request):
     domain = body.get("domain", "work")
     profile = _profile()
     d = models.ensure_domain(profile, domain)
-    day = models.now_iso()[:10]
-    bucket = (d.get("daily") or {}).get(day) or {}
+    day = models.local_date(0)
+    bucket = models.daily_bucket(profile, domain, day)
     listening = list((bucket.get("listening") or {}).values())
     mp = bucket.get("minimal_pairs") or {"ok": 0, "total": 0}
 
@@ -566,6 +673,7 @@ async def daily_recap(request: Request):
     if not hist or hist[-1].get("date") != day:
         hist.append({"date": day, "accuracy": round(acc, 3), "total": len(listening)})
     d["history"] = hist[-30:]
+    bucket["recap"] = {"blocks": blocks, "diagnosis": diagnosis, "at": models.now_iso()}
     storage.save(profile)
     return {"blocks": blocks, "diagnosis": diagnosis, "next_goal": next_goal}
 

@@ -37,6 +37,14 @@ export default function Report({ domain }: { domain: string }) {
   const [skillLabel, setSkillLabel] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  const now0 = new Date();
+  const todayStr = `${now0.getFullYear()}-${String(now0.getMonth() + 1).padStart(2, "0")}-${String(now0.getDate()).padStart(2, "0")}`;
+  const [calMonth, setCalMonth] = useState(todayStr.slice(0, 7));
+  const [calDays, setCalDays] = useState<Record<string, any>>({});
+  const [selDate, setSelDate] = useState(todayStr);
+  const [detail, setDetail] = useState<any>(null);
+  const [detailBusy, setDetailBusy] = useState(false);
+
   const loadReport = async () => {
     setLoading(true);
     try { setReport(await api.report(domain, period)); }
@@ -50,6 +58,20 @@ export default function Report({ domain }: { domain: string }) {
     loadReport();
     loadProfile();
   }, [domain, period]);
+
+  useEffect(() => {
+    api.dailyCalendar(domain, calMonth).then((r) => {
+      const map: Record<string, any> = {};
+      (r.days || []).forEach((d: any) => { map[d.date] = d; });
+      setCalDays(map);
+    }).catch(() => setCalDays({}));
+  }, [domain, calMonth]);
+
+  useEffect(() => {
+    setDetailBusy(true);
+    api.dailyDetail(domain, selDate).then(setDetail).catch(() => setDetail(null))
+      .finally(() => setDetailBusy(false));
+  }, [domain, selDate]);
 
   useEffect(() => {
     api.seed("skills").then((r) => {
@@ -84,6 +106,18 @@ export default function Report({ domain }: { domain: string }) {
   const ungraduated = grad.length - graduated;
 
   const errors = (view.errors || []).slice(-8).reverse();
+
+  const [calY, calM] = calMonth.split("-").map(Number);
+  const lead = (new Date(calY, calM - 1, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(calY, calM, 0).getDate();
+  const calCells: (string | null)[] = [
+    ...Array.from({ length: lead }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, i) => `${calMonth}-${String(i + 1).padStart(2, "0")}`),
+  ];
+  const shiftMonth = (delta: number) => {
+    const d = new Date(calY, calM - 1 + delta, 1);
+    setCalMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  };
 
   const history = (view.history || []).slice(-7).map((h: any) => ({
     date: String(h.date || "").slice(5),
@@ -127,6 +161,120 @@ export default function Report({ domain }: { domain: string }) {
           <div className="k">待毕业技能 <Tip text="一项技能要在 3 个不同真实场合用成功，才算真正掌握（毕业）。" /></div>
           <div className="v" style={{ color: "var(--amber)" }}>{ungraduated}</div>
         </div>
+      </div>
+
+      {/* 练习日历 */}
+      <div className="panel">
+        <div className="block-head">
+          <h2 style={{ margin: 0 }}>练习日历</h2>
+          <div className="row" style={{ gap: 6 }}>
+            <button className="mini" onClick={() => shiftMonth(-1)}>‹</button>
+            <span className="cal-month">{calMonth}</span>
+            <button className="mini" onClick={() => shiftMonth(1)}>›</button>
+          </div>
+        </div>
+        <div className="cal-week">
+          {["一", "二", "三", "四", "五", "六", "日"].map((w) => <span key={w}>{w}</span>)}
+        </div>
+        <div className="cal-grid">
+          {calCells.map((date, i) => {
+            if (!date) return <span key={`e${i}`} />;
+            const info = calDays[date];
+            const day = Number(date.slice(8));
+            return (
+              <button
+                key={date}
+                className={`cal-cell ${info?.practiced ? "practiced" : ""} ${date === todayStr ? "today" : ""} ${date === selDate ? "sel" : ""}`}
+                onClick={() => setSelDate(date)}
+                title={info?.practiced ? `${date} · 已练习` : date}
+              >
+                <span className="cal-d">{day}</span>
+                {info?.practiced && <span className="cal-dot" />}
+              </button>
+            );
+          })}
+        </div>
+        <div className="cal-legend">
+          <span><i className="l-done" /> 已练习</span>
+          <span><i className="l-today" /> 今天</span>
+        </div>
+      </div>
+
+      {/* 当天复盘详情 */}
+      <div className="panel cal-detail">
+        <div className="block-head">
+          <h2 style={{ margin: 0 }}>{selDate} · 当日复盘</h2>
+          <span className="hint">{detailBusy ? "加载中…" : detail?.practiced ? "已练习" : "无记录"}</span>
+        </div>
+        {detail?.practiced ? (
+          <>
+            <div className="recap-grid" style={{ marginTop: 10 }}>
+              <div className="recap-item"><b>{detail.blocks.listening.correct}/{detail.blocks.listening.total}</b><span>听辨</span></div>
+              <div className="recap-item"><b>{detail.blocks.shadow.avg ?? "—"}</b><span>跟读均分</span></div>
+              <div className="recap-item"><b>{detail.blocks.minimal_pairs.total ? `${detail.blocks.minimal_pairs.ok}/${detail.blocks.minimal_pairs.total}` : "—"}</b><span>对立对</span></div>
+              <div className="recap-item"><b>{detail.blocks.scenario.done ? (detail.blocks.scenario.success ? "✓" : "✗") : "—"}</b><span>场景实战</span></div>
+            </div>
+
+            {detail.recap?.diagnosis ? (
+              <>
+                <div className="divider">AI 复盘</div>
+                <p className="hint">判断：{detail.recap.diagnosis.verdict}</p>
+                <p><RichText text={detail.recap.diagnosis.why} /></p>
+                {(detail.recap.diagnosis.next_focus || []).length > 0 && (
+                  <p className="hint">重点：{detail.recap.diagnosis.next_focus.join("、")}</p>
+                )}
+                {detail.recap.diagnosis.tomorrow_plan && (
+                  <p className="hint">明日计划：<RichText text={detail.recap.diagnosis.tomorrow_plan} /></p>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="divider">当日建议</div>
+                {(detail.advice || []).length ? (
+                  <ul className="weak">
+                    {detail.advice.map((a: string, i: number) => <li key={i}><RichText text={a} /></li>)}
+                  </ul>
+                ) : <p className="hint">这天没有足够记录生成建议。</p>}
+              </>
+            )}
+
+            {(detail.blocks.errors || []).length > 0 && (
+              <>
+                <div className="divider">错误 / 卡点</div>
+                <ul className="weak">
+                  {detail.blocks.errors.slice(0, 8).map((e: any, i: number) => (
+                    <li key={i}><span className="evidence">{e.original}</span> — {e.issue || e.detail || "答错"}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {(detail.blocks.shadow.issues || []).length > 0 && (
+              <>
+                <div className="divider">发音问题</div>
+                <ul className="weak">
+                  {detail.blocks.shadow.issues.slice(0, 6).map((x: any, i: number) => (
+                    <li key={i}><b>{x.sound || x.word}</b>{x.heard_as ? ` → ${x.heard_as}` : ""} · {x.tip}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {detail.blocks.scenario.done && (
+              <>
+                <div className="divider">场景实战</div>
+                {detail.blocks.scenario.records.map((r: any, i: number) => (
+                  <p className="hint" key={i}>
+                    {r.success ? "办成了" : "没办成"} · {(r.skills || []).join("、") || "—"}
+                    {r.stuck_at ? ` · 卡点：${r.stuck_at}` : ""}
+                  </p>
+                ))}
+              </>
+            )}
+          </>
+        ) : (
+          <p className="empty">这一天还没有练习记录。</p>
+        )}
       </div>
 
       {/* 近 7 天趋势 */}

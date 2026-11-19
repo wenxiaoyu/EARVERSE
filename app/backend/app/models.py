@@ -81,6 +81,18 @@ def recent_pron_issues(profile: dict[str, Any], domain: str, limit: int = 5) -> 
     return items[:limit]
 
 
+def local_date_of(value: str) -> str:
+    """把 UTC ISO 时间转成本地日期（YYYY-MM-DD）。"""
+    raw = str(value or "")
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone().date().isoformat()
+    except Exception:
+        return raw[:10]
+
+
 def set_goal(profile: dict[str, Any], domain: str, goal: dict[str, Any]) -> dict[str, Any]:
     d = ensure_domain(profile, domain)
     d["goal"] = goal
@@ -238,7 +250,7 @@ def record_pronunciation(profile: dict[str, Any], domain: str, target: str,
 def daily_bucket(profile: dict[str, Any], domain: str, date: str | None = None) -> dict[str, Any]:
     """取「某场景 + 某天」的训练流水桶。"""
     d = ensure_domain(profile, domain)
-    day = date or now_iso()[:10]
+    day = date or local_date(0)
     bucket = d.setdefault("daily", {}).setdefault(day, {})
     bucket.setdefault("listening", {})
     mp = bucket.setdefault("minimal_pairs", {})
