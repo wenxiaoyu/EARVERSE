@@ -1,0 +1,11 @@
+schema: spec-driven
+created: 2026-11-18
+workflow:
+  current_phase: apply
+  schema: spec-driven
+  phases:
+    explore: { status: passed, completed_at: "2026-11-18T17:00:00Z" }
+    propose: { status: passed, completed_at: "2026-11-18T17:30:00Z" }
+    apply: { status: in_progress, started_at: "2026-11-18T17:40:00Z" }
+  review_results:
+    propose: { passed: true, retries: 0 }

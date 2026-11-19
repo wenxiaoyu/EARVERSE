@@ -1,0 +1,107 @@
+[
+  {
+    "id": "r01",
+    "name": "辅音 + 元音连读",
+    "formal": "not at all",
+    "sound": "nodadall",
+    "tip": "前一个词以辅音结尾、后一个以元音开头时，两个词黏成一个词。"
+  },
+  {
+    "id": "r02",
+    "name": "闪音（t / d → 轻 d）",
+    "formal": "better water",
+    "sound": "bedder wader",
+    "tip": "两个元音之间的 t 会变成很轻的 d，这是美音最明显的特征。"
+  },
+  {
+    "id": "r03",
+    "name": "h 音脱落",
+    "formal": "tell him",
+    "sound": "tellim",
+    "tip": "him / her / he 在句中常丢掉 h。"
+  },
+  {
+    "id": "r04",
+    "name": "to 弱读",
+    "formal": "want to go",
+    "sound": "wanna go",
+    "tip": "to 在句中退化成 /tə/，快到几乎听不见。"
+  },
+  {
+    "id": "r05",
+    "name": "of 弱读",
+    "formal": "a lot of",
+    "sound": "a lotta",
+    "tip": "of 退化成 /ə/ 甚至完全吞掉。"
+  },
+  {
+    "id": "r06",
+    "name": "for 弱读",
+    "formal": "for the team",
+    "sound": "fer the team",
+    "tip": "for 在句中读 /fər/，不是 /fɔːr/。"
+  },
+  {
+    "id": "r07",
+    "name": "and 弱读",
+    "formal": "bread and butter",
+    "sound": "bread n butter",
+    "tip": "and 只剩一个 /ən/ 甚至 /n/。"
+  },
+  {
+    "id": "r08",
+    "name": "did you 合流",
+    "formal": "did you",
+    "sound": "didja",
+    "tip": "d + y 合成 /dʒ/。同理 wouldja、couldja。"
+  },
+  {
+    "id": "r09",
+    "name": "what are you 合流",
+    "formal": "what are you doing",
+    "sound": "whaddaya doing",
+    "tip": "四个音节压成一个词。"
+  },
+  {
+    "id": "r10",
+    "name": "失去爆破",
+    "formal": "next day",
+    "sound": "nex day",
+    "tip": "两个爆破音相遇，前一个只做口型不出声。"
+  },
+  {
+    "id": "r11",
+    "name": "have 缩写",
+    "formal": "should have",
+    "sound": "shoulda",
+    "tip": "shoulda / coulda / woulda，母语者几乎不读 have。"
+  },
+  {
+    "id": "r12",
+    "name": "give me / let me",
+    "formal": "give me",
+    "sound": "gimme",
+    "tip": "同理 lemme、tell me → \"telly-me\"。"
+  },
+  {
+    "id": "r13",
+    "name": "I don't know",
+    "formal": "I do not know",
+    "sound": "I dunno",
+    "tip": "极高频，几乎总是读成 \"I dunno\"。"
+  },
+  {
+    "id": "r14",
+    "name": "you 弱读",
+    "formal": "keep you posted",
+    "sound": "keepya posted",
+    "tip": "you 在句中退化成 /jə/，与前词黏连。"
+  },
+  {
+    "id": "r15",
+    "name": "句末 t / d 弱化",
+    "formal": "I just got it",
+    "sound": "I jus go dit",
+    "tip": "句尾的 t 常只剩一个停顿。"
+  }
+]

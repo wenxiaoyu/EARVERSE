@@ -1,0 +1,938 @@
+[
+  {
+    "id": "c01",
+    "cat": "core",
+    "w": "actually",
+    "zh": "实际上；其实",
+    "ex": "Actually, I think we should wait.",
+    "difficulty": 1
+  },
+  {
+    "id": "c02",
+    "cat": "core",
+    "w": "probably",
+    "zh": "大概；很可能",
+    "ex": "It'll probably take two more days.",
+    "difficulty": 1
+  },
+  {
+    "id": "c03",
+    "cat": "core",
+    "w": "available",
+    "zh": "有空的；可用的",
+    "ex": "Are you available on Thursday afternoon?",
+    "difficulty": 1
+  },
+  {
+    "id": "c04",
+    "cat": "core",
+    "w": "schedule",
+    "zh": "日程；安排",
+    "ex": "Let's check the schedule first.",
+    "difficulty": 1
+  },
+  {
+    "id": "c05",
+    "cat": "core",
+    "w": "colleague",
+    "zh": "同事",
+    "ex": "I need to check with a colleague.",
+    "difficulty": 1
+  },
+  {
+    "id": "c06",
+    "cat": "core",
+    "w": "deadline",
+    "zh": "截止时间",
+    "ex": "The deadline is the end of this month.",
+    "difficulty": 1
+  },
+  {
+    "id": "c07",
+    "cat": "core",
+    "w": "update",
+    "zh": "更新；最新进展",
+    "ex": "Just a quick update on the project.",
+    "difficulty": 1
+  },
+  {
+    "id": "c08",
+    "cat": "core",
+    "w": "issue",
+    "zh": "问题；议题",
+    "ex": "We ran into an issue yesterday.",
+    "difficulty": 1
+  },
+  {
+    "id": "c09",
+    "cat": "core",
+    "w": "figure",
+    "zh": "弄明白；数字",
+    "ex": "I can't figure out why it failed.",
+    "difficulty": 1
+  },
+  {
+    "id": "c10",
+    "cat": "core",
+    "w": "handle",
+    "zh": "处理；应对",
+    "ex": "I'll handle it from here.",
+    "difficulty": 1
+  },
+  {
+    "id": "c11",
+    "cat": "core",
+    "w": "manage",
+    "zh": "设法做到；管理",
+    "ex": "Did you manage to finish it?",
+    "difficulty": 1
+  },
+  {
+    "id": "c12",
+    "cat": "core",
+    "w": "eventually",
+    "zh": "最终",
+    "ex": "We eventually found the root cause.",
+    "difficulty": 1
+  },
+  {
+    "id": "c13",
+    "cat": "core",
+    "w": "currently",
+    "zh": "目前",
+    "ex": "We're currently testing it internally.",
+    "difficulty": 1
+  },
+  {
+    "id": "c14",
+    "cat": "core",
+    "w": "immediately",
+    "zh": "立刻",
+    "ex": "We need to fix this immediately.",
+    "difficulty": 1
+  },
+  {
+    "id": "c15",
+    "cat": "core",
+    "w": "specific",
+    "zh": "具体的",
+    "ex": "Could you be more specific?",
+    "difficulty": 1
+  },
+  {
+    "id": "c16",
+    "cat": "core",
+    "w": "particular",
+    "zh": "特定的；尤其是",
+    "ex": "Is there any particular reason?",
+    "difficulty": 1
+  },
+  {
+    "id": "c17",
+    "cat": "core",
+    "w": "approximately",
+    "zh": "大约",
+    "ex": "It takes approximately two weeks.",
+    "difficulty": 1
+  },
+  {
+    "id": "c18",
+    "cat": "core",
+    "w": "regarding",
+    "zh": "关于",
+    "ex": "I have a question regarding the budget.",
+    "difficulty": 1
+  },
+  {
+    "id": "c19",
+    "cat": "core",
+    "w": "attached",
+    "zh": "附上的",
+    "ex": "I've attached the file to the email.",
+    "difficulty": 1
+  },
+  {
+    "id": "c20",
+    "cat": "core",
+    "w": "confirm",
+    "zh": "确认",
+    "ex": "Can you confirm the number?",
+    "difficulty": 1
+  },
+  {
+    "id": "c21",
+    "cat": "core",
+    "w": "postpone",
+    "zh": "推迟",
+    "ex": "Can we postpone it to next week?",
+    "difficulty": 1
+  },
+  {
+    "id": "c22",
+    "cat": "core",
+    "w": "prioritize",
+    "zh": "排优先级；优先处理",
+    "ex": "We need to prioritize the client request.",
+    "difficulty": 1
+  },
+  {
+    "id": "c23",
+    "cat": "core",
+    "w": "allocate",
+    "zh": "分配（资源）",
+    "ex": "We've allocated two engineers to it.",
+    "difficulty": 1
+  },
+  {
+    "id": "c24",
+    "cat": "core",
+    "w": "escalate",
+    "zh": "升级（上报）",
+    "ex": "Let's escalate this to the manager.",
+    "difficulty": 1
+  },
+  {
+    "id": "c25",
+    "cat": "core",
+    "w": "align",
+    "zh": "对齐；达成一致",
+    "ex": "Let's align on the scope first.",
+    "difficulty": 1
+  },
+  {
+    "id": "c26",
+    "cat": "core",
+    "w": "clarify",
+    "zh": "澄清",
+    "ex": "Just to clarify, is that this week?",
+    "difficulty": 1
+  },
+  {
+    "id": "c27",
+    "cat": "core",
+    "w": "deliver",
+    "zh": "交付",
+    "ex": "Can we deliver by Friday?",
+    "difficulty": 1
+  },
+  {
+    "id": "c28",
+    "cat": "core",
+    "w": "estimate",
+    "zh": "估计",
+    "ex": "That's a rough estimate.",
+    "difficulty": 1
+  },
+  {
+    "id": "c29",
+    "cat": "core",
+    "w": "impact",
+    "zh": "影响",
+    "ex": "What impact will that have on the release?",
+    "difficulty": 1
+  },
+  {
+    "id": "c30",
+    "cat": "core",
+    "w": "resource",
+    "zh": "资源；人手",
+    "ex": "We don't have enough resources right now.",
+    "difficulty": 1
+  },
+  {
+    "id": "c31",
+    "cat": "core",
+    "w": "capacity",
+    "zh": "产能；承载能力",
+    "ex": "We're at full capacity this sprint.",
+    "difficulty": 1
+  },
+  {
+    "id": "c32",
+    "cat": "core",
+    "w": "scope",
+    "zh": "范围",
+    "ex": "That's out of scope for now.",
+    "difficulty": 1
+  },
+  {
+    "id": "c33",
+    "cat": "core",
+    "w": "timeline",
+    "zh": "时间线",
+    "ex": "Can you walk me through the timeline?",
+    "difficulty": 1
+  },
+  {
+    "id": "c34",
+    "cat": "core",
+    "w": "milestone",
+    "zh": "里程碑",
+    "ex": "The next milestone is in mid-December.",
+    "difficulty": 1
+  },
+  {
+    "id": "c35",
+    "cat": "core",
+    "w": "stakeholder",
+    "zh": "相关方",
+    "ex": "We should loop in the stakeholders.",
+    "difficulty": 1
+  },
+  {
+    "id": "c36",
+    "cat": "core",
+    "w": "approve",
+    "zh": "批准",
+    "ex": "Has legal approved the contract?",
+    "difficulty": 1
+  },
+  {
+    "id": "c37",
+    "cat": "core",
+    "w": "proposal",
+    "zh": "提案",
+    "ex": "I'll send over a short proposal.",
+    "difficulty": 1
+  },
+  {
+    "id": "c38",
+    "cat": "core",
+    "w": "review",
+    "zh": "评审；复查",
+    "ex": "Can you review my slides before tomorrow?",
+    "difficulty": 1
+  },
+  {
+    "id": "c39",
+    "cat": "core",
+    "w": "recommend",
+    "zh": "建议",
+    "ex": "What would you recommend?",
+    "difficulty": 1
+  },
+  {
+    "id": "c40",
+    "cat": "core",
+    "w": "concern",
+    "zh": "顾虑；担心",
+    "ex": "My main concern is the data quality.",
+    "difficulty": 1
+  },
+  {
+    "id": "c41",
+    "cat": "core",
+    "w": "option",
+    "zh": "选项",
+    "ex": "There's a second option we should consider.",
+    "difficulty": 1
+  },
+  {
+    "id": "c42",
+    "cat": "core",
+    "w": "context",
+    "zh": "背景；来龙去脉",
+    "ex": "Let me give you some context.",
+    "difficulty": 1
+  },
+  {
+    "id": "c43",
+    "cat": "core",
+    "w": "agenda",
+    "zh": "议程",
+    "ex": "Anything to add to the agenda?",
+    "difficulty": 1
+  },
+  {
+    "id": "c44",
+    "cat": "core",
+    "w": "minutes",
+    "zh": "会议纪要",
+    "ex": "I'll share the minutes afterwards.",
+    "difficulty": 1
+  },
+  {
+    "id": "c45",
+    "cat": "core",
+    "w": "brief",
+    "zh": "简要的；简报",
+    "ex": "Just a brief update from my side.",
+    "difficulty": 1
+  },
+  {
+    "id": "c46",
+    "cat": "core",
+    "w": "urgent",
+    "zh": "紧急的",
+    "ex": "Is this urgent or can it wait?",
+    "difficulty": 1
+  },
+  {
+    "id": "c47",
+    "cat": "core",
+    "w": "flexible",
+    "zh": "灵活的",
+    "ex": "Our timeline is fairly flexible.",
+    "difficulty": 1
+  },
+  {
+    "id": "c48",
+    "cat": "core",
+    "w": "reasonable",
+    "zh": "合理的",
+    "ex": "That sounds like a reasonable plan.",
+    "difficulty": 1
+  },
+  {
+    "id": "c49",
+    "cat": "core",
+    "w": "significant",
+    "zh": "显著的；重大的",
+    "ex": "There was a significant delay.",
+    "difficulty": 1
+  },
+  {
+    "id": "c50",
+    "cat": "core",
+    "w": "temporary",
+    "zh": "临时的",
+    "ex": "It's just a temporary workaround.",
+    "difficulty": 1
+  },
+  {
+    "id": "c51",
+    "cat": "core",
+    "w": "alternative",
+    "zh": "替代方案",
+    "ex": "Is there an alternative approach?",
+    "difficulty": 1
+  },
+  {
+    "id": "c52",
+    "cat": "core",
+    "w": "preliminary",
+    "zh": "初步的",
+    "ex": "These are preliminary results.",
+    "difficulty": 1
+  },
+  {
+    "id": "c53",
+    "cat": "core",
+    "w": "feasible",
+    "zh": "可行的",
+    "ex": "Do you think that is feasible?",
+    "difficulty": 1
+  },
+  {
+    "id": "c54",
+    "cat": "core",
+    "w": "consistent",
+    "zh": "一致的；稳定的",
+    "ex": "The numbers have to be consistent.",
+    "difficulty": 1
+  },
+  {
+    "id": "c55",
+    "cat": "core",
+    "w": "efficient",
+    "zh": "高效的",
+    "ex": "It's not the most efficient way to do it.",
+    "difficulty": 1
+  },
+  {
+    "id": "c56",
+    "cat": "core",
+    "w": "sufficient",
+    "zh": "足够的",
+    "ex": "Is the sample size sufficient?",
+    "difficulty": 1
+  },
+  {
+    "id": "c57",
+    "cat": "core",
+    "w": "accurate",
+    "zh": "准确的",
+    "ex": "The forecast was not very accurate.",
+    "difficulty": 1
+  },
+  {
+    "id": "c58",
+    "cat": "core",
+    "w": "aware",
+    "zh": "意识到的",
+    "ex": "Are you aware of the change?",
+    "difficulty": 1
+  },
+  {
+    "id": "c59",
+    "cat": "core",
+    "w": "requirement",
+    "zh": "需求；要求",
+    "ex": "Is that a hard requirement?",
+    "difficulty": 1
+  },
+  {
+    "id": "c60",
+    "cat": "core",
+    "w": "bandwidth",
+    "zh": "精力；可用时间（口语）",
+    "ex": "I don't have the bandwidth for that.",
+    "difficulty": 1
+  },
+  {
+    "id": "p01",
+    "cat": "phrasal",
+    "w": "follow up",
+    "zh": "跟进",
+    "ex": "I'll follow up with the vendor tomorrow.",
+    "difficulty": 2
+  },
+  {
+    "id": "p02",
+    "cat": "phrasal",
+    "w": "come up with",
+    "zh": "想出（方案）",
+    "ex": "We need to come up with a workaround.",
+    "difficulty": 2
+  },
+  {
+    "id": "p03",
+    "cat": "phrasal",
+    "w": "bring up",
+    "zh": "提出（话题）",
+    "ex": "I'll bring it up with my manager.",
+    "difficulty": 2
+  },
+  {
+    "id": "p04",
+    "cat": "phrasal",
+    "w": "look into",
+    "zh": "调查；研究",
+    "ex": "Let me look into it and get back to you.",
+    "difficulty": 2
+  },
+  {
+    "id": "p05",
+    "cat": "phrasal",
+    "w": "figure out",
+    "zh": "搞清楚",
+    "ex": "We're still trying to figure out the cause.",
+    "difficulty": 2
+  },
+  {
+    "id": "p06",
+    "cat": "phrasal",
+    "w": "sort out",
+    "zh": "解决；理清",
+    "ex": "We'll sort it out after the meeting.",
+    "difficulty": 2
+  },
+  {
+    "id": "p07",
+    "cat": "phrasal",
+    "w": "go over",
+    "zh": "过一遍",
+    "ex": "Let's go over the numbers one more time.",
+    "difficulty": 2
+  },
+  {
+    "id": "p08",
+    "cat": "phrasal",
+    "w": "run into",
+    "zh": "遇到（问题）",
+    "ex": "We ran into a problem with the data.",
+    "difficulty": 2
+  },
+  {
+    "id": "p09",
+    "cat": "phrasal",
+    "w": "put off",
+    "zh": "推迟",
+    "ex": "Let's put off the decision until Monday.",
+    "difficulty": 2
+  },
+  {
+    "id": "p10",
+    "cat": "phrasal",
+    "w": "call off",
+    "zh": "取消",
+    "ex": "They called off the launch.",
+    "difficulty": 2
+  },
+  {
+    "id": "p11",
+    "cat": "phrasal",
+    "w": "carry out",
+    "zh": "执行",
+    "ex": "We carried out the test last week.",
+    "difficulty": 2
+  },
+  {
+    "id": "p12",
+    "cat": "phrasal",
+    "w": "set up",
+    "zh": "建立；安排",
+    "ex": "I'll set up a call for Thursday.",
+    "difficulty": 2
+  },
+  {
+    "id": "p13",
+    "cat": "phrasal",
+    "w": "take over",
+    "zh": "接手",
+    "ex": "She took over the project in May.",
+    "difficulty": 2
+  },
+  {
+    "id": "p14",
+    "cat": "phrasal",
+    "w": "back up",
+    "zh": "支持；备份",
+    "ex": "Can you back up that claim with data?",
+    "difficulty": 2
+  },
+  {
+    "id": "p15",
+    "cat": "phrasal",
+    "w": "break down",
+    "zh": "拆分；出故障",
+    "ex": "Let's break down the timeline by phase.",
+    "difficulty": 2
+  },
+  {
+    "id": "p16",
+    "cat": "phrasal",
+    "w": "check in",
+    "zh": "确认情况；汇报一下",
+    "ex": "I'll check in with you on Friday.",
+    "difficulty": 2
+  },
+  {
+    "id": "p17",
+    "cat": "phrasal",
+    "w": "reach out",
+    "zh": "联系",
+    "ex": "I'll reach out to their team.",
+    "difficulty": 2
+  },
+  {
+    "id": "p18",
+    "cat": "phrasal",
+    "w": "roll out",
+    "zh": "推出；逐步上线",
+    "ex": "We're rolling it out next quarter.",
+    "difficulty": 2
+  },
+  {
+    "id": "p19",
+    "cat": "phrasal",
+    "w": "wrap up",
+    "zh": "收尾；结束",
+    "ex": "Let's wrap up in five minutes.",
+    "difficulty": 2
+  },
+  {
+    "id": "p20",
+    "cat": "phrasal",
+    "w": "catch up",
+    "zh": "赶上；聊近况",
+    "ex": "Let's catch up early next week.",
+    "difficulty": 2
+  },
+  {
+    "id": "p21",
+    "cat": "phrasal",
+    "w": "point out",
+    "zh": "指出",
+    "ex": "Good point — thanks for pointing that out.",
+    "difficulty": 2
+  },
+  {
+    "id": "p22",
+    "cat": "phrasal",
+    "w": "rule out",
+    "zh": "排除",
+    "ex": "We can't rule out a data issue yet.",
+    "difficulty": 2
+  },
+  {
+    "id": "p23",
+    "cat": "phrasal",
+    "w": "work out",
+    "zh": "解决；顺利进行",
+    "ex": "I'm sure it'll work out.",
+    "difficulty": 2
+  },
+  {
+    "id": "p24",
+    "cat": "phrasal",
+    "w": "end up",
+    "zh": "最终变成",
+    "ex": "We ended up doing it manually.",
+    "difficulty": 2
+  },
+  {
+    "id": "p25",
+    "cat": "phrasal",
+    "w": "turn down",
+    "zh": "拒绝",
+    "ex": "They turned down our proposal.",
+    "difficulty": 2
+  },
+  {
+    "id": "p26",
+    "cat": "phrasal",
+    "w": "fill in",
+    "zh": "代为参加；填写",
+    "ex": "Can you fill in for me on Thursday?",
+    "difficulty": 2
+  },
+  {
+    "id": "p27",
+    "cat": "phrasal",
+    "w": "kick off",
+    "zh": "开始；启动",
+    "ex": "Let's kick off with the status update.",
+    "difficulty": 2
+  },
+  {
+    "id": "k01",
+    "cat": "chunk",
+    "w": "to be honest",
+    "zh": "说实话",
+    "ex": "To be honest, I doubt we can make it.",
+    "difficulty": 3
+  },
+  {
+    "id": "k02",
+    "cat": "chunk",
+    "w": "as far as I know",
+    "zh": "据我所知",
+    "ex": "As far as I know, it is still open.",
+    "difficulty": 3
+  },
+  {
+    "id": "k03",
+    "cat": "chunk",
+    "w": "the thing is",
+    "zh": "问题在于",
+    "ex": "The thing is, we have no budget left.",
+    "difficulty": 3
+  },
+  {
+    "id": "k04",
+    "cat": "chunk",
+    "w": "I'm not sure if",
+    "zh": "我不确定是否",
+    "ex": "I'm not sure if that's the right fix.",
+    "difficulty": 3
+  },
+  {
+    "id": "k05",
+    "cat": "chunk",
+    "w": "it depends on",
+    "zh": "取决于",
+    "ex": "It depends on what the client wants.",
+    "difficulty": 3
+  },
+  {
+    "id": "k06",
+    "cat": "chunk",
+    "w": "what I mean is",
+    "zh": "我的意思是",
+    "ex": "What I mean is, we need more time.",
+    "difficulty": 3
+  },
+  {
+    "id": "k07",
+    "cat": "chunk",
+    "w": "just in case",
+    "zh": "以防万一",
+    "ex": "Bring a backup copy, just in case.",
+    "difficulty": 3
+  },
+  {
+    "id": "k08",
+    "cat": "chunk",
+    "w": "on my end",
+    "zh": "我这边",
+    "ex": "Everything is ready on my end.",
+    "difficulty": 3
+  },
+  {
+    "id": "k09",
+    "cat": "chunk",
+    "w": "in terms of",
+    "zh": "就……而言",
+    "ex": "In terms of cost, option B is better.",
+    "difficulty": 3
+  },
+  {
+    "id": "k10",
+    "cat": "chunk",
+    "w": "at this point",
+    "zh": "目前这个阶段",
+    "ex": "At this point, we should stop and reassess.",
+    "difficulty": 3
+  },
+  {
+    "id": "k11",
+    "cat": "chunk",
+    "w": "more or less",
+    "zh": "大致上",
+    "ex": "It's more or less done.",
+    "difficulty": 3
+  },
+  {
+    "id": "k12",
+    "cat": "chunk",
+    "w": "sooner or later",
+    "zh": "迟早",
+    "ex": "We'll have to deal with it sooner or later.",
+    "difficulty": 3
+  },
+  {
+    "id": "k13",
+    "cat": "chunk",
+    "w": "by the way",
+    "zh": "顺便说一下",
+    "ex": "By the way, did you see my email?",
+    "difficulty": 3
+  },
+  {
+    "id": "k14",
+    "cat": "chunk",
+    "w": "that being said",
+    "zh": "话虽如此",
+    "ex": "That being said, I still think it is risky.",
+    "difficulty": 3
+  },
+  {
+    "id": "k15",
+    "cat": "chunk",
+    "w": "as long as",
+    "zh": "只要",
+    "ex": "We can ship it as long as QA signs off.",
+    "difficulty": 3
+  },
+  {
+    "id": "k16",
+    "cat": "chunk",
+    "w": "for now",
+    "zh": "暂时",
+    "ex": "Let's keep the old version for now.",
+    "difficulty": 3
+  },
+  {
+    "id": "k17",
+    "cat": "chunk",
+    "w": "up to you",
+    "zh": "你决定",
+    "ex": "Either way works — it's up to you.",
+    "difficulty": 3
+  },
+  {
+    "id": "k18",
+    "cat": "chunk",
+    "w": "make sense",
+    "zh": "讲得通；能理解",
+    "ex": "Does that make sense?",
+    "difficulty": 3
+  },
+  {
+    "id": "k19",
+    "cat": "chunk",
+    "w": "no worries",
+    "zh": "没关系",
+    "ex": "No worries, it happens.",
+    "difficulty": 3
+  },
+  {
+    "id": "k20",
+    "cat": "chunk",
+    "w": "sounds good",
+    "zh": "听起来不错",
+    "ex": "Monday at ten? Sounds good.",
+    "difficulty": 3
+  },
+  {
+    "id": "n01",
+    "cat": "connect",
+    "w": "however",
+    "zh": "然而",
+    "ex": "However, the numbers tell a different story.",
+    "difficulty": 2
+  },
+  {
+    "id": "n02",
+    "cat": "connect",
+    "w": "therefore",
+    "zh": "因此",
+    "ex": "Therefore, we should delay the release.",
+    "difficulty": 2
+  },
+  {
+    "id": "n03",
+    "cat": "connect",
+    "w": "otherwise",
+    "zh": "否则",
+    "ex": "We need to act now, otherwise it's too late.",
+    "difficulty": 2
+  },
+  {
+    "id": "n04",
+    "cat": "connect",
+    "w": "meanwhile",
+    "zh": "与此同时",
+    "ex": "Meanwhile, the client is still waiting.",
+    "difficulty": 2
+  },
+  {
+    "id": "n05",
+    "cat": "connect",
+    "w": "nevertheless",
+    "zh": "尽管如此",
+    "ex": "Nevertheless, I think we should try.",
+    "difficulty": 2
+  },
+  {
+    "id": "n06",
+    "cat": "connect",
+    "w": "apparently",
+    "zh": "看起来；据说",
+    "ex": "Apparently, the file was never uploaded.",
+    "difficulty": 2
+  },
+  {
+    "id": "n07",
+    "cat": "connect",
+    "w": "basically",
+    "zh": "基本上；说白了",
+    "ex": "Basically, we have to start over.",
+    "difficulty": 2
+  },
+  {
+    "id": "n08",
+    "cat": "connect",
+    "w": "honestly",
+    "zh": "老实说",
+    "ex": "Honestly, I don't see the point.",
+    "difficulty": 2
+  },
+  {
+    "id": "n09",
+    "cat": "connect",
+    "w": "eventually",
+    "zh": "最终",
+    "ex": "Eventually, they agreed to the plan.",
+    "difficulty": 2
+  },
+  {
+    "id": "n10",
+    "cat": "connect",
+    "w": "in other words",
+    "zh": "换句话说",
+    "ex": "In other words, we missed the window.",
+    "difficulty": 2
+  }
+]

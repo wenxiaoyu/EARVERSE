@@ -1,0 +1,366 @@
+[
+  {
+    "id": "s01",
+    "tag": "连读",
+    "text": "Not at all, that is a good question.",
+    "note": "not at all → \"no-da-dall\"，t 与 a 连读并浊化。",
+    "difficulty": 2
+  },
+  {
+    "id": "s02",
+    "tag": "连读",
+    "text": "We need to figure out what went wrong.",
+    "note": "figure out → \"fig-yer-out\"，r 与 out 连上。",
+    "difficulty": 2
+  },
+  {
+    "id": "s03",
+    "tag": "连读",
+    "text": "Let me check on that and get back to you.",
+    "note": "check on → \"che-ckon\"；get back to → \"ge-back-tuh\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s04",
+    "tag": "连读",
+    "text": "I will pick it up on my way back.",
+    "note": "pick it up → \"pi-ki-tup\"，三个词黏成一串。",
+    "difficulty": 3
+  },
+  {
+    "id": "s05",
+    "tag": "连读",
+    "text": "Is it already on the agenda?",
+    "note": "Is it → \"i-zit\"；already on → \"already-yon\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s06",
+    "tag": "连读",
+    "text": "Put it in the shared folder.",
+    "note": "Put it in → \"pu-ti-tin\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s07",
+    "tag": "连读",
+    "text": "We should take a look at it together.",
+    "note": "look at it → \"loo-ka-tit\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s08",
+    "tag": "连读",
+    "text": "Turn it off and on again.",
+    "note": "Turn it off → \"tur-ni-toff\"；off and → \"off-n\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s09",
+    "tag": "闪音",
+    "text": "Just to make sure I got it right.",
+    "note": "got it → \"go-dit\"，t 变闪音。",
+    "difficulty": 1
+  },
+  {
+    "id": "s10",
+    "tag": "闪音",
+    "text": "That is a better option for us.",
+    "note": "better → \"be-der\"。",
+    "difficulty": 1
+  },
+  {
+    "id": "s11",
+    "tag": "闪音",
+    "text": "We need a little more data.",
+    "note": "little → \"li-dl\"；data → \"day-da\"。",
+    "difficulty": 1
+  },
+  {
+    "id": "s12",
+    "tag": "闪音",
+    "text": "Let us sit down and talk about it.",
+    "note": "sit down 的 t 几乎不发声；talk about it → \"tal-ka-bau-dit\"。",
+    "difficulty": 1
+  },
+  {
+    "id": "s13",
+    "tag": "闪音",
+    "text": "I will get it sorted out today.",
+    "note": "get it → \"ge-dit\"。",
+    "difficulty": 1
+  },
+  {
+    "id": "s14",
+    "tag": "闪音",
+    "text": "What matters is the total number.",
+    "note": "matters → \"ma-derz\"；total → \"to-dl\"。",
+    "difficulty": 1
+  },
+  {
+    "id": "s15",
+    "tag": "弱读",
+    "text": "We have a lot of things to cover.",
+    "note": "a lot of → \"a-lo-da\"，of 退化成 ə。",
+    "difficulty": 2
+  },
+  {
+    "id": "s16",
+    "tag": "弱读",
+    "text": "Most of it is already done.",
+    "note": "most of it → \"mos-to-vit\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s17",
+    "tag": "弱读",
+    "text": "It is one of the biggest risks.",
+    "note": "one of the → \"wun-a-thuh\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s18",
+    "tag": "弱读",
+    "text": "I am going to talk to him about it.",
+    "note": "talk to him → \"tal-kuh-wim\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s19",
+    "tag": "弱读",
+    "text": "This is for the client, not for us.",
+    "note": "for the → \"fer-thuh\"，两个都弱。",
+    "difficulty": 2
+  },
+  {
+    "id": "s20",
+    "tag": "弱读",
+    "text": "We can sort it out and then decide.",
+    "note": "and then → \"n-then\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s21",
+    "tag": "弱读",
+    "text": "There are a couple of open items.",
+    "note": "couple of → \"cuppla\"；are a → \"ara\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s22",
+    "tag": "缩略",
+    "text": "I am going to need two more days.",
+    "note": "going to → \"gonna\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s23",
+    "tag": "缩略",
+    "text": "Do you want to move it to Friday?",
+    "note": "want to → \"wanna\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s24",
+    "tag": "缩略",
+    "text": "I have got to take this call.",
+    "note": "have got to → \"gotta\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s25",
+    "tag": "缩略",
+    "text": "It is kind of a blocker for us.",
+    "note": "kind of → \"kinda\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s26",
+    "tag": "缩略",
+    "text": "We sort of expected this.",
+    "note": "sort of → \"sorta\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s27",
+    "tag": "缩略",
+    "text": "Give me a second, I will pull up the numbers.",
+    "note": "give me → \"gimme\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s28",
+    "tag": "缩略",
+    "text": "Let me look into it.",
+    "note": "let me → \"lemme\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s29",
+    "tag": "变形",
+    "text": "Did you get a chance to look at the deck?",
+    "note": "did you → \"didja\"；get a → \"ge-da\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s30",
+    "tag": "变形",
+    "text": "What are you working on right now?",
+    "note": "what are you → \"whaddaya\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s31",
+    "tag": "变形",
+    "text": "Could you say that again a bit slower?",
+    "note": "could you → \"couldja\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s32",
+    "tag": "变形",
+    "text": "Would you mind sharing your screen?",
+    "note": "would you → \"wouldja\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s33",
+    "tag": "变形",
+    "text": "Are you referring to the Q3 report?",
+    "note": "Are you → \"arya\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s34",
+    "tag": "变形",
+    "text": "What do you think about moving it to Friday?",
+    "note": "what do you → \"whaddaya\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s35",
+    "tag": "变形",
+    "text": "Do you have a minute to talk about this?",
+    "note": "do you → \"dya\"；have a → \"hava\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s36",
+    "tag": "情态",
+    "text": "He should have told us earlier.",
+    "note": "should have → \"shoulda\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s37",
+    "tag": "情态",
+    "text": "We could have caught this sooner.",
+    "note": "could have → \"coulda\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s38",
+    "tag": "情态",
+    "text": "I would have done it differently.",
+    "note": "would have → \"woulda\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s39",
+    "tag": "情态",
+    "text": "We should not have shipped it that early.",
+    "note": "should not have → \"shouldn-a\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s40",
+    "tag": "失去爆破",
+    "text": "That is a big deal for the team.",
+    "note": "big deal 的 g 几乎不出声。",
+    "difficulty": 2
+  },
+  {
+    "id": "s41",
+    "tag": "失去爆破",
+    "text": "We will need the next day to prepare.",
+    "note": "next day → \"nex-day\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s42",
+    "tag": "失去爆破",
+    "text": "Let us keep it short and simple.",
+    "note": "keep it → \"kee-pit\"；short and → \"shor-n\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s43",
+    "tag": "综合",
+    "text": "Let us take this offline and circle back tomorrow.",
+    "note": "take this → \"tay-this\"；and → \"n\"。offline 是\"会后再说\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s44",
+    "tag": "综合",
+    "text": "Just to recap, the action items are on the doc.",
+    "note": "recap 读 \"ree-cap\"；items are → \"item-zar\"。",
+    "difficulty": 3
+  },
+  {
+    "id": "s45",
+    "tag": "综合",
+    "text": "Who is taking the action item on the budget?",
+    "note": "taking the → \"tay-kin-thuh\"；action item 常读成一串。",
+    "difficulty": 3
+  },
+  {
+    "id": "s46",
+    "tag": "综合",
+    "text": "I will keep you posted on the progress.",
+    "note": "keep you → \"kee-pya\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s47",
+    "tag": "综合",
+    "text": "Can you walk me through the timeline?",
+    "note": "walk me → \"wok-me\"；through the → \"thru-thuh\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s48",
+    "tag": "综合",
+    "text": "We are a little behind schedule.",
+    "note": "a little → \"a-li-dl\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s49",
+    "tag": "综合",
+    "text": "Any questions before we wrap up?",
+    "note": "before we → \"before-we\" 连读；wrap up → \"ra-pup\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s50",
+    "tag": "综合",
+    "text": "Let us double check with legal first.",
+    "note": "double check 的 le 几乎吞掉；with legal → \"with-leegl\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s51",
+    "tag": "综合",
+    "text": "Something came up, can we reschedule?",
+    "note": "came up → \"cay-mup\"。",
+    "difficulty": 2
+  },
+  {
+    "id": "s52",
+    "tag": "综合",
+    "text": "It turned out to be a much bigger issue.",
+    "note": "turned out → \"turn-dout\"；out to → \"out-tuh\"。",
+    "difficulty": 3
+  }
+]

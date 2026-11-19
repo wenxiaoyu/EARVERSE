@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>清空记录</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .reset-wrap { max-width: 560px; margin: 12vh auto 0; padding: 0 20px; }
+  .reset-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 26px; }
+  .reset-card h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: -0.01em; }
+  .reset-card p { margin: 10px 0 0; color: var(--ink-2); }
+  .reset-card .muted { color: var(--muted); font-size: 13px; }
+  .reset-card ul { margin: 14px 0 0; padding-left: 20px; color: var(--ink-2); }
+  .reset-card .row { display: flex; align-items: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="reset-wrap">
+  <div class="reset-card">
+    <h1 id="r-title">正在清空…</h1>
+    <p id="r-body" class="muted">读一下本地记录。</p>
+    <ul id="r-list" hidden></ul>
+    <div class="row">
+      <button class="btn btn-primary" id="r-back">回首页</button>
+      <span class="muted">以后想重来一次，直接打开 <code>/reset.html</code> 就行。</span>
+    </div>
+  </div>
+</div>
+<script>
+/* 独立的重置页：只清本站在 localStorage 里那一条记录，然后可以回到首次访问的样子。
+   放在 app.js 之外，避免和正常启动流程互相影响。 */
+(function () {
+  var KEY = 'abTrainer.v1';
+  var title = document.getElementById('r-title');
+  var body = document.getElementById('r-body');
+  var list = document.getElementById('r-list');
+  var back = document.getElementById('r-back');
+
+  var raw = null;
+  try { raw = localStorage.getItem(KEY); } catch (e) { raw = null; }
+
+  var lines = [];
+  if (raw) {
+    var s = null;
+    try { s = JSON.parse(raw); } catch (e) { s = null; }
+    if (s && typeof s === 'object') {
+      var days = s.sessions ? Object.keys(s.sessions).length : 0;
+      var cards = s.cards ? Object.keys(s.cards).length : 0;
+      var dict = s.dict ? Object.keys(s.dict).length : 0;
+      var skills = s.skills ? Object.keys(s.skills).length : 0;
+      var settled = 0;
+      if (s.skills) Object.keys(s.skills).forEach(function (k) { if (s.skills[k] && s.skills[k].settled) settled += 1; });
+      if (days) lines.push('练过的天数：' + days + ' 天');
+      if (cards) lines.push('复习过的词卡：' + cards + ' 张');
+      if (dict) lines.push('听写过的句子：' + dict + ' 句');
+      if (skills) lines.push('试过的言语功能：' + skills + ' 件（其中办成过 ' + settled + ' 件）');
+    }
+  }
+
+  try {
+    localStorage.removeItem(KEY);
+    localStorage.removeItem('__abt_probe__');
+  } catch (e) { /* 存储被禁也就是本来就没有记录 */ }
+
+  if (raw) {
+    title.textContent = '记录已清空';
+    body.textContent = '本地保存的学习记录已经删掉了，现在和第一次打开时一样。';
+    if (lines.length) { lines.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; list.appendChild(li); }); }
+    list.hidden = false;
+    document.title = '记录已清空 · english-trainer';
+  } else {
+    title.textContent = '这里本来就没有记录';
+    body.textContent = '和第一次打开时一样，直接回首页开始就行。';
+    document.title = '本来就没有记录 · english-trainer';
+  }
+
+  back.onclick = function () { location.replace('./'); };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英语听力训练</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ---------------- Sidebar ---------------- -->
+  <nav class="sidebar">
+    <div class="brand">
+      英语听力训练
+      <small>每天 20 分钟</small>
+    </div>
+
+    <button class="nav-item active" data-page="today">
+      <span class="ico">◎</span><span>今天</span>
+      <span class="badge zero" id="nav-due">0</span>
+    </button>
+    <button class="nav-item" data-page="cards">
+      <span class="ico n">1</span><span>听音猜义</span>
+    </button>
+    <button class="nav-item" data-page="dictation">
+      <span class="ico n">2</span><span>听写</span>
+    </button>
+    <button class="nav-item" data-page="say">
+      <span class="ico n">3</span><span>说英语</span>
+    </button>
+    <button class="nav-item" data-page="reductions">
+      <span class="ico n">?</span><span>为什么听不清</span>
+    </button>
+    <button class="nav-item" data-page="progress">
+      <span class="ico">◔</span><span>我的进步</span>
+    </button>
+    <button class="nav-item" data-page="settings">
+      <span class="ico">⚙</span><span>设置</span>
+    </button>
+
+    <div class="sidebar-foot" id="streak-foot">还没有开始</div>
+  </nav>
+
+  <!-- ---------------- Main ---------------- -->
+  <main class="main">
+
+    <!-- ===== 今天 ===== -->
+    <section class="page active" id="page-today">
+      <h1 id="today-greeting">今天</h1>
+      <p class="page-sub" id="today-sub">三步，20 分钟。</p>
+
+      <!-- 一次只让你做一件事 -->
+      <div class="next-card" id="next-card"></div>
+
+      <!-- 三步清单 -->
+      <div id="today-blocks"></div>
+
+      <!-- 说明（第一次来展开） -->
+      <details class="panel explain" id="explain">
+        <summary>这个工具到底在练什么？（30 秒读完）</summary>
+        <div class="explain-body">
+          <p><b>听不懂，常常不是词汇量不够。</b>是耳朵没把「声音」和「意思」接上——别人说 gonna，你脑子里存的是 going to，于是慢半拍。</p>
+          <ul>
+            <li><b>第 1 步 听音猜义</b>：只听声音猜意思，逼脑子从声音直接跳到意思，不经过拼写。每天 10 张新卡，学过的词过几天自动回来考你。</li>
+            <li><b>第 2 步 听写</b>：把听到的写下来。写不出的地方标一下原因，一周就能看出你固定卡在哪。</li>
+            <li><b>第 3 步 为什么听不清</b>：一句话两种念法，听出差别在哪。想多听就在今天页下面打开「随便听」。</li>
+            <li><b>第 4 步 说英语（选做）</b>：挑一件真实的事，和几个人演一遍。他们说的话只有声音，你得用耳朵接；说错了没人当场纠正你，只是把正确说法再说一遍。结束后挑三句进听写题库，第二天回来考你。同一件事要在 3 个不同场合各办成 1 次，才算真的会了。</li>
+          </ul>
+          <p class="hint">数据只存在这台电脑的浏览器里，不上传。换浏览器或清缓存会丢，可以在设置里导出备份。</p>
+        </div>
+      </details>
+
+      <details class="panel listen-panel">
+        <summary>想多听点？随便听（不做题、不计分）</summary>
+        <div class="explain-body">
+          <p class="hint" style="margin:8px 0 10px">走路、通勤时听。允许听不懂，这一块练的是耳朵不烦，不是理解率。</p>
+          <div class="link-list" id="listen-links"></div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn-ghost btn-sm" id="listen-timer">开始 10 分钟计时</button>
+            <span class="hint" id="listen-timer-text"></span>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== 听音猜义 ===== -->
+    <section class="page" id="page-cards">
+      <h1>听音猜义</h1>
+      <p class="page-sub">先只听，别看书。想到中文意思，再点开看答案。</p>
+
+      <div class="deck-pills" id="deck-pills"></div>
+
+      <div class="fc-stage" id="fc-stage"></div>
+
+      <div class="fc-foot">
+        <div class="progress-line"><i id="fc-bar"></i></div>
+        <div class="row" style="margin-top:8px">
+          <span class="hint" id="fc-progress-text"></span>
+          <span class="spacer"></span>
+          <span class="hint"><span class="kbd">空格</span> 重听 · <span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span> 评价</span>
+        </div>
+      </div>
+
+      <div class="page-foot">
+        <button class="btn btn-ghost btn-sm" data-go="today">← 回今天</button>
+        <span class="spacer"></span>
+        <button class="btn btn-primary" id="fc-next">去听写 →</button>
+      </div>
+    </section>
+
+    <!-- ===== 听写 ===== -->
+    <section class="page" id="page-dictation">
+      <h1>听写</h1>
+      <p class="page-sub">听到什么写什么。听不清就先慢速、循环，直到写出来为止。</p>
+
+      <div class="panel">
+        <div class="flow-hint">
+          <span><b>1</b>点 ▶ 听一句</span>
+          <span class="sep">→</span>
+          <span><b>2</b>按听到的写下来</span>
+          <span class="sep">→</span>
+          <span><b>3</b>交卷，看漏了哪个词</span>
+        </div>
+
+        <div class="dictate-player">
+          <button class="play-btn" id="d-play">▶</button>
+          <button class="btn btn-ghost btn-sm" id="d-slow">慢速</button>
+          <button class="btn btn-ghost btn-sm" id="d-loop">循环重播</button>
+          <div class="spacer"></div>
+          <span class="tag" id="d-tag">—</span>
+        </div>
+
+        <textarea id="d-input" placeholder="按你听到的写，不确定的词打个 ?? 也别留空。⌘ + Enter 交卷。"></textarea>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn btn-primary" id="d-check">交卷批改</button>
+          <button class="btn btn-ghost" id="d-reveal">听不出来，直接看答案</button>
+          <div class="spacer"></div>
+          <span class="hint" id="d-counter"></span>
+        </div>
+      </div>
+
+      <div class="panel" id="d-result" style="display:none"></div>
+
+      <div class="page-foot" id="d-foot" style="display:none">
+        <button class="btn btn-ghost btn-sm" data-go="today">← 回今天</button>
+        <span class="spacer"></span>
+        <button class="btn btn-primary" id="d-next">下一句 →</button>
+      </div>
+    </section>
+
+    <!-- ===== 说英语 ===== -->
+    <section class="page" id="page-say">
+      <h1>说英语</h1>
+      <p class="page-sub" id="say-sub">挑一件事，把它办成。在场的人各有立场，没人会替你说话。</p>
+      <div id="say-root"></div>
+    </section>
+
+    <!-- ===== 为什么听不清 ===== -->
+    <section class="page" id="page-reductions">
+      <h1>为什么听不清</h1>
+      <p class="page-sub">同一句话，字典念法和真人念法差在哪。点「听两次」就能听出区别。</p>
+
+      <div class="panel">
+        <div class="row" style="justify-content:space-between;margin-bottom:4px">
+          <h2 style="margin:0">15 条最常见的变化</h2>
+          <span class="hint" id="rules-progress"></span>
+        </div>
+        <div class="hint" style="margin-top:6px">听过、标记「已经能听出来」，这里会打勾。全部打勾不代表学会，只代表你认识这个变化了。</div>
+        <div id="rules-list"></div>
+      </div>
+
+      <div class="page-foot">
+        <button class="btn btn-ghost btn-sm" data-go="today">← 回今天</button>
+        <span class="spacer"></span>
+        <button class="btn btn-primary" data-go="dictation">去听写里验证 →</button>
+      </div>
+    </section>
+
+    <!-- ===== 我的进步 ===== -->
+    <section class="page" id="page-progress">
+      <h1>我的进步</h1>
+      <p class="page-sub">就回答一个问题：你在变好吗？</p>
+
+      <div id="prog-hero"></div>
+
+      <div class="grid-3" id="progress-stats"></div>
+
+      <div class="panel" id="skills-panel"></div>
+
+      <div class="panel">
+        <h2>最近 14 天，每次听写听懂了多少</h2>
+        <div class="bars" id="acc-bars"></div>
+        <div class="hint" id="acc-note"></div>
+      </div>
+
+      <div class="panel">
+        <h2>你最常卡在哪</h2>
+        <div id="dist"></div>
+      </div>
+
+      <div class="diagnosis" id="diagnosis"></div>
+
+      <div class="page-foot">
+        <button class="btn btn-ghost btn-sm" data-go="today">← 回今天</button>
+        <span class="spacer"></span>
+        <button class="btn btn-primary" data-go="dictation">再练一句 →</button>
+      </div>
+    </section>
+
+    <!-- ===== 设置 ===== -->
+    <section class="page" id="page-settings">
+      <h1>设置</h1>
+      <p class="page-sub">改完立刻生效，下面会显示「已保存」。</p>
+
+      <div class="panel">
+        <h2>声音</h2>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="set-voice">音色</label>
+            <span class="saved" id="saved-voice"></span>
+          </div>
+          <select id="set-voice"><option>正在检测…</option></select>
+          <div class="hint" id="voice-cur">正在检测这台电脑上的英文音色…</div>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="set-rate">语速</label>
+            <span class="field-val">
+              <b id="set-rate-val">1.00</b>
+              <button class="btn btn-ghost btn-xs" id="rate-test">试听</button>
+            </span>
+          </div>
+          <input type="range" id="set-rate" min="0.6" max="1.3" step="0.05" value="1">
+          <div class="hint">1.0 接近真人语速；0.75 只在第一遍听写时用。</div>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="set-pitch">音高</label>
+            <span class="field-val">
+              <b id="set-pitch-val">1.00</b>
+              <button class="btn btn-ghost btn-xs" id="pitch-test">试听</button>
+            </span>
+          </div>
+          <input type="range" id="set-pitch" min="0.8" max="1.2" step="0.02" value="1">
+          <div class="hint">1.00 是原声，0.94–0.98 能压掉一点播音腔，再低就失真。</div>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="set-reduce">口语化</label>
+            <span class="saved" id="saved-reduce"></span>
+          </div>
+          <div class="seg" id="reduce-seg">
+            <button data-reduce="1" class="on">开 · 像真人说话</button>
+            <button data-reduce="0">关 · 每个词念满</button>
+          </div>
+          <div class="hint">开启后，<code>going to</code> 会读成 gonna、<code>for</code> 读成 fer。批改时两种写法都算对，不会扣分。关掉就是教科书念法，留作对比。</div>
+        </div>
+
+        <div class="field" style="margin-bottom:0">
+          <label>试听同一句话</label>
+          <div class="row">
+            <button class="btn btn-ghost btn-sm" id="tts-plain">教科书念法</button>
+            <button class="btn btn-ghost btn-sm" id="tts-real">口语化念法</button>
+            <button class="btn btn-ghost btn-sm" id="tts-slow">慢速</button>
+            <button class="btn btn-soft btn-sm" id="tts-ab">连着播两次对比</button>
+          </div>
+          <div class="hint" id="tts-preview"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="voice-health"></div>
+
+      <div class="panel">
+        <h2>节奏</h2>
+        <div class="field" style="margin-bottom:0">
+          <div class="field-top">
+            <label for="set-newcap">每天新学几个词</label>
+            <span class="saved" id="saved-newcap"></span>
+          </div>
+          <select id="set-newcap">
+            <option value="10">10 个</option>
+            <option value="15">15 个</option>
+            <option value="20" selected>20 个</option>
+            <option value="30">30 个</option>
+          </select>
+          <div class="hint">宁少勿多。新词堆太多，第二天的复习量会把你压垮——这是大多数人放弃背词的原因。</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>把自己遇到的句子加进来</h2>
+        <p class="hint" style="margin-top:-6px">每行一句英文。开会、看剧听不懂的句子，直接搬进来练。</p>
+        <textarea id="import-text" placeholder="One sentence per line, in English."></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-primary btn-sm" id="import-btn">加入听写题库</button>
+          <span class="hint" id="import-msg"></span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>说英语 · 模型</h2>
+        <p class="hint" style="margin-top:-6px">「说英语」那一页要连一个模型才会真的对话。密钥写进这台电脑上的 <code>env.config.json</code>，不进浏览器，也不上传。</p>
+        <div id="say-cfg">
+          <div class="field">
+            <label for="say-base">接口地址</label>
+            <input type="text" id="say-base" placeholder="https://api.deepseek.com/v1" autocomplete="off" spellcheck="false">
+            <div class="hint">任何 OpenAI 兼容地址都行：DeepSeek 用 <code>https://api.deepseek.com/v1</code>；通义用 <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code>；OpenAI 用 <code>https://api.openai.com/v1</code>。</div>
+          </div>
+          <div class="field">
+            <label for="say-model">模型名</label>
+            <input type="text" id="say-model" placeholder="deepseek-chat" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="say-key">密钥</label>
+            <input type="password" id="say-key" placeholder="sk-…" autocomplete="off">
+            <div class="hint">只存本机。填过一次这里就不再显示，要换直接覆盖。</div>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary btn-sm" id="say-cfg-save">保存并测试</button>
+            <button class="btn btn-ghost btn-sm" id="say-cfg-test">只测试</button>
+            <span class="hint" id="say-cfg-status"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>数据</h2>
+        <div class="row">
+          <button class="btn btn-ghost" id="export-btn">导出备份</button>
+          <button class="btn btn-ghost" id="reset-btn" style="color:var(--bad)">清空全部记录</button>
+        </div>
+        <div class="hint" style="margin-top:10px" id="storage-info"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="scenarios.js"></script>
+<script src="app.js"></script>
+<script src="env.js"></script>
+</body>
+</html>

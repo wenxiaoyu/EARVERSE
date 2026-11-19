@@ -1,0 +1,26 @@
+# content-generation Specification
+
+## Purpose
+TBD - created by archiving change ai-english-coach. Update Purpose after archive.
+## Requirements
+### Requirement: 按画像生成素材
+系统 SHALL 按用户画像动态生成个性化训练素材（听音词、听写句、场景对话），生成内容 SHALL 优先针对画像标记的当前短板，而非随机或固定顺序。
+
+#### Scenario: 短板定向生成
+- **WHEN** 画像显示用户「哑巴词汇」集中在某类词
+- **THEN** 生成的听音词优先包含该类词，并附带反应时间训练提示
+
+### Requirement: 种子语料降级
+固定题库（原 117 词、听写句、场景库、连读弱读规则）SHALL 仅作为冷启动种子与风格参照，不再作为日常训练主体。当画像数据足够时，训练素材 SHALL 由 AI 生成，种子仅在冷启动阶段用于首次测验与早期训练。
+
+#### Scenario: 冷启动用种子
+- **WHEN** 新用户尚无画像数据
+- **THEN** 系统使用种子语料进行首次测验与初始训练
+
+### Requirement: 难度标定
+系统生成的每一份训练素材 SHALL 带有难度标定，AI SHALL 依据用户画像的当前水平与目标时间线（3~6 个月）调节素材难度梯度。
+
+#### Scenario: 难度随画像调节
+- **WHEN** 用户在某一维度持续答错
+- **THEN** 该维度的生成素材难度降低；当连续答对后难度逐步回升
+

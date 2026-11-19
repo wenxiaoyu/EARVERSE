@@ -1,0 +1,20 @@
+schema: spec-driven
+created: 2026-11-18
+workflow:
+  current_phase: doc
+  schema: spec-driven
+  schema_selection_reason: "explore-notes 推荐 spec-driven（openspec 1.2.0 唯一可用 schema）"
+  phases:
+    explore: { status: passed, completed_at: "2026-11-18T08:01:32Z" }
+    propose: { status: passed, completed_at: "2026-11-18T08:15:00Z" }
+    apply: { status: passed, completed_at: "2026-11-18T08:30:00Z" }
+    review: { status: passed, completed_at: "2026-11-18T08:35:00Z" }
+    verify: { status: passed, completed_at: "2026-11-18T08:36:00Z" }
+    doc: { status: in_progress, started_at: "2026-11-18T08:36:00Z" }
+    archive: { status: pending }
+  review_results:
+    explore: { passed: true, retries: 0 }
+    propose: { passed: true, retries: 0 }
+    apply: { passed: true, retries: 0 }
+    review: { passed: true, retries: 0 }
+    verify: { passed: true, retries: 0 }

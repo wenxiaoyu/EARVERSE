@@ -1,0 +1,39 @@
+# Explore 阶段待澄清问题
+# blocker=true 的问题必须由用户回答后才能继续；blocker=false 用推荐答案即可。
+
+questions:
+  - id: target-user
+    question: "目标用户是谁？这决定内容难度曲线和场景库设计。"
+    blocker: true
+    answer: "职场英语使用者（优先）。必须支持用户选择场景，且多个场景可并行训练、互不影响。"
+    recommendation: "职场英语使用者（软件/互联网从业者），与现有 117 词、会议例句、职场场景库方向一致。"
+
+  - id: goal-timeline
+    question: "达成「英语交流能力提升」的目标时间线是多久？到什么程度算达成？"
+    blocker: true
+    answer: "3~6 个月：从「开会能听懂大意但不敢开口」到「能独立应付工作会议里的听说，不追求流利」。"
+    recommendation: "6 个月：从「开会能听懂大意但不敢开口」到「能独立应付工作会议里的听说，不追求流利」。"
+
+  - id: product-form
+    question: "产品形态是什么？Web 应用 / 移动端 / 桌面端？"
+    blocker: true
+    answer: "Web 应用（浏览器访问，桌面优先）。口语录音用 MediaRecorder API，后续可套壳成桌面端。"
+    recommendation: "Web 应用（浏览器访问，桌面优先），最快交付，后续可套壳成桌面端。"
+
+  - id: speech-stack
+    question: "语音识别（ASR）与语音合成（TTS）用什么方案？"
+    blocker: false
+    answer: null
+    recommendation: "TTS 用云端高质量语音；ASR 用 Whisper 系评估口语。首次测验的口语评估依赖 ASR + LLM 评分。"
+
+  - id: backend-stack
+    question: "后端技术栈用什么？"
+    blocker: false
+    answer: null
+    recommendation: "Python（FastAPI）+ SQLite/PostgreSQL。LLM 编排、Whisper ASR、流式对话在 Python 生态最顺。"
+
+  - id: llm-provider
+    question: "LLM 用哪家？用户自填 key 还是产品统一提供？"
+    blocker: false
+    answer: null
+    recommendation: "沿用现有模式：OpenAI 兼容接口，用户自填 key，不绑定单一供应商。"

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "ask-delay",
+    "label": "争取延期",
+    "plain": "把时间往后挪，还要对方点头"
+  },
+  {
+    "id": "refuse-request",
+    "label": "拒绝请求",
+    "plain": "不答应，但别把关系弄僵"
+  },
+  {
+    "id": "trade-offer",
+    "label": "提交换条件",
+    "plain": "给一点，换一点"
+  },
+  {
+    "id": "clarify-number",
+    "label": "澄清数字和时间",
+    "plain": "把「周三」「大概」问成确切的一天"
+  },
+  {
+    "id": "ask-repeat",
+    "label": "要求重说",
+    "plain": "没听清就打断，让对方再来一遍"
+  },
+  {
+    "id": "cut-in",
+    "label": "打断拉回",
+    "plain": "把跑偏的对话拉回你要办的事"
+  },
+  {
+    "id": "bargain",
+    "label": "讨价还价",
+    "plain": "不接受加钱、加量、加期限"
+  },
+  {
+    "id": "admit-unknown",
+    "label": "承认不知道",
+    "plain": "不知道就说不确定，别硬编"
+  },
+  {
+    "id": "bad-news",
+    "label": "传达坏消息",
+    "plain": "把坏消息说清楚，还要给出补救"
+  },
+  {
+    "id": "ask-commit",
+    "label": "要一个明确承诺",
+    "plain": "把「再说」「在排产」问成一句话"
+  },
+  {
+    "id": "wrap-confirm",
+    "label": "收尾确认",
+    "plain": "结束前把结论复述一遍"
+  },
+  {
+    "id": "propose-alt",
+    "label": "提替代方案",
+    "plain": "这条路堵了就换一条"
+  },
+  {
+    "id": "soft-no",
+    "label": "婉转否定",
+    "plain": "不直接说 no，但意思到"
+  },
+  {
+    "id": "probe-detail",
+    "label": "追问细节",
+    "plain": "对方说得含糊，你问具体"
+  },
+  {
+    "id": "borrow-resource",
+    "label": "借人手",
+    "plain": "让别人腾出人或时间给你"
+  },
+  {
+    "id": "self-intro",
+    "label": "自我介绍",
+    "plain": "一分钟说清你做过什么"
+  },
+  {
+    "id": "set-time",
+    "label": "约时间",
+    "plain": "把「改天」变成具体哪天几点"
+  },
+  {
+    "id": "disagree",
+    "label": "表达不同意见",
+    "plain": "不同意，但说得出理由"
+  },
+  {
+    "id": "self-repair",
+    "label": "说错了自己改",
+    "plain": "发现说错，当场修正不重来"
+  },
+  {
+    "id": "close-conv",
+    "label": "结束对话",
+    "plain": "自己收场，不拖着"
+  }
+]

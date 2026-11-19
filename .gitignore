@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+**/.DS_Store
+
+# agent / tool state
+.pi/
+
+# runtime data & secrets
+app/backend/data/
+app/backend/env.config.json
+app/logs/
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# frontend
+app/frontend/node_modules/
+app/frontend/dist/
