@@ -339,6 +339,7 @@ export default function Today({
   const s3: StepStatus = scenarioDone ? "done" : "idle";
   const s4: StepStatus = diagnosis ? "done"
     : (s1 === "done" && s2 === "done" && s3 === "done") ? "active" : "idle";
+  const stepStates: StepStatus[] = [s1, s2, s3, s4];
 
   const shadow = shadowItems[Math.min(shadowIdx, Math.max(shadowItems.length - 1, 0))];
   const sceneSuccess = scenarioReview ? Boolean(scenarioReview.success)
@@ -403,7 +404,16 @@ export default function Today({
                 <div className="t">{b.title}</div>
                 <div className="m">{b.minutes}′</div>
                 <div className="f">{b.focus}</div>
-                <div className="bar" style={{ ["--w" as any]: `${60 + i * 12}%` }} />
+                {(() => {
+                  const st = stepStates[i] || "idle";
+                  return (
+                    <div
+                      className={`bar ${st}`}
+                      title={st === "done" ? "已完成" : st === "active" ? "进行中" : "未开始"}
+                      style={{ ["--w" as any]: st === "done" ? "100%" : st === "active" ? "50%" : "0%" }}
+                    />
+                  );
+                })()}
               </div>
             ))}
           </div>
@@ -490,9 +500,6 @@ export default function Today({
                   <div className={`p-card ${res === true ? "ok" : res === false ? "bad" : ""}`} key={it.id}>
                     <div className="p-top">
                       <button className="p-play" onClick={() => speak(it.w, "real")} aria-label="播放">▶</button>
-                      <span className="load-leds">
-                        {[1, 2, 3].map((i) => <i key={i} className={i <= it.difficulty ? "on" : ""} />)}
-                      </span>
                     </div>
                     <div className="p-body">
                       {rev ? (<><div className="w">{it.w}</div><div className="z">{it.zh || "—"}</div></>) : (<span className="mask">听发音，判断听没听出</span>)}
