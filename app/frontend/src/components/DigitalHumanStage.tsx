@@ -25,6 +25,7 @@ export default function DigitalHumanStage({
     let raf = 0;
     let resetTimer = 0;
     const clock = new THREE.Clock();
+    let mixer: THREE.AnimationMixer | null = null;
     const morphs: { open?: number; blink?: number; smile?: number } = {};
     const meshMorphs: THREE.Mesh[] = [];
 
@@ -62,14 +63,19 @@ export default function DigitalHumanStage({
       const targetHeight = visibleH * 0.85;
       const targetWidth = (w / h) * targetHeight;
       const scale = Math.min(targetWidth / size.x, targetHeight / size.y);
+      const targetY = 0.8;
       model.scale.setScalar(scale);
-      model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+      model.position.set(-center.x * scale, targetY - center.y * scale, -center.z * scale);
+      camera.position.y = targetY;
+      camera.lookAt(0, targetY, 0);
     };
 
     const tick = () => {
       raf = requestAnimationFrame(tick);
-      clock.getDelta();
+      const dt = Math.min(clock.getDelta(), 0.1);
+      if (mixer) mixer.update(dt);
       const amp = ampRef.current;
+      const now = performance.now();
       for (const m of meshMorphs) {
         const dict = m.morphTargetDictionary;
         const inf = m.morphTargetInfluences;
@@ -108,6 +114,10 @@ export default function DigitalHumanStage({
         if (disposed) return;
         model = gltf.scene;
         scene.add(model);
+        if (gltf.animations?.length) {
+          mixer = new THREE.AnimationMixer(model!);
+          for (const clip of gltf.animations) mixer.clipAction(clip).play();
+        }
         gltf.scene.traverse((o) => {
           if ((o as THREE.Mesh).isMesh) {
             const mesh = o as THREE.Mesh;
