@@ -25,7 +25,8 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
-  const [live, setLive] = useState(false);
+  const [live, setLive] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [amplitude, setAmplitude] = useState(0);
   const [mood, setMood] = useState<MiraMood>("warm");
@@ -56,8 +57,13 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
       setMessages([{ role: "assistant", text: r.greeting || "Hey, I'm Mira. Tell me about your day — in English." }]);
       setMood(r.mood || "warm");
       setGesture(r.gesture || "wave");
+      // 进入 Live 直接开始收音，不需要点「开始」
+      void beginListening();
     }).catch(() => {
-      if (alive) setMessages([{ role: "assistant", text: "Hey, I'm Mira. Tell me about your day — in English." }]);
+      if (alive) {
+        setMessages([{ role: "assistant", text: "Hey, I'm Mira. Tell me about your day — in English." }]);
+        void beginListening();
+      }
     });
     return () => { alive = false; };
   }, [domain]);
@@ -207,7 +213,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     }
   };
 
-  const toggleLive = async () => {
+  const toggleMute = async () => {
     if (live) {
       setLive(false); liveRef.current = false; recorder.stop(); setListening(false); listeningRef.current = false;
       setMood("warm"); setGesture("none");
@@ -251,6 +257,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         </div>
         <div className="coach-head-right">
           <span className="coach-only">ENGLISH ONLY</span>
+          <button className="btn sm ghost" onClick={() => setChatOpen((v) => !v)}>{chatOpen ? "收起对话" : "对话"}</button>
           <button className="btn sm" onClick={end} disabled={ending}>{ending ? "总结中…" : "结束对话"}</button>
         </div>
       </div>
@@ -259,7 +266,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         <section className="coach-stage">
           <div className="coach-status">
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
-            {busy ? "Mira is thinking…" : speaking ? "Mira is speaking…" : listening ? "Listening…" : live ? "Live" : "Ready"}
+            {busy ? "Mira 思考中…" : speaking ? "Mira 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
           </div>
           <Suspense fallback={<TeacherAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />}>
             <Live2DStage mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
@@ -271,38 +278,54 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
           </div>
         </section>
 
-        <section className="coach-talk">
-          <div className="coach-messages" ref={scroller}>
-            {messages.map((m, i) => (
-              <div key={i} className={`coach-msg ${m.role}`}>
-                <div className="coach-bubble">
-                  {m.text}
-                  {m.correction && <div className="coach-better">Better: {m.correction}</div>}
+        {chatOpen ? (
+          <section className="coach-talk">
+            <div className="coach-talk-head">
+              <span>对话</span>
+              <button className="mini" onClick={() => setChatOpen(false)}>隐藏</button>
+            </div>
+            <div className="coach-messages" ref={scroller}>
+              {messages.map((m, i) => (
+                <div key={i} className={`coach-msg ${m.role}`}>
+                  <div className="coach-bubble">
+                    {m.text}
+                    {m.correction && <div className="coach-better">Better: {m.correction}</div>}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {busy && <div className="coach-typing"><i /><i /><i /></div>}
-          </div>
-
-          <div className="coach-controls">
+              ))}
+              {busy && <div className="coach-typing"><i /><i /><i /></div>}
+            </div>
+            <div className="coach-controls">
+              <button
+                className={`coach-mic ${live ? "live" : ""} ${listening ? "listening" : ""}`}
+                onClick={toggleMute}
+                title={live ? "点击静音" : "点击恢复收音"}
+              >
+                <span className="mic-ico" />
+                {live ? (listening ? "收音中…" : "收音待命") : "已静音"}
+              </button>
+              <form className="coach-input" onSubmit={submit}>
+                <input
+                  value={text} onChange={(e) => setText(e.target.value)}
+                  placeholder="Or type in English…" aria-label="Type in English"
+                />
+                <button className="btn sm primary" type="submit" disabled={busy || speaking || !text.trim()}>Send</button>
+              </form>
+            </div>
+            <p className="coach-hint">Mira only speaks English. 中文会被拒绝，并引导你用英语重说。</p>
+          </section>
+        ) : (
+          <div className="coach-livebar">
             <button
               className={`coach-mic ${live ? "live" : ""} ${listening ? "listening" : ""}`}
-              onClick={toggleLive}
-              title={live ? "停止聆听" : "开始说话"}
+              onClick={toggleMute}
+              title={live ? "点击静音" : "点击恢复收音"}
             >
               <span className="mic-ico" />
-              {live ? (listening ? "Listening…" : "Stop") : "开始说话"}
+              {live ? (listening ? "收音中…" : "收音待命") : "已静音"}
             </button>
-            <form className="coach-input" onSubmit={submit}>
-              <input
-                value={text} onChange={(e) => setText(e.target.value)}
-                placeholder="Or type in English…" aria-label="Type in English"
-              />
-              <button className="btn sm primary" type="submit" disabled={busy || speaking || !text.trim()}>Send</button>
-            </form>
           </div>
-          <p className="coach-hint">Mira only speaks English. 中文会被拒绝，并引导你用英语重说。</p>
-        </section>
+        )}
       </div>
 
       {summary && (

@@ -1396,19 +1396,24 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .coach-head-right{display:flex;align-items:center;gap:10px;flex:none}
 .coach-only{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--green);
   border:1px solid rgba(127,176,105,.3);border-radius:999px;padding:5px 9px;background:rgba(127,176,105,.06)}
-.coach-room{display:grid;grid-template-columns:minmax(300px,.92fr) minmax(360px,1.08fr);gap:14px;flex:1;min-height:560px}
-.coach-stage{position:relative;border:1px solid var(--hair);border-radius:18px;overflow:hidden;
-  background:radial-gradient(80% 60% at 50% 30%,rgba(232,163,61,.10),transparent 70%),linear-gradient(180deg,rgba(24,28,23,.9),rgba(16,19,16,.96));
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:22px 20px 16px;min-height:560px}
+.coach-room{display:block;position:relative;flex:1;min-height:calc(100vh - 130px)}
+.coach-stage{position:absolute;inset:0;border:1px solid var(--hair);border-radius:18px;overflow:hidden;
+  background:radial-gradient(80% 60% at 50% 30%,rgba(232,163,61,.10),transparent 70%),linear-gradient(180deg,rgba(24,28,23,.9),rgba(16,19,16,.96))}
 .coach-stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(242,235,223,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(242,235,223,.025) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);pointer-events:none}
-.coach-stage .mira-avatar{position:relative;z-index:1;max-height:440px;max-width:420px;margin:auto}
+.coach-stage .mira-avatar{position:absolute;inset:0;z-index:1;max-height:none;max-width:none;margin:0}
 .coach-status{position:absolute;top:16px;left:18px;z-index:2;display:flex;align-items:center;gap:7px;
   font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
 .live-dot.on{background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 1.2s steps(1) infinite}
-.coach-context{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
+.coach-context{position:absolute;left:0;right:0;bottom:14px;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .coach-context span{font-family:var(--mono);font-size:8.5px;color:var(--muted);border:1px solid var(--hair);border-radius:999px;padding:4px 8px;background:rgba(0,0,0,.14)}
-.coach-talk{display:flex;flex-direction:column;border:1px solid var(--hair);border-radius:18px;background:rgba(16,19,16,.72);overflow:hidden;min-height:560px}
+.coach-talk{position:absolute;right:14px;top:14px;bottom:14px;width:min(420px,92%);display:flex;flex-direction:column;
+  border:1px solid rgba(232,163,61,.28);border-radius:16px;background:rgba(16,19,16,.9);overflow:hidden;z-index:20;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(10px);animation:coach-float .25s ease-out}
+.coach-talk-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--hair);
+  font-family:var(--serif);font-size:15px}
+.coach-livebar{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);z-index:10;display:flex;gap:8px}
+@keyframes coach-float{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .coach-messages{flex:1;overflow:auto;padding:20px 18px;display:flex;flex-direction:column;gap:10px;min-height:300px;max-height:calc(100vh - 300px)}
 .coach-msg{display:flex;max-width:92%}
 .coach-msg.assistant{align-self:flex-start}

@@ -94,9 +94,9 @@ export default function Live2DStage({
           app!.renderer.resize(w, h);
           const mw = model.width || 300;
           const mh = model.height || 450;
-          const scale = Math.min(w / mw, h / mh) * 0.94;
+          const scale = Math.min(w / mw, h / mh) * 0.9;
           model.scale.set(scale);
-          model.position.set(w / 2, h * 0.52);
+          model.position.set(w / 2, h * 0.5);
         };
         layout();
         observer = new ResizeObserver(layout);
