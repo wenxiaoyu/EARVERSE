@@ -91,6 +91,22 @@ export default function DigitalHumanStage({
           inf[morphs.smile] = THREE.MathUtils.lerp(inf[morphs.smile], 0.7, 0.3);
         }
       }
+      const head = headRef.current;
+      const swayX = Math.sin(now / 2200) * 0.03;
+      const swayY = Math.sin(now / 2800) * 0.07;
+      const swayZ = Math.sin(now / 3800) * 0.025;
+      const idleNod = (now % 7000) / 7000 > 0.97 ? 0.18 : 0;
+      if (model) {
+        model.rotation.y = swayY + (model.userData.nodY || 0);
+        model.position.y = baseY + Math.sin(now / 1800) * 0.03;
+      }
+      if (head) {
+        head.rotation.x = swayX * 4 + idleNod + (head.userData.nodX || 0);
+        head.rotation.z = swayZ * 3 + (head.userData.nodZ || 0);
+      } else if (model) {
+        model.rotation.x = idleNod + (model.userData.nodX || 0);
+        model.rotation.z = (model.userData.nodZ || 0);
+      }
       renderer!.render(scene, camera);
     };
 
