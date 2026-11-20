@@ -11,6 +11,17 @@ from . import context, guard, prompts
 
 MOODS = {"warm", "curious", "thinking", "encouraging", "correcting",
          "celebrating", "concerned", "confused"}
+
+
+def _infer_actions(reply: str) -> dict[str, str]:
+    t = (reply or "").lower()
+    if "?" in reply:
+        return {"mood": "curious", "gesture": "lean_in"}
+    if "!" in reply or any(w in t for w in ("great", "awesome", "nice", "perfect", "good job")):
+        return {"mood": "encouraging", "gesture": "thumbs_up"}
+    if any(w in t for w in ("sorry", "worried", "that sounds hard", "that sounds tough")):
+        return {"mood": "concerned", "gesture": "hand_on_chest"}
+    return {"mood": "warm", "gesture": "nod"}
 GESTURES = {"none", "nod", "lean_in", "open_palm", "point_up",
             "hand_on_chest", "shrug", "thumbs_up", "wave", "chin_tap"}
 
@@ -70,6 +81,45 @@ def _normalize(data: dict[str, Any] | None, raw: str, user_text: str) -> dict[st
         "blocked": False,
         "english_only": True,
     }
+
+
+async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
+                    user_text: str, history: list[dict] | None = None):
+    """SSE：流式输出 Mira 的英文回复。用户插话时前端中断即可。"""
+    text = (user_text or "").strip()[:800]
+    if not text:
+        yield {"type": "done", "reply": guard.EMPTY_REPLY, "correction": "",
+               "mood": "curious", "gesture": "nod", "english_only": True}
+        return
+    if not guard.is_english_input(text):
+        yield {"type": "done", "reply": guard.REDIRECT, "correction": "",
+               "mood": "confused", "gesture": "shrug", "blocked": True, "english_only": True}
+        return
+    if llm is None:
+        yield {"type": "done", "reply": _local_reply(text), "correction": "",
+               "mood": "warm", "gesture": "nod", "english_only": True}
+        return
+    b = context.brief(profile, domain)
+    try:
+        full = ""
+        async for chunk in llm.stream_chat(
+            prompts.coach_stream_messages(b, history or [], text),
+            temperature=0.7, max_tokens=160,
+        ):
+            if not chunk:
+                continue
+            full += chunk
+            if not guard.has_cjk(chunk):
+                yield {"type": "delta", "text": chunk}
+        reply = guard.english_or(full.strip(), _local_reply(text))
+        actions = _infer_actions(reply)
+        yield {"type": "done", "reply": reply, "correction": "",
+               "mood": actions["mood"], "gesture": actions["gesture"],
+               "english_only": True}
+    except Exception:
+        reply = _local_reply(text)
+        yield {"type": "done", "reply": reply, "correction": "",
+               "mood": "warm", "gesture": "nod", "english_only": True}
 
 
 async def start(profile: dict[str, Any], domain: str) -> dict[str, Any]:
@@ -195,5 +245,20 @@ async def end(llm: LLMClient | None, profile: dict[str, Any], domain: str,
         if c.get("original") and c.get("better"):
             models.record_error(profile, domain, "speaking",
                                 c["original"], c["better"], "coach")
+
+    # 把下次焦点设成明天的目标，进入今天的工作台即可见
+    goal_text = " · ".join(out["next_focus"][:2]).strip()
+    if goal_text:
+        models.set_goal(profile, domain, {
+            "text": goal_text,
+            "kind": "coach",
+            "words": [],
+            "hearing": [],
+            "skills": [],
+            "source": "coach",
+            "from_date": models.local_date(0),
+            "for_date": models.local_date(1),
+        })
     models._touch(profile)
-    return {**out, "saved": True, "english_only": True}
+    return {**out, "saved": True, "english_only": True,
+            "tomorrow_goal": goal_text or ""}

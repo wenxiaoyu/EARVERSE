@@ -1,49 +1,49 @@
 import { useEffect, useRef, useState } from "react";
 import { Application } from "pixi.js";
-import { Live2DModel } from "pixi-live2d-display/cubism2";
+import { Live2DModel } from "pixi-live2d-display/cubism4";
 import * as PIXI from "pixi.js";
 import TeacherAvatar, { type MiraGesture, type MiraMood } from "./TeacherAvatar";
 
 // Cubism 运行时需要挂在 window.PIXI 上
 (window as any).PIXI = PIXI;
 
-let cubism2Promise: Promise<void> | null = null;
-function loadCubism2Runtime(): Promise<void> {
-  if ((window as any).Live2D) return Promise.resolve();
-  if (!cubism2Promise) {
-    cubism2Promise = new Promise((resolve, reject) => {
+let cubism4Promise: Promise<void> | null = null;
+function loadCubismRuntime(): Promise<void> {
+  if ((window as any).Live2DCubismCore) return Promise.resolve();
+  if (!cubism4Promise) {
+    cubism4Promise = new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = "/live2d/lib/live2d.min.js";
+      s.src = "/live2d/lib/live2dcubismcore.min.js";
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error("live2d runtime load failed"));
+      s.onerror = () => reject(new Error("cubism core load failed"));
       document.head.appendChild(s);
     });
   }
-  return cubism2Promise;
+  return cubism4Promise;
 }
 
 const EXPRESSION: Record<MiraMood, string> = {
-  warm: "f01",
-  curious: "f03",
-  thinking: "f03",
-  encouraging: "f02",
-  correcting: "f02",
-  celebrating: "f01",
-  concerned: "f04",
-  confused: "f04",
+  warm: "exp_01",
+  curious: "exp_03",
+  thinking: "exp_03",
+  encouraging: "exp_02",
+  correcting: "exp_04",
+  celebrating: "exp_07",
+  concerned: "exp_05",
+  confused: "exp_06",
 };
 
 const MOTION: Record<MiraGesture, [string, number]> = {
-  none: ["idle", 0],
-  nod: ["tapBody", 1],
-  lean_in: ["tapBody", 2],
-  open_palm: ["pinchOut", 0],
-  point_up: ["flickHead", 0],
-  hand_on_chest: ["tapBody", 0],
-  shrug: ["shake", 0],
-  thumbs_up: ["pinchOut", 1],
-  wave: ["flickHead", 1],
-  chin_tap: ["shake", 1],
+  none: ["Idle", 0],
+  nod: ["TapBody", 1],
+  lean_in: ["TapBody", 2],
+  open_palm: ["TapBody", 3],
+  point_up: ["TapBody", 4],
+  hand_on_chest: ["TapBody", 1],
+  shrug: ["TapBody", 5],
+  thumbs_up: ["TapBody", 2],
+  wave: ["TapBody", 4],
+  chin_tap: ["TapBody", 0],
 };
 
 export default function Live2DStage({
@@ -70,7 +70,7 @@ export default function Live2DStage({
 
     (async () => {
       try {
-        await loadCubism2Runtime();
+        await loadCubismRuntime();
         app = new Application({
           view: cv,
           transparent: true,
@@ -79,14 +79,14 @@ export default function Live2DStage({
           autoDensity: true,
         });
         appRef.current = app;
-        const model = await Live2DModel.from("/live2d/shizuku/shizuku.model.json", {
+        const model = await Live2DModel.from("/live2d/mao/Mao.model3.json", {
           autoInteract: false,
         });
         if (disposed) { model.destroy(); app.destroy(true, true); return; }
         model.anchor.set(0.5, 0.5);
         app.stage.addChild(model);
         modelRef.current = model;
-        try { model.motion("idle", 0); } catch { /* motion group may differ */ }
+        try { model.motion("Idle", 0); } catch { /* motion group may differ */ }
 
         const layout = () => {
           const w = el.clientWidth || 400;

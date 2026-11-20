@@ -51,6 +51,30 @@ def summary_messages(brief: dict[str, Any], history: list[dict]) -> list[dict]:
     ]
 
 
+STREAM_SYSTEM = """You are Mira, the live English conversation coach.
+You speak ONLY English. NEVER output Chinese or any other language.
+Reply in 1-3 short natural English sentences. No JSON, no markdown, no labels.
+Keep the learner talking; at most one question."""
+
+
+def coach_stream_messages(brief: dict[str, Any], history: list[dict], user_text: str) -> list[dict]:
+    convo = []
+    for m in (history or [])[-10:]:
+        role = m.get("role")
+        text = str(m.get("text") or "").strip()
+        if role in ("user", "assistant") and text and not guard.has_cjk(text):
+            convo.append({"role": role, "content": text[:600]})
+    payload = {
+        "learner_brief": brief,
+        "recent_conversation": convo,
+        "user_message": (user_text or "")[:800],
+    }
+    return [
+        {"role": "system", "content": STREAM_SYSTEM},
+        {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+    ]
+
+
 def coach_messages(brief: dict[str, Any], history: list[dict], user_text: str,
                    strict: bool = False) -> list[dict]:
     system = SYSTEM

@@ -38,6 +38,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const listeningRef = useRef(false);
   const recorder = useVadRecorder();
   const scroller = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => { liveRef.current = live; }, [live]);
   useEffect(() => { busyRef.current = busy; }, [busy]);
@@ -90,40 +91,98 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     }
   };
 
+  const streamTurn = async (t: string, hist: any[], signal: AbortSignal, onDelta: (acc: string) => void) => {
+    const res = await fetch("/api/coach/turn/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domain, text: t, history: hist }),
+      signal,
+    });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    const reader = res.body!.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    let acc = "";
+    let final: any = null;
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx: number;
+      while ((idx = buf.indexOf("\n\n")) >= 0) {
+        const raw = buf.slice(0, idx).trim();
+        buf = buf.slice(idx + 2);
+        if (!raw.startsWith("data:")) continue;
+        const ev = JSON.parse(raw.slice(5).trim());
+        if (ev.type === "delta") { acc += ev.text; onDelta(acc); }
+        else if (ev.type === "done") { final = ev; }
+      }
+    }
+    return final || { reply: acc || "Let's keep going in English.", mood: "warm", gesture: "nod", correction: "" };
+  };
+
   const send = async (raw: string) => {
     const t = raw.trim();
     if (!t || busyRef.current) return;
     if (listeningRef.current) { recorder.stop(); setListening(false); }
     setText("");
-    setMessages((m) => [...m, { role: "user", text: t }]);
+    setMessages((m) => [...m, { role: "user", text: t }, { role: "assistant", text: "" }]);
     setBusy(true); busyRef.current = true;
     setMood("thinking"); setGesture("chin_tap"); setListening(false);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    // 全双工：模型还没生成时就开始监听，用户可插话并中止生成
+    if (liveRef.current) await beginListening(true, true);
+    const onDelta = (acc: string) => {
+      setMessages((m) => {
+        const copy = [...m];
+        const last = copy[copy.length - 1];
+        copy[copy.length - 1] = { ...last, text: acc };
+        return copy;
+      });
+    };
     try {
-      const out = await api.coachTurn(domain, t, history);
-      setMessages((m) => [...m, {
-        role: "assistant", text: out.reply || "Let's keep going in English.",
-        correction: out.correction || "",
-      }]);
+      const out = await streamTurn(t, history, controller.signal, onDelta);
+      setMessages((m) => {
+        const copy = [...m];
+        const last = copy[copy.length - 1];
+        copy[copy.length - 1] = {
+          role: "assistant",
+          text: out.reply || "Let's keep going in English.",
+          correction: out.correction || "",
+        };
+        return copy;
+      });
       setMood(out.mood || "warm"); setGesture(out.gesture || "nod");
       setBusy(false); busyRef.current = false;
-      // 全双工：在 Mira 开口前就开始监听，用户可随时插话
-      if (liveRef.current) await beginListening(true);
       await playTeacher(out.reply || "Let's keep going in English.");
-    } catch {
-      setMessages((m) => [...m, { role: "assistant", text: "I lost that one. Could you try again in English?" }]);
-      setMood("confused"); setGesture("shrug"); setBusy(false); busyRef.current = false;
+    } catch (e) {
+      const aborted = controller.signal.aborted || (e as any)?.name === "AbortError";
+      setBusy(false); busyRef.current = false;
+      if (!aborted) {
+        setMessages((m) => {
+          const copy = [...m];
+          const last = copy[copy.length - 1];
+          copy[copy.length - 1] = { role: "assistant", text: "I lost that one. Could you try again in English?" };
+          return copy;
+        });
+        setMood("confused"); setGesture("shrug");
+      }
+      // 被插话打断：保留已生成的部分，等用户这句话说完自动发下一轮
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
     }
   };
 
   const bargeIn = () => {
-    if (!speakingRef.current) return;
-    stopMira();
+    abortRef.current?.abort();
+    if (speakingRef.current) stopMira();
     setSpeaking(false); speakingRef.current = false; setAmplitude(0);
     setMood("curious"); setGesture("lean_in");
   };
 
-  const beginListening = async (high = false) => {
-    if (busyRef.current || listeningRef.current) return;
+  const beginListening = async (high = false, allowBusy = false) => {
+    if ((busyRef.current && !allowBusy) || listeningRef.current) return;
     setListening(true); listeningRef.current = true; setMood("curious"); setGesture("lean_in");
     // Mira 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
     const threshold = high || speakingRef.current ? 0.035 : 0.018;

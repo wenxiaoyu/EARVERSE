@@ -141,3 +141,17 @@ def test_brief_includes_coach_feedback():
     b = context.brief(p, "work")
     assert b["coach_next_focus"] == ["Try past tense"]
     assert b["coach_last_summary"] == "Good session."
+
+
+def test_end_sets_tomorrow_goal_from_next_focus():
+    class LLM:
+        async def chat(self, messages, **kw):
+            return ('{"summary":"Good.","wins":[],"gaps":[],'
+                    '"next_focus":["Practice past tense"],"corrections":[]}')
+    p = m.empty_profile()
+    out = run(service.end(LLM(), p, "work",
+               [{"role": "user", "text": "I goed home"}]))
+    assert out["tomorrow_goal"] == "Practice past tense"
+    d = m.ensure_domain(p, "work")
+    assert d["goal"]["text"] == "Practice past tense"
+    assert d["goal"]["for_date"] == m.local_date(1)

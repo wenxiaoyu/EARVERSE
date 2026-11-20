@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import uuid
 from pathlib import Path
 from typing import Any
@@ -1138,6 +1139,21 @@ async def coach_turn(request: Request):
         _llm(), _profile(), str(body.get("domain") or "work"),
         str(body.get("text") or ""), body.get("history") or [],
     )
+
+
+@app.post("/api/coach/turn/stream")
+async def coach_turn_stream(request: Request):
+    body = await request.json()
+
+    async def gen():
+        async for ev in coach.stream_turn(
+            _llm(), _profile(), str(body.get("domain") or "work"),
+            str(body.get("text") or ""), body.get("history") or [],
+        ):
+            yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache"})
 
 
 @app.post("/api/coach/end")
