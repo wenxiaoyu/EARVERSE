@@ -1223,3 +1223,81 @@ input[type=range].range::-moz-range-thumb{
 }
 input[type=range].range::-moz-range-track{height:6px;border-radius:999px;background:#2a221b}
 input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;background:var(--amber)}
+
+/* ============ 报告：分享笔记 ============ */
+.share-mask{position:fixed;inset:0;z-index:600;background:rgba(8,6,5,.62);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:sdFade .18s ease}
+.share-modal{width:min(1020px,96vw);max-height:94vh;overflow:auto;padding:20px 22px 22px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid rgba(232,163,61,.28);
+  border-radius:18px;box-shadow:0 40px 100px -30px #000;animation:sdIn .22s cubic-bezier(.2,.9,.2,1)}
+.share-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+.share-kicker{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase}
+.share-head h3{font-family:var(--serif);font-size:24px;margin:3px 0 2px}
+.share-head p{margin:0;color:var(--muted);font-size:12.5px}
+.share-close{flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:transparent;border:1px solid var(--hair);
+  color:var(--muted);font-size:19px;line-height:1;cursor:pointer}
+.share-close:hover{color:var(--ink);border-color:rgba(232,163,61,.55)}
+.share-layout{display:grid;grid-template-columns:540px minmax(0,1fr);gap:24px;align-items:start}
+.share-preview{min-width:0}
+.share-side{min-width:0;padding-top:2px}
+.share-tabs{display:inline-flex;gap:4px;background:#191411;border:1px solid var(--hair);border-radius:10px;padding:3px;margin-bottom:12px}
+.share-tabs button{background:transparent;border:0;color:var(--muted);font-family:var(--sans);font-size:13px;padding:7px 14px;border-radius:8px;cursor:pointer}
+.share-tabs button.on{background:rgba(232,163,61,.14);color:var(--ink)}
+.share-side label{margin-top:0}
+.share-side textarea{width:100%;min-height:170px;resize:vertical;line-height:1.7;font-size:13.5px}
+.share-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.share-privacy{font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px;border-top:1px dashed var(--hair);padding-top:10px}
+.share-loading,.share-error{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px}
+.share-error b{color:var(--ink);font-size:16px}
+.share-error .btn{margin-top:4px}
+
+/* 3:4 分享卡（540×720，导出 2x = 1080×1440） */
+.sn-card{position:relative;width:540px;height:720px;box-sizing:border-box;padding:38px 40px 64px;
+  background:radial-gradient(900px 500px at 85% -10%,rgba(232,163,61,.16),transparent 55%),
+             linear-gradient(160deg,#F7EFE2 0%,#F1E6D5 58%,#EADDC8 100%);
+  color:#241B12;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;
+  font-family:var(--sans);box-shadow:0 24px 60px -30px rgba(0,0,0,.75)}
+.sn-card:before{content:"";position:absolute;inset:14px;border:1px solid rgba(70,50,28,.14);border-radius:14px;pointer-events:none}
+.sn-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.sn-brand{font-family:var(--serif);font-size:21px;font-weight:900;letter-spacing:.02em}
+.sn-brand small{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.24em;color:#8b7458;font-weight:500;margin-top:3px}
+.sn-day{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#8b7458;border:1px solid rgba(70,50,28,.2);border-radius:999px;padding:4px 9px}
+.sn-verdict{align-self:flex-start;margin-top:26px;font-size:14px;font-weight:700;padding:6px 13px;border-radius:999px;background:rgba(185,121,31,.12);color:#9a5f14;border:1px solid rgba(185,121,31,.28)}
+.sn-verdict.worse{background:rgba(178,58,50,.10);color:#a3342d;border-color:rgba(178,58,50,.28)}
+.sn-verdict.same,.sn-verdict.no_baseline,.sn-verdict.no_compare{background:rgba(60,48,34,.08);color:#6e5b45;border-color:rgba(60,48,34,.18)}
+.sn-metrics{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:22px;border-top:1px solid rgba(70,50,28,.16);border-bottom:1px solid rgba(70,50,28,.16)}
+.sn-metric{padding:18px 4px 16px;display:flex;flex-direction:column;gap:4px}
+.sn-metric + .sn-metric{border-left:1px solid rgba(70,50,28,.16);padding-left:22px}
+.sn-metric-lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#8b7458}
+.sn-metric b{font-family:var(--serif);font-size:38px;line-height:1.05;font-weight:900;color:#241B12}
+.sn-delta{font-family:var(--mono);font-size:12px;font-style:normal;color:#4F7A3A}
+.sn-delta.down{color:#B23A32}
+.sn-delta.flat{color:#8b7458}
+.sn-lines{margin-top:20px;display:flex;flex-direction:column;gap:11px;position:relative;z-index:1}
+.sn-lines > div{display:flex;gap:12px;align-items:flex-start}
+.sn-lines b{flex:0 0 68px;font-size:11px;letter-spacing:.08em;color:#9a5f14;font-weight:700;padding-top:2px}
+.sn-lines span{flex:1 1 auto;font-size:16px;line-height:1.55;color:#3b2d20;min-width:0;
+  white-space:nowrap}
+.sn-quote{font-family:var(--serif);font-size:38px;line-height:1.5;font-weight:900;letter-spacing:-.02em;margin-top:34px;color:#241B12;position:relative;z-index:1}
+.sn-quote-metrics{display:flex;flex-wrap:wrap;gap:18px;margin-top:auto;padding-top:18px;border-top:1px solid rgba(70,50,28,.16);font-family:var(--mono);font-size:11px;color:#8b7458}
+.sn-quote-metrics b{color:#241B12;font-size:14px}
+.sn-quote-metrics .sn-delta{font-size:11px;margin-left:4px}
+.sn-foot{position:absolute;left:40px;right:40px;bottom:30px;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:#8b7458;border-top:1px solid rgba(70,50,28,.16);padding-top:12px}
+@media(max-width:900px){
+  .share-layout{grid-template-columns:1fr}
+  .share-preview{display:flex;justify-content:center;overflow:auto}
+  .sn-card{transform:scale(.78);transform-origin:top center;margin-bottom:-158px}
+}
+@media(max-width:560px){
+  .sn-card{transform:scale(.58);margin-bottom:-300px}
+  .share-modal{padding:16px}
+}
+
+/* 分享卡补充：避免大面积留白 */
+.sn-score-quote{margin-top:auto;padding-top:18px;border-top:1px solid rgba(70,50,28,.16);
+  font-family:var(--serif);font-size:20px;line-height:1.5;color:#5a4632;letter-spacing:-.01em}
+.sn-quote-notes{margin-top:26px;display:flex;flex-direction:column;gap:9px;position:relative;z-index:1}
+.sn-quote-notes span{display:block;font-size:14px;line-height:1.55;color:#3b2d20;min-width:0;
+  white-space:nowrap}
+.sn-quote-notes b{display:inline-block;min-width:64px;font-size:10px;letter-spacing:.08em;color:#9a5f14;margin-right:6px}

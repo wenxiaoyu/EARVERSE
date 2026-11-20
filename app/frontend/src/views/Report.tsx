@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import RichText from "../components/RichText";
 import Tip from "../components/Tip";
+import ShareNote from "../components/ShareNote";
 
 function ymd(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -58,6 +59,7 @@ export default function Report({ domain }: { domain: string }) {
   const [detail, setDetail] = useState<any>(null);
   const [detailBusy, setDetailBusy] = useState(false);
   const [subTab, setSubTab] = useState<"overview" | "calendar">("overview");
+  const [shareOpen, setShareOpen] = useState(false);
   const [calMode, setCalMode] = useState<"day" | "week" | "month">("month");
   const [weekMap, setWeekMap] = useState<Record<string, any>>({});
 
@@ -245,9 +247,12 @@ export default function Report({ domain }: { domain: string }) {
       <h1>你在变好吗？</h1>
       <p className="sub">掌握构成、盲区、发音、毕业进度，一眼看清。</p>
 
-      <div className="seg" style={{ marginBottom: 16 }}>
-        <button className={subTab === "overview" ? "on" : ""} onClick={() => setSubTab("overview")}>概览</button>
-        <button className={subTab === "calendar" ? "on" : ""} onClick={() => setSubTab("calendar")}>日历</button>
+      <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
+        <div className="seg">
+          <button className={subTab === "overview" ? "on" : ""} onClick={() => setSubTab("overview")}>概览</button>
+          <button className={subTab === "calendar" ? "on" : ""} onClick={() => setSubTab("calendar")}>日历</button>
+        </div>
+        <button className="btn sm" onClick={() => setShareOpen(true)}>生成分享笔记</button>
       </div>
 
       {subTab === "overview" && (
@@ -486,6 +491,8 @@ export default function Report({ domain }: { domain: string }) {
         {dayDetail}
       </>
       )}
+
+      <ShareNote domain={domain} open={shareOpen} onClose={() => setShareOpen(false)} />
     </section>
   );
 }

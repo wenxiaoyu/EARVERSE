@@ -19,6 +19,26 @@ from ..llm import prompts
 _CJK = re.compile(r"[\u4e00-\u9fff]")
 
 
+
+def _strip_speaker_prefix(text: str, session: dict[str, Any]) -> str:
+    """去掉模型学舌产生的 “Mark: Mark: ...” 前缀；只清理已知角色名。"""
+    t = (text or "").strip()
+    names = {(c.get("name") or "").strip() for c in (session.get("cast") or [])}
+    names = sorted((n for n in names if n), key=len, reverse=True)
+    if not names:
+        return t
+    pattern = re.compile(
+        r"^\s*(?:\*\*)?(?:" + "|".join(re.escape(n) for n in names) +
+        r")(?:\*\*)?\s*:\s*", re.I,
+    )
+    for _ in range(6):
+        cleaned = pattern.sub("", t, count=1)
+        if cleaned == t:
+            break
+        t = cleaned
+    return t.strip()
+
+
 def start_session(scenario_id: str, domain: str | None = None) -> dict[str, Any]:
     scenario = seeddata.scenario_by_id(scenario_id)
     if scenario is None:
@@ -75,7 +95,8 @@ def build_actor_messages(session: dict, speaker: dict[str, Any],
                          user_text: str) -> list[dict]:
     others = [c for c in (session.get("cast") or []) if c.get("id") != speaker.get("id")]
     history = [
-        {"role": t["role"], "text": t["text"], "by_name": t.get("by_name", "")}
+        {"role": t["role"], "text": _strip_speaker_prefix(t.get("text", ""), session),
+         "by_name": t.get("by_name", "")}
         for t in session.get("history", [])
     ]
     return prompts.actor_messages(
@@ -138,6 +159,7 @@ async def actor_reply(llm, session: dict, user_text: str) -> dict[str, Any]:
             pass
         if _CJK.search(text):
             text = "Sorry, I didn't quite catch that — could you say it again?"
+    text = _strip_speaker_prefix(text, session)
     session["history"].append({"role": "assistant", "by": speaker.get("id"),
                                 "by_name": speaker.get("name", ""), "text": text})
     return {"by": speaker.get("id"), "by_name": speaker.get("name", ""), "text": text}

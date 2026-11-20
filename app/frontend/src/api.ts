@@ -85,6 +85,8 @@ export const api = {
   generate: (domain: string, kind = "cards", count = 10) =>
     json<any>("/api/generate", { method: "POST", body: JSON.stringify({ domain, kind, count }) }),
   report: (domain: string, period = "week") => json<any>(`/api/report?domain=${domain}&period=${period}`),
+  shareNote: (domain: string) =>
+    json<any>("/api/share/note", { method: "POST", body: JSON.stringify({ domain }) }),
   recitationToday: (domain: string) =>
     json<any>(`/api/recitation/today?domain=${encodeURIComponent(domain)}`),
   recitationGenerate: (domain: string) =>

@@ -106,7 +106,9 @@ def actor_messages(goal: str, role_name: str, role_role: str, stance: str,
         "If the user uses Chinese, still answer in character, in English.\n"
         "Speak natural spoken English with realistic reductions (gonna, wanna, fer, kinda). "
         "Keep each turn to 1-3 sentences. Stay in character. Never mention you are an AI. "
-        "Never correct the user's English during the conversation."
+        "Never correct the user's English during the conversation. "
+        "Never start your reply with your name, a speaker label, or 'Name:' — "
+        "output only the spoken words."
     )
     messages = [{"role": "system", "content": system}]
     for turn in history:
@@ -396,4 +398,36 @@ def recitation_review_messages(domain: str, passage: dict, transcript: str,
         f"评分: {_dump(scores)}\n"
         f"漏点: {_dump(missed)}"
     )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+# ---------------------------------------------------------------- 分享笔记
+
+def share_note_messages(domain: str, facts: dict) -> list[dict]:
+    payload = {
+        "day_no": facts.get("day_no"),
+        "verdict": facts.get("verdict_label"),
+        "metrics": facts.get("metrics"),
+        "better": facts.get("better"),
+        "worse": facts.get("worse"),
+        "next": facts.get("next"),
+        "quote": facts.get("quote"),
+        "today": facts.get("today"),
+    }
+    system = (
+        "你是英语学习者的朋友，不是营销号。写一条小红书风格的学习日记。\n"
+        "硬性要求：\n"
+        "- 只使用给定 facts 里的数字和结论，绝不编造分数、天数、效果；\n"
+        "- 文案必须和 verdict 一致：说退步时不要写“有进步/变好”，说变好时不要写“退步”；\n"
+        "- 第一行固定：用耳界练英语的第 N 天。N 用 facts.day_no；\n"
+        "- 正文 3–5 行：一个真实进步、一个具体卡点、一个明天动作；\n"
+        "- 每条不超过 20 个汉字，避免长句；\n"
+        "- 口语化、具体、有共鸣，不写“英语大神”“30 天流利”这类夸张承诺；\n"
+        "- 不出现具体错误原句、录音、公司名、真实姓名；\n"
+        "- 最后一句固定：有一起练的吗？评论区打卡，我们互相盯着。\n"
+        "- 再附话题标签：英语听力 / 职场英语 / 英语打卡 / 成人英语。\n"
+        '输出 JSON: {"quote":"一句（≤28字）",'
+        '"caption":"完整小红书文案","hashtags":["#英语听力",...]}' 
+    )
+    user = f"场景: {domain}\n事实: {_dump(payload)}"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]

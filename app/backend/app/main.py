@@ -31,6 +31,7 @@ from .llm.client import LLMClient
 from .recitation import service as recitation
 from .reports import service as reports
 from .scenarios import engine as scenarios
+from .share import service as share
 from .speech import asr as speech_asr
 from .speech import tts as speech_tts
 from .storage import ProfileStorage
@@ -1112,6 +1113,13 @@ async def generate(request: Request):
 async def report(domain: str = "work", period: str = "week"):
     profile = _profile()
     return await reports.build_report(_llm(), domain, period, profile)
+
+
+@app.post("/api/share/note")
+async def share_note(request: Request):
+    body = await request.json()
+    domain = str(body.get("domain") or "work")
+    return await share.build_note(_llm(), domain, _profile())
 
 
 @app.post("/api/speech/tts")
