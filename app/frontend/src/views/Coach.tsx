@@ -1,10 +1,8 @@
-import { FormEvent, Suspense, lazy, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { playMira, stopMira } from "../voice";
-import TeacherAvatar from "../components/TeacherAvatar";
+import MascotAvatar from "../components/MascotAvatar";
 import type { MiraGesture, MiraMood } from "../components/TeacherAvatar";
-
-const DigitalHumanStage = lazy(() => import("../components/DigitalHumanStage"));
 import { useVadRecorder } from "../components/useVadRecorder";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
@@ -268,9 +266,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
             {busy ? "Mira 思考中…" : speaking ? "Mira 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
           </div>
-          <Suspense fallback={<TeacherAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />}>
-            <DigitalHumanStage mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
-          </Suspense>
+          <MascotAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
           <div className="coach-context">
             {focus && <span>Focus · {focus}</span>}
             {brief.active_days_this_week != null && <span>{brief.active_days_this_week} active days this week</span>}
