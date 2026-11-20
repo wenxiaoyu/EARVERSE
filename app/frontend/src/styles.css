@@ -1401,9 +1401,8 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
   border:1px solid rgba(127,176,105,.3);border-radius:999px;padding:5px 9px;background:rgba(127,176,105,.06)}
 .coach-room{display:block;position:relative;flex:1;min-height:calc(100vh - 130px)}
 .shell.coach-fill .coach-room{height:100%;min-height:0}
-.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;
-  background:radial-gradient(80% 60% at 50% 30%,rgba(232,163,61,.10),transparent 70%),linear-gradient(180deg,rgba(24,28,23,.9),rgba(16,19,16,.96))}
-.coach-stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(242,235,223,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(242,235,223,.025) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);pointer-events:none}
+.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;background:transparent}
+.coach-stage:before{display:none}
 .coach-stage .mira-avatar{position:absolute;inset:0;z-index:1;max-height:none;max-width:none;margin:0}
 .coach-status{position:absolute;top:16px;left:18px;z-index:2;display:flex;align-items:center;gap:7px;
   font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted)}
