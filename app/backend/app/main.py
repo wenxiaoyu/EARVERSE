@@ -1213,4 +1213,10 @@ async def speech_asr_endpoint(file: UploadFile = File(...)):
 # ---------------------------------------------------------------- 静态托管
 
 if FRONTEND_DIST.exists():
+    @app.get("/", include_in_schema=False)
+    async def root_index():
+        # 强制浏览器每次取最新 index.html，避免引用旧 hash 资源
+        idx = FRONTEND_DIST / "index.html"
+        return FileResponse(str(idx), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="static")
