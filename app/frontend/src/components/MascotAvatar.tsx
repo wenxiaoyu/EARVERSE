@@ -68,12 +68,13 @@ export default function MascotAvatar({
         <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
         <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" style={speaking ? { opacity: 0 } : undefined} />
 
-        {/* 说话声波涟漪：发光能量核 + 向外扩散的圆弧 */}
-        <g className="mascot-sonar">
-          <circle className="mascot-sonar-ring s1" cx="160" cy="250" r="8" />
-          <circle className="mascot-sonar-ring s2" cx="160" cy="250" r="16" />
-          <circle className="mascot-sonar-ring s3" cx="160" cy="250" r="24" />
-          <circle className="mascot-sonar-core" cx="160" cy="250" r="3.5" />
+        {/* 说话动作：嘴巴旁弹出对话气泡 + 三点依次亮起 */}
+        <g className="mascot-talk">
+          <rect className="mascot-talk-bubble" x="176" y="212" width="64" height="32" rx="9" fill="#f4fffd" />
+          <path className="mascot-talk-bubble" d="M176 232 l-12 9 7 -15 Z" fill="#f4fffd" />
+          <circle className="mascot-talk-dot d1" cx="192" cy="228" r="3" />
+          <circle className="mascot-talk-dot d2" cx="208" cy="228" r="3" />
+          <circle className="mascot-talk-dot d3" cx="224" cy="228" r="3" />
         </g>
       </g>
     </svg>
