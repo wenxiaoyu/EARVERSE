@@ -68,11 +68,13 @@ export default function MascotAvatar({
         <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
         <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" />
 
-        {/* 说话声波弧线 */}
-        <g className="mascot-speech" stroke="#f2c87d" strokeWidth="5" strokeLinecap="round" fill="none">
-          <path className="w1" d="M92 220c-9 6-13 14-13 22" />
-          <path className="w2" d="M84 210c-14 10-21 22-21 34" />
-          <path className="w3" d="M76 200c-19 14-29 30-29 46" />
+        {/* 说话电波：嘴巴位置的一组均衡柱，说话时替代嘴巴 */}
+        <g className="mascot-waveform" fill="#f2c87d">
+          <rect className="bar b1" x="138" y="234" width="5" height="14" rx="2.5" />
+          <rect className="bar b2" x="148" y="228" width="5" height="20" rx="2.5" />
+          <rect className="bar b3" x="158" y="224" width="5" height="24" rx="2.5" />
+          <rect className="bar b4" x="168" y="228" width="5" height="20" rx="2.5" />
+          <rect className="bar b5" x="178" y="234" width="5" height="14" rx="2.5" />
         </g>
       </g>
     </svg>
