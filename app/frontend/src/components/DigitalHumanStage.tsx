@@ -22,6 +22,7 @@ export default function DigitalHumanStage({
     let observer: ResizeObserver | null = null;
     let renderer: THREE.WebGLRenderer | null = null;
     let model: THREE.Group | null = null;
+    let baseY = 0;
     let raf = 0;
     let resetTimer = 0;
     const clock = new THREE.Clock();
@@ -65,7 +66,8 @@ export default function DigitalHumanStage({
       const scale = Math.min(targetWidth / size.x, targetHeight / size.y);
       const targetY = 0.8;
       model.scale.setScalar(scale);
-      model.position.set(-center.x * scale, targetY - center.y * scale, -center.z * scale);
+      baseY = targetY - center.y * scale;
+      model.position.set(-center.x * scale, baseY, -center.z * scale);
       camera.position.y = targetY;
       camera.lookAt(0, targetY, 0);
     };
@@ -95,15 +97,24 @@ export default function DigitalHumanStage({
     const onGesture = (e: Event) => {
       const d = (e as CustomEvent).detail || {};
       const head = headRef.current;
-      if (!head) return;
-      head.rotation.x = 0;
-      head.rotation.z = 0;
-      if (d.gesture === "nod") head.rotation.x = 0.3;
-      else if (d.gesture === "lean_in") { head.rotation.x = 0.15; head.rotation.z = 0.08; }
-      else if (d.gesture === "chin_tap" || d.mood === "thinking") head.rotation.z = 0.2;
+      if (head) {
+        head.rotation.x = 0;
+        head.rotation.z = 0;
+        if (d.gesture === "nod") head.rotation.x = 0.3;
+        else if (d.gesture === "lean_in") { head.rotation.x = 0.15; head.rotation.z = 0.08; }
+        else if (d.gesture === "chin_tap" || d.mood === "thinking") head.rotation.z = 0.2;
+      } else if (model) {
+        model.userData.nodX = 0;
+        model.userData.nodY = 0;
+        model.userData.nodZ = 0;
+        if (d.gesture === "nod") model.userData.nodX = 0.12;
+        else if (d.gesture === "lean_in") model.userData.nodX = 0.08;
+        else if (d.gesture === "chin_tap" || d.mood === "thinking") model.userData.nodY = 0.2;
+      }
       window.clearTimeout(resetTimer);
       resetTimer = window.setTimeout(() => {
         if (headRef.current) { headRef.current.rotation.x = 0; headRef.current.rotation.z = 0; }
+        else if (model) { model.userData.nodX = 0; model.userData.nodY = 0; model.userData.nodZ = 0; }
       }, 900);
     };
     window.addEventListener("mira-gesture", onGesture);
