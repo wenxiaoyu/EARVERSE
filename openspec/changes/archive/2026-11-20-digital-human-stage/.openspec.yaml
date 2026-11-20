@@ -1,0 +1,13 @@
+schema: spec-driven
+created: 2026-11-20
+
+workflow:
+  current_phase: verify
+  phases:
+    explore: { status: skipped, fast_path: true }
+    propose: { status: passed }
+    apply: { status: passed }
+    review: { status: passed }
+    verify: { status: passed }
+    doc: { status: in_progress }
+    archive: { status: pending }

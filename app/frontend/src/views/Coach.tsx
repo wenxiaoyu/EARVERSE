@@ -4,7 +4,7 @@ import { playMira, stopMira } from "../voice";
 import TeacherAvatar from "../components/TeacherAvatar";
 import type { MiraGesture, MiraMood } from "../components/TeacherAvatar";
 
-const Live2DStage = lazy(() => import("../components/Live2DStage"));
+const DigitalHumanStage = lazy(() => import("../components/DigitalHumanStage"));
 import { useVadRecorder } from "../components/useVadRecorder";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
@@ -269,7 +269,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
             {busy ? "Mira 思考中…" : speaking ? "Mira 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
           </div>
           <Suspense fallback={<TeacherAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />}>
-            <Live2DStage mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
+            <DigitalHumanStage mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
           </Suspense>
           <div className="coach-context">
             {focus && <span>Focus · {focus}</span>}
