@@ -85,6 +85,23 @@ export const api = {
   generate: (domain: string, kind = "cards", count = 10) =>
     json<any>("/api/generate", { method: "POST", body: JSON.stringify({ domain, kind, count }) }),
   report: (domain: string, period = "week") => json<any>(`/api/report?domain=${domain}&period=${period}`),
+  coachStart: (domain: string) =>
+    json<any>("/api/coach/start", { method: "POST", body: JSON.stringify({ domain }) }),
+  coachTurn: (domain: string, text: string, history: any[] = []) =>
+    json<any>("/api/coach/turn", {
+      method: "POST",
+      body: JSON.stringify({ domain, text, history }),
+    }),
+  speechTts: (text: string) =>
+    track((async () => {
+      const res = await fetch("/api/speech/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, style: "plain", speed: 0.96 }),
+      });
+      if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+      return res.blob();
+    })()),
   shareNote: (domain: string) =>
     json<any>("/api/share/note", { method: "POST", body: JSON.stringify({ domain }) }),
   recitationToday: (domain: string) =>

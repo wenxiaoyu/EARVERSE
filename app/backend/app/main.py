@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response, StreamingRes
 from fastapi.staticfiles import StaticFiles
 
 from . import models, seeddata
+from .coach import service as coach
 from .assessment import ai as ai_assess
 from .pronunciation import service as pronunciation
 from .config import LLMConfig, load_config, public_view, save_config
@@ -1120,6 +1121,21 @@ async def share_note(request: Request):
     body = await request.json()
     domain = str(body.get("domain") or "work")
     return await share.build_note(_llm(), domain, _profile())
+
+
+@app.post("/api/coach/start")
+async def coach_start(request: Request):
+    body = await request.json()
+    return await coach.start(_profile(), str(body.get("domain") or "work"))
+
+
+@app.post("/api/coach/turn")
+async def coach_turn(request: Request):
+    body = await request.json()
+    return await coach.turn(
+        _llm(), _profile(), str(body.get("domain") or "work"),
+        str(body.get("text") or ""), body.get("history") or [],
+    )
 
 
 @app.post("/api/speech/tts")

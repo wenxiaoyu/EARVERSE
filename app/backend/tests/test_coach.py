@@ -1,0 +1,107 @@
+import sys, pathlib, asyncio
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from app import models as m
+from app.coach import context, guard, prompts, service
+
+
+class FakeLLM:
+    def __init__(self, text):
+        self.text = text
+        self.calls = 0
+    async def chat(self, messages, **kw):
+        self.calls += 1
+        return self.text
+
+
+def run(c):
+    return asyncio.run(c)
+
+
+def test_guard_chinese_and_english():
+    assert guard.has_cjk("你好")
+    assert not guard.is_english_input("你好")
+    assert guard.is_english_input("Hello there")
+    r = guard.redirect()
+    assert r["blocked"] is True
+    assert not guard.has_cjk(r["reply"])
+
+
+def test_brief_is_english_only_and_has_context():
+    p = m.empty_profile()
+    b = context.brief(p, "work")
+    raw = str(b)
+    assert not guard.has_cjk(raw)
+    assert "domain" in b and "metrics" in b and "today_goal" in b
+    assert not guard.has_cjk(context.greeting(b))
+
+
+def test_start_returns_english_greeting():
+    p = m.empty_profile()
+    out = run(service.start(p, "work"))
+    assert out["english_only"] is True
+    assert not guard.has_cjk(out["greeting"])
+
+
+def test_turn_chinese_is_blocked_without_llm():
+    p = m.empty_profile()
+    llm = FakeLLM('{"reply":"你好"}')
+    out = run(service.turn(llm, p, "work", "你好，今天怎么样？", []))
+    assert out["blocked"] is True
+    assert llm.calls == 0
+    assert not guard.has_cjk(out["reply"])
+
+
+def test_turn_structured_english():
+    p = m.empty_profile()
+    llm = FakeLLM('{"reply":"That sounds interesting. What happened next?",'
+                  '"correction":"I was swamped.","mood":"curious","gesture":"lean_in"}')
+    out = run(service.turn(llm, p, "work", "I am busy today", []))
+    assert out["reply"].startswith("That sounds")
+    assert out["correction"] == "I was swamped."
+    assert out["gesture"] == "lean_in"
+    assert out["blocked"] is False
+    assert not guard.has_cjk(out["reply"])
+
+
+def test_turn_llm_chinese_falls_back_to_english():
+    p = m.empty_profile()
+    llm = FakeLLM('{"reply":"你好，我是Mira","mood":"warm","gesture":"nod"}')
+    out = run(service.turn(llm, p, "work", "hello", []))
+    assert not guard.has_cjk(out["reply"])
+    assert out["reply"]
+
+
+def test_prompt_hard_rules():
+    p = m.empty_profile()
+    b = context.brief(p, "work")
+    msgs = prompts.coach_messages(b, [], "hello")
+    assert "ONLY English" in msgs[0]["content"]
+    assert "Chinese" in msgs[0]["content"]
+    assert "reply" in msgs[0]["content"]
+
+
+def test_turn_retries_after_chinese_output():
+    class SeqLLM:
+        def __init__(self): self.calls = 0
+        async def chat(self, *a, **k):
+            self.calls += 1
+            if self.calls == 1:
+                return '{"reply":"你好，很高兴见到你","mood":"warm","gesture":"nod"}'
+            return '{"reply":"Hi, good to see you. What would you like to talk about?","mood":"warm","gesture":"nod"}'
+    p = m.empty_profile(); llm = SeqLLM()
+    out = run(service.turn(llm, p, "work", "hello", []))
+    assert llm.calls == 2
+    assert not guard.has_cjk(out["reply"])
+    assert "good to see you" in out["reply"]
+
+
+def test_guard_fullwidth_punctuation():
+    assert guard.has_cjk("Hello，Mira")
+    assert not guard.is_english_input("Hello，Mira")
+
+
+def test_no_llm_local_fallback():
+    p = m.empty_profile()
+    out = run(service.turn(None, p, "work", "Hello", []))
+    assert out["english_only"] is True
+    assert not guard.has_cjk(out["reply"])

@@ -1,0 +1,87 @@
+/* 浏览器自动停顿录音：检测到说话后，静音约 800ms 自动结束。
+   输出 16-bit PCM WAV，供 DeepSeek ASR 使用。 */
+import { useRef } from "react";
+import { encodeWav } from "../wavRecorder";
+
+type Cb = (blob: Blob) => void;
+
+export function useVadRecorder() {
+  const ref = useRef<{
+    ctx?: AudioContext; stream?: MediaStream; node?: ScriptProcessorNode;
+    an?: AnalyserNode; gain?: GainNode; chunks: Float32Array[]; active: boolean;
+    speech: boolean; silence: number; started: number; timer?: number;
+    done?: Cb;
+  }>({ chunks: [], active: false, speech: false, silence: 0, started: 0 });
+
+  const cleanup = () => {
+    const r = ref.current;
+    if (r.timer) window.clearInterval(r.timer);
+    r.timer = undefined;
+    r.node?.disconnect();
+    r.an?.disconnect();
+    r.gain?.disconnect();
+    r.stream?.getTracks().forEach((t) => t.stop());
+    r.ctx?.close().catch(() => {});
+    r.ctx = undefined; r.stream = undefined; r.node = undefined; r.an = undefined; r.gain = undefined;
+    r.active = false;
+  };
+
+  const stop = () => {
+    const r = ref.current;
+    if (!r.active) return;
+    const rate = r.ctx?.sampleRate ?? 44100;
+    const chunks = r.chunks;
+    const cb = r.done;
+    cleanup();
+    const blob = encodeWav(chunks, rate);
+    r.chunks = [];
+    if (blob.size > 44 && cb) cb(blob);
+  };
+
+  const start = async (onDone: Cb) => {
+    const r = ref.current;
+    if (r.active) return;
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
+    const ctx = new AudioContext();
+    if (ctx.state === "suspended") await ctx.resume();
+    const source = ctx.createMediaStreamSource(stream);
+    const node = ctx.createScriptProcessor(4096, 1, 1);
+    const an = ctx.createAnalyser();
+    an.fftSize = 1024;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    const chunks: Float32Array[] = [];
+    r.ctx = ctx; r.stream = stream; r.node = node; r.an = an; r.gain = gain;
+    r.chunks = chunks; r.active = true; r.speech = false; r.silence = 0;
+    r.started = Date.now(); r.done = onDone;
+    node.onaudioprocess = (e) => {
+      if (!r.active) return;
+      chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    };
+    source.connect(an);
+    an.connect(node);
+    node.connect(gain);
+    gain.connect(ctx.destination);
+    const buf = new Float32Array(an.fftSize);
+    r.timer = window.setInterval(() => {
+      if (!r.active) return;
+      an.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+      const rms = Math.sqrt(sum / buf.length);
+      if (rms > 0.018) {
+        r.speech = true;
+        r.silence = 0;
+      } else if (r.speech) {
+        r.silence += 120;
+      }
+      const tooLong = Date.now() - r.started > 45_000;
+      const silentDone = r.speech && r.silence >= 800;
+      if (tooLong || silentDone) stop();
+    }, 120);
+  };
+
+  return { start, stop };
+}

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 
-type Name = "today" | "assess" | "recite" | "scenario" | "report" | "settings" | "about";
+type Name = "today" | "assess" | "recite" | "scenario" | "coach" | "report" | "settings" | "about";
 
 const PATHS: Record<Name, ReactElement> = {
   // 今天：日出 / 当天
@@ -31,6 +31,13 @@ const PATHS: Record<Name, ReactElement> = {
     <>
       <path d="M3.5 7.5h9a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H8l-3 2v-2H3.5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2Z" />
       <path d="M17 9.5h2.5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H19v2l-2.6-1.7" />
+    </>
+  ),
+  // 陪练：麦克风
+  coach: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
     </>
   ),
   // 报告：柱状图

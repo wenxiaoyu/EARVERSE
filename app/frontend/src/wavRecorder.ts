@@ -5,7 +5,7 @@ function writeStr(view: DataView, offset: number, str: string) {
   for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
 }
 
-function encodeWav(chunks: Float32Array[], sampleRate: number): Blob {
+export function encodeWav(chunks: Float32Array[], sampleRate: number): Blob {
   let len = 0;
   for (const c of chunks) len += c.length;
   const data = new Float32Array(len);

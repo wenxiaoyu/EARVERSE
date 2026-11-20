@@ -7,10 +7,12 @@ import Scenario from "./views/Scenario";
 import Report from "./views/Report";
 import Settings from "./views/Settings";
 import About from "./views/About";
+import Coach from "./views/Coach";
+import MiraCard from "./components/MiraCard";
 import NavIcon from "./components/NavIcon";
 import SceneDrawer, { type SceneGroup } from "./components/SceneDrawer";
 
-type Tab = "today" | "assess" | "recite" | "scenario" | "report" | "settings" | "about";
+type Tab = "today" | "assess" | "recite" | "scenario" | "coach" | "report" | "settings" | "about";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "today", label: "今天" },
@@ -150,6 +152,7 @@ export default function App() {
               {t.key === "assess" && !confirmed && <span className="nd" />}
             </button>
           ))}
+          <MiraCard active={tab === "coach"} onClick={() => setTab("coach")} />
           <div className="rail-foot">
             <SceneDrawer items={SCENES} groups={SCENE_GROUPS} value={domain} onChange={setDomain} />
           </div>
@@ -175,6 +178,7 @@ export default function App() {
           )}
           {tab === "recite" && <Recitation domain={domain} />}
           {tab === "scenario" && <Scenario domain={domain} />}
+          {tab === "coach" && <Coach domain={domain} onExit={() => setTab("today")} />}
           {tab === "report" && <Report domain={domain} />}
           {tab === "settings" && <Settings onSaved={refresh} />}
           {tab === "about" && <About onStart={() => setTab("today")} />}
