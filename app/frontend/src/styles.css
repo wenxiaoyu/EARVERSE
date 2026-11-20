@@ -1490,12 +1490,14 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.gesture-lean_in .mascot-fig{animation:mascot-lean 1.2s ease-in-out}
 .mascot-avatar.listening .mascot-fig{animation:mascot-listen-fig 1.6s ease-in-out infinite}
 
-/* 说话：嘴巴隐藏，嘴巴下方显示心电图式扫描细线 */
-.mascot-waveform{filter:drop-shadow(0 0 5px rgba(98,231,208,.85))}
-.mascot-wave,.mascot-wave-base{fill:none;stroke:#62e7d0;stroke-linecap:round;stroke-linejoin:round}
-.mascot-wave-base{stroke-width:1.5;opacity:.22}
-.mascot-wave{stroke-width:2.5;stroke-dasharray:14 86;stroke-dashoffset:100;opacity:0}
-.mascot-avatar.speaking .mascot-wave{opacity:1;animation:mascot-ecg 1.1s linear infinite}
+/* 说话：嘴巴隐藏，嘴巴位置显示声波涟漪（能量核 + 扩散圆弧） */
+.mascot-sonar{stroke:#62e7d0;fill:none;stroke-linecap:round}
+.mascot-sonar path{stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+.mascot-sonar-core{fill:#62e7d0;opacity:0;filter:drop-shadow(0 0 6px rgba(98,231,208,.9));transform-box:fill-box;transform-origin:center}
+.mascot-avatar.speaking .mascot-sonar path{animation:mascot-sonar 1.2s ease-out infinite}
+.mascot-avatar.speaking .mascot-sonar .s2{animation-delay:.15s}
+.mascot-avatar.speaking .mascot-sonar .s3{animation-delay:.3s}
+.mascot-avatar.speaking .mascot-sonar-core{opacity:1;animation:mascot-core .8s ease-in-out infinite}
 
 .mascot-avatar.mood-curious .mascot-eyes{transform:scale(1.06)}
 .mascot-avatar.mood-curious .mascot-smile{opacity:0}
@@ -1515,5 +1517,6 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 @keyframes mascot-nod{0%,100%{transform:translateY(0)}35%{transform:translateY(8px)}70%{transform:translateY(3px)}}
 @keyframes mascot-lean{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(5px) scale(1.03)}}
 @keyframes mascot-listen-fig{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes mascot-ecg{to{stroke-dashoffset:0}}
+@keyframes mascot-sonar{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+@keyframes mascot-core{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.8)}}
 @media(prefers-reduced-motion:reduce){.mascot-avatar *{animation:none!important;transition:none!important}}

@@ -68,10 +68,12 @@ export default function MascotAvatar({
         <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
         <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" style={speaking ? { opacity: 0 } : undefined} />
 
-        {/* 说话电波：心电图式细线，在嘴巴下方扫描 */}
-        <g className="mascot-waveform" style={{ opacity: speaking ? 1 : 0 }}>
-          <path className="mascot-wave-base" pathLength={100} d="M122 254 H136 l5 -9 5 18 5 -13 5 6 H172" />
-          <path className="mascot-wave" pathLength={100} d="M122 254 H136 l5 -9 5 18 5 -13 5 6 H172" />
+        {/* 说话声波涟漪：发光能量核 + 向外扩散的圆弧 */}
+        <g className="mascot-sonar">
+          <path className="mascot-sonar s1" d="M146 250 a14 14 0 0 1 28 0" />
+          <path className="mascot-sonar s2" d="M138 250 a22 22 0 0 1 44 0" />
+          <path className="mascot-sonar s3" d="M130 250 a30 30 0 0 1 60 0" />
+          <circle className="mascot-sonar-core" cx="160" cy="250" r="3.5" />
         </g>
       </g>
     </svg>
