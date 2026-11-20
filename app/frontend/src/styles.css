@@ -1490,14 +1490,16 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.gesture-lean_in .mascot-fig{animation:mascot-lean 1.2s ease-in-out}
 .mascot-avatar.listening .mascot-fig{animation:mascot-listen-fig 1.6s ease-in-out infinite}
 
-/* 说话：嘴巴隐藏，嘴巴位置显示跳动的电波均衡柱 */
-.mascot-avatar.speaking .mascot-smile{opacity:0}
-.mascot-avatar.speaking .mascot-waveform{opacity:1}
-.mascot-avatar.speaking .mascot-waveform rect{transform-box:fill-box;transform-origin:center bottom;animation:mascot-eq .55s ease-in-out infinite alternate}
-.mascot-avatar.speaking .mascot-waveform .b2{animation-delay:.1s}
-.mascot-avatar.speaking .mascot-waveform .b3{animation-delay:.2s}
-.mascot-avatar.speaking .mascot-waveform .b4{animation-delay:.3s}
-.mascot-avatar.speaking .mascot-waveform .b5{animation-delay:.4s}
+/* 说话：嘴巴隐藏，嘴巴位置显示科技感电波均衡柱 */
+.mascot-waveform{filter:drop-shadow(0 0 5px rgba(98,231,208,.9))}
+.mascot-waveform .mascot-wave-base{opacity:.75}
+.mascot-avatar.speaking .mascot-waveform rect{transform-box:fill-box;transform-origin:center bottom;animation:mascot-eq .5s ease-in-out infinite alternate}
+.mascot-avatar.speaking .mascot-waveform .b2{animation-delay:.07s}
+.mascot-avatar.speaking .mascot-waveform .b3{animation-delay:.14s}
+.mascot-avatar.speaking .mascot-waveform .b4{animation-delay:.21s}
+.mascot-avatar.speaking .mascot-waveform .b5{animation-delay:.28s}
+.mascot-avatar.speaking .mascot-waveform .b6{animation-delay:.35s}
+.mascot-avatar.speaking .mascot-waveform .b7{animation-delay:.42s}
 
 .mascot-avatar.mood-curious .mascot-eyes{transform:scale(1.06)}
 .mascot-avatar.mood-curious .mascot-smile{opacity:0}

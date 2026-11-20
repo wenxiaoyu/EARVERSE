@@ -65,16 +65,19 @@ export default function MascotAvatar({
         <circle cx="226" cy="218" r="15" fill="#e8927c" opacity=".35" />
 
         {/* 嘴：恒为微笑；好奇时变「o」 */}
-        <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
-        <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" />
+        <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
+        <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" style={speaking ? { opacity: 0 } : undefined} />
 
-        {/* 说话电波：嘴巴位置的一组均衡柱，说话时替代嘴巴 */}
-        <g className="mascot-waveform" fill="#f2c87d">
-          <rect className="bar b1" x="138" y="234" width="5" height="14" rx="2.5" />
-          <rect className="bar b2" x="148" y="228" width="5" height="20" rx="2.5" />
-          <rect className="bar b3" x="158" y="224" width="5" height="24" rx="2.5" />
-          <rect className="bar b4" x="168" y="228" width="5" height="20" rx="2.5" />
-          <rect className="bar b5" x="178" y="234" width="5" height="14" rx="2.5" />
+        {/* 说话电波：科技感均衡柱，说话时替代嘴巴 */}
+        <g className="mascot-waveform" fill="#62e7d0" style={{ opacity: speaking ? 1 : 0 }}>
+          <rect className="bar b1" x="136" y="236" width="6" height="12" rx="3" />
+          <rect className="bar b2" x="144" y="228" width="6" height="20" rx="3" />
+          <rect className="bar b3" x="152" y="222" width="6" height="26" rx="3" />
+          <rect className="bar b4" x="160" y="218" width="6" height="30" rx="3" />
+          <rect className="bar b5" x="168" y="222" width="6" height="26" rx="3" />
+          <rect className="bar b6" x="176" y="228" width="6" height="20" rx="3" />
+          <rect className="bar b7" x="184" y="236" width="6" height="12" rx="3" />
+          <path className="mascot-wave-base" d="M132 249h56" stroke="#62e7d0" strokeWidth="2" fill="none" />
         </g>
       </g>
     </svg>
