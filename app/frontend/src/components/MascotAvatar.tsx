@@ -70,11 +70,9 @@ export default function MascotAvatar({
 
         {/* 说话动作：嘴巴旁弹出对话气泡 + 三点依次亮起 */}
         <g className="mascot-talk">
-          <rect className="mascot-talk-bubble" x="176" y="212" width="64" height="32" rx="9" fill="#f4fffd" />
-          <path className="mascot-talk-bubble" d="M176 232 l-12 9 7 -15 Z" fill="#f4fffd" />
-          <circle className="mascot-talk-dot d1" cx="192" cy="228" r="3" />
-          <circle className="mascot-talk-dot d2" cx="208" cy="228" r="3" />
-          <circle className="mascot-talk-dot d3" cx="224" cy="228" r="3" />
+          <circle className="mascot-talk-dot d1" cx="150" cy="242" r="3.5" />
+          <circle className="mascot-talk-dot d2" cx="160" cy="242" r="3.5" />
+          <circle className="mascot-talk-dot d3" cx="170" cy="242" r="3.5" />
         </g>
       </g>
     </svg>
