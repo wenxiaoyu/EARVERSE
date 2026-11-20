@@ -431,3 +431,42 @@ def share_note_messages(domain: str, facts: dict) -> list[dict]:
     )
     user = f"场景: {domain}\n事实: {_dump(payload)}"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+# ---------------------------------------------------------------- 报告 v2
+
+def report_v2_messages(domain: str, facts: dict) -> list[dict]:
+    payload = {
+        "period": facts.get("label"),
+        "range": [facts.get("start"), facts.get("end")],
+        "prev_range": [facts.get("prev_start"), facts.get("prev_end")],
+        "active_days": facts.get("active_days"),
+        "period_days": facts.get("period_days"),
+        "coverage": facts.get("coverage"),
+        "verdict": facts.get("verdict"),
+        "headline": facts.get("headline"),
+        "metrics": [
+            {k: m.get(k) for k in ("key", "label", "score", "unit", "n",
+                                   "confidence", "confidence_label", "delta_text", "direction")}
+            for m in (facts.get("metrics") or [])
+        ],
+        "strengths": facts.get("strengths"),
+        "gaps": facts.get("gaps"),
+        "recitation": facts.get("recitation"),
+    }
+    system = (
+        "你是严谨的英语学习评估师，不是营销号。根据给定的周期 facts 写报告。\\n"
+        "硬性规则：\\n"
+        "- 只能使用 facts 中的指标、样本量、置信度和变化，不得编造数字；\\n"
+        "- 每条结论必须能对应到某个指标；低置信/小样本必须明确说“样本不足/低置信”，不得下强结论；\\n"
+        "- 不要把累计词汇快照说成本周变化；不要用“英语大神/流利”等承诺；\\n"
+        "- 不出现具体错误原句、录音、公司名、真实姓名；\\n"
+        "- 最多 3 个 section：本期结论、关键短板、下周计划；\\n"
+        "- 下周计划只给 1–2 个可验证动作，带目标数字（目标也应来自合理设定，不要声称已达成）；\\n"
+        "- 全部用中文。\\n"
+        '输出 JSON: {"headline":"≤24字","trend":"变好|持平|变差",'
+        '"sections":[{"title":"≤12字","finding":"≤60字","evidence":"≤40字","action":"≤50字"}],'
+        '"next_week":["≤40字"]}'
+    )
+    user = f"场景: {domain}\\n周期事实: {_dump(payload)}"
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]

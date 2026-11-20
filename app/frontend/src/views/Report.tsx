@@ -114,7 +114,6 @@ export default function Report({ domain }: { domain: string }) {
   const counts: Record<string, number> = { automatic: 0, recognized: 0, deaf: 0, unknown: 0 };
   Object.values(vocab).forEach((e: any) => { const s = e?.state || "unknown"; counts[s] = (counts[s] || 0) + 1; });
   const vTotal = Object.values(counts).reduce((a, b) => a + b, 0);
-  const masteryRate = vTotal ? Math.round(((counts.automatic + counts.recognized) / vTotal) * 100) : 0;
 
   const hearing = Object.entries(view.hearing || {})
     .map(([id, info]: any) => ({ label: info?.name || id, value: info?.count || 0 }))
@@ -132,7 +131,6 @@ export default function Report({ domain }: { domain: string }) {
     id, label: skillLabel[id] || id, n: Array.isArray(venues) ? venues.length : 0,
   })).sort((a, b) => b.n - a.n);
   const graduated = grad.filter((g) => g.n >= 3).length;
-  const ungraduated = grad.length - graduated;
 
   const errors = (view.errors || []).slice(-8).reverse();
 
@@ -153,6 +151,12 @@ export default function Report({ domain }: { domain: string }) {
     acc: Math.round((h.accuracy || 0) * 100),
     total: h.total || 0,
   }));
+  const dims = report?.metrics || [];
+  const trendRows = (report?.daily_trend?.length
+    ? report.daily_trend.filter((x: any) => x.accuracy != null).map((x: any) => ({
+        date: String(x.date || "").slice(5), acc: x.accuracy, total: x.total || 0,
+      }))
+    : history);
 
   const weekStartDate = mondayOf(selDate);
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStartDate, i));
@@ -245,7 +249,7 @@ export default function Report({ domain }: { domain: string }) {
     <section>
       <p className="screen-tag">Screen 04 — 教练报告 · Field Print</p>
       <h1>你在变好吗？</h1>
-      <p className="sub">掌握构成、盲区、发音、毕业进度，一眼看清。</p>
+      <p className="sub">六维能力、周期对比、样本量与置信度，一眼看清。</p>
 
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
         <div className="seg">
@@ -267,37 +271,43 @@ export default function Report({ domain }: { domain: string }) {
         </AsyncButton>
       </div>
 
-      {/* KPI */}
-      <div className="kpi-grid">
-        <div className="stat-card">
-          <div className="k">趋势</div>
-          <div className="v" style={{ fontSize: 22 }}>
-            {report ? <span className={`trend ${report.trend}`}>{report.trend}</span> : "—"}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="k">词汇掌握率</div>
-          <div className="v" style={{ color: "var(--green)" }}>{masteryRate}%</div>
-        </div>
-        <div className="stat-card">
-          <div className="k">哑巴词汇 <Tip text="看着认识、但听不出来的词：文字能懂，声音对不上意思。" /></div>
-          <div className="v" style={{ color: "var(--red)" }}>{counts.deaf}</div>
-        </div>
-        <div className="stat-card">
-          <div className="k">待毕业技能 <Tip text="一项技能要在 3 个不同真实场合用成功，才算真正掌握（毕业）。" /></div>
-          <div className="v" style={{ color: "var(--amber)" }}>{ungraduated}</div>
-        </div>
+      {/* 周期 + 六维能力画像 */}
+      <div className="report-meta">
+        <span>{report ? `统计周期：${report.label} ${report.start} ~ ${report.end}` : "统计周期加载中…"}</span>
+        <span>{report ? `数据覆盖：${report.active_days}/${report.period_days} 天` : ""}</span>
+        <span>{report ? `趋势：${report.trend}` : ""}</span>
+        {loading && <span className="report-loading">更新中…</span>}
       </div>
+      {report?.headline && <div className="report-headline">{report.headline}</div>}
+      <div className="dim-grid">
+        {dims.map((m: any) => (
+          <div className={`dim-card ${m.confidence}`} key={m.key}>
+            <div className="dim-head">
+              <span>{m.label}</span>
+              <span className={`dim-conf ${m.confidence}`}>{m.confidence_label}</span>
+            </div>
+            <div className="dim-score">
+              {m.score == null ? "—" : Math.round(m.score)}
+              <small>{m.unit}</small>
+              {m.delta_text && <em className={`dim-delta ${m.direction}`}>{m.delta_text}</em>}
+            </div>
+            <div className="dim-note">{m.note || `n=${m.n}`}</div>
+          </div>
+        ))}
+      </div>
+      <p className="hint report-note">
+        n = 样本量；低置信/无数据不下强结论。词汇自动化只计“已自动化”，是累计快照，不是本期变化。
+      </p>
 
-      {/* 近 7 天趋势 */}
+      {/* 本期每日听辨 */}
       <div className="panel">
         <div className="block-head">
-          <h2 style={{ margin: 0 }}>近 7 天掌握率</h2>
-          <span className="hint">每天交卷后的正确率</span>
+          <h2 style={{ margin: 0 }}>本期每日听辨正确率</h2>
+          <span className="hint">只统计当前周期；不按累计数据</span>
         </div>
-        {history.length ? (
+        {trendRows.length ? (
           <div className="trend7">
-            {history.map((h: any, i: number) => (
+            {trendRows.map((h: any, i: number) => (
               <div className="t7-col" key={i} title={`${h.date} · ${h.acc}%（${h.total} 题）`}>
                 <span className="t7-val">{h.acc}%</span>
                 <div className="t7-bar" style={{ height: `${Math.max(2, h.acc)}%` }} />
@@ -306,14 +316,14 @@ export default function Report({ domain }: { domain: string }) {
             ))}
           </div>
         ) : (
-          <p className="empty">练几天后，这里会出现你的掌握率趋势。</p>
+          <p className="empty">本期还没有听辨记录。</p>
         )}
       </div>
 
       {/* 掌握构成 + 听力盲区 */}
       <div className="two-panel">
         <div className="panel">
-          <h2>词汇掌握构成</h2>
+          <h2>词汇掌握构成 <span className="hint">累计</span></h2>
           {vTotal ? (
             <>
               <div className="mastery-bar">
@@ -331,7 +341,7 @@ export default function Report({ domain }: { domain: string }) {
         </div>
 
         <div className="panel">
-          <h2>听力盲区 Top <Tip text="你最常听错的语音现象，如弱读、连读、吞音。" /></h2>
+          <h2>听力盲区 Top <span className="hint">累计</span> <Tip text="你最常听错的语音现象，如弱读、连读、吞音。" /></h2>
           {hearing.length ? <Bars rows={hearing} suffix=" 次" /> : <p className="empty">暂无盲区记录。</p>}
         </div>
       </div>
@@ -339,11 +349,11 @@ export default function Report({ domain }: { domain: string }) {
       {/* 发音 + 表达回避 */}
       <div className="two-panel">
         <div className="panel">
-          <h2>发音评分</h2>
+          <h2>发音评分 <span className="hint">累计</span></h2>
           {pronRows.length ? <Bars rows={pronRows} max={100} color="green" /> : <p className="empty">还没做过发音练习。去「今天 · 跟读」试试。</p>}
         </div>
         <div className="panel">
-          <h2>表达回避</h2>
+          <h2>表达回避 <span className="hint">累计</span></h2>
           {avoidance.length ? <Bars rows={avoidance} suffix=" 次" /> : <p className="empty">暂无回避记录。</p>}
         </div>
       </div>
@@ -351,7 +361,7 @@ export default function Report({ domain }: { domain: string }) {
       {/* 毕业进度 */}
       <div className="panel">
         <div className="block-head">
-          <h2 style={{ margin: 0 }}>技能毕业进度</h2>
+          <h2 style={{ margin: 0 }}>技能毕业进度 <span className="hint">累计</span></h2>
           <span className="hint">{graduated} 已毕业 / {grad.length} 在练 · 每项需 3 个不同场合</span>
         </div>
         {grad.length ? (
@@ -371,7 +381,7 @@ export default function Report({ domain }: { domain: string }) {
 
       {/* 错误原句表 */}
       <div className="panel">
-        <h2>最近的错误原句</h2>
+        <h2>最近的错误原句 <span className="hint">累计</span></h2>
         {errors.length ? (
           <table className="err-table">
             <thead><tr><th>类型</th><th>原句</th><th>备注</th></tr></thead>

@@ -24,67 +24,110 @@ def normalize_report(data: dict) -> dict:
         if not isinstance(s, dict):
             continue
         secs.append({
-            "title": _clip(s.get("title"), 8),
-            "finding": _clip(s.get("finding"), 30),
-            "evidence": _clip(s.get("evidence"), 20),
-            "action": _clip(s.get("action"), 20),
+            "title": _clip(s.get("title"), 12),
+            "finding": _clip(s.get("finding"), 60),
+            "evidence": _clip(s.get("evidence"), 40),
+            "action": _clip(s.get("action"), 50),
         })
     data["sections"] = secs
-    data["next_week"] = [_clip(x, 20) for x in (data.get("next_week") or [])[:3]]
-    data["headline"] = _clip(data.get("headline"), 16)
+    data["next_week"] = [_clip(x, 40) for x in (data.get("next_week") or [])[:3]]
+    data["headline"] = _clip(data.get("headline"), 24)
     return data
 
 
-def local_report(domain: str, period: str, profile: dict[str, Any]) -> dict[str, Any]:
-    """本地兜底报告：从画像直接推导，确保引用具体错误。"""
-    d = profile.get("domains", {}).get(domain, {})
-    errors = (d.get("errors") or [])[-5:]
-    focus = loop.plan_focus(profile, domain)
-    weak = focus["hearing"]
-    deaf = focus["deaf_words"]
+def _trend_word(verdict: str) -> str:
+    return {"better": "变好", "worse": "变差", "same": "持平"}.get(verdict, "无对比")
 
-    sections: list[dict[str, Any]] = []
-    if deaf:
-        evidence = errors[0]["original"] if errors else "（暂无原句，训练后自动累积）"
-        sections.append({
-            "title": "哑巴词汇",
-            "finding": f"有 {len(deaf)} 个词看到认识、听到反应不出。",
-            "evidence": evidence,
-            "action": "接下来 3 天每天用听音猜义专练这批词，只听声音说中文。",
-        })
-    if weak:
-        names = "、".join(w.get("name") or w["rule_id"] for w in weak[:2])
-        evidence = errors[0]["original"] if errors else "（暂无原句）"
-        sections.append({
-            "title": "听力盲区",
-            "finding": f"最常卡在：{names}。",
-            "evidence": evidence,
-            "action": "去「为什么听不清」对应对练，再回听写验证同类句子。",
-        })
-    if not sections:
-        sections.append({
-            "title": "基线",
-            "finding": "训练数据还少，暂无稳定结论。",
-            "evidence": errors[0]["original"] if errors else "（暂无原句）",
-            "action": "再练 3 天，报告会开始引用你的具体错误。",
+
+def _metric_line(m: dict[str, Any]) -> str:
+    if m.get("score") is None:
+        return f"{m['label']}：无数据"
+    d = f"，{m['delta_text']}" if m.get("delta_text") else ""
+    return f"{m['label']} {round(m['score'])}{m['unit']}（n={m['n']}，{m['confidence_label']}{d}）"
+
+
+def local_report(domain: str, period: str, profile: dict[str, Any],
+                 facts: dict[str, Any] | None = None) -> dict[str, Any]:
+    """基于周期 facts 的本地报告：结论、短板、下一步，全部带样本量。"""
+    from . import metrics as metrics_mod
+
+    facts = facts or metrics_mod.compute(profile, domain, period)
+    ms = [m for m in facts.get("metrics", []) if m.get("n")]
+    gaps = facts.get("gaps") or []
+    strengths = facts.get("strengths") or []
+    coverage = facts.get("coverage") or {}
+    active = facts.get("active_days", 0)
+    days = facts.get("period_days", 0)
+
+    if not ms:
+        sections = [
+            {"title": "数据不足", "finding": "本期还没有足够的练习记录，暂不下能力结论。",
+             "evidence": f"覆盖 {active}/{days} 天，n=0",
+             "action": "先完成一轮听辨或跟读，再来复盘。"},
+        ]
+        return normalize_report({
+            **facts, "domain": domain, "period": period,
+            "trend": "持平", "headline": facts.get("headline", "本期数据还不够"),
+            "sections": sections, "next_week": ["先完成一轮听辨 + 1 段跟读"],
+            "source": "local",
         })
 
-    trend = "持平"
-    if d.get("scenario_record"):
-        recent = d["scenario_record"][-5:]
-        succ = sum(1 for r in recent if r.get("success"))
-        trend = "变好" if succ > len(recent) / 2 else "变差"
+    top = ms[:2]
+    conclusion = "；".join(_metric_line(m) for m in top)
+    evidence = f"覆盖 {active}/{days} 天 · 听辨 {coverage.get('listening', 0)} · 跟读 {coverage.get('pronunciation', 0)} · 对立对 {coverage.get('phoneme', 0)}"
+    sections = [{
+        "title": "本期结论",
+        "finding": conclusion,
+        "evidence": evidence,
+        "action": "先看样本量：低置信的维度不急着下结论。",
+    }]
 
-    return normalize_report({
-        "domain": domain,
-        "period": period,
-        "trend": trend,
-        "headline": f"{domain} 场景：{trend}",
-        "sections": sections,
-        "next_week": [s["action"] for s in sections],
-        "source": "local",
+    gap = gaps[0] if gaps else None
+    if gap:
+        sections.append({
+            "title": "关键短板",
+            "finding": f"{gap['label']}偏弱：{round(gap['score'])}{gap['unit']}，n={gap['n']}，{gap['confidence']}。",
+            "evidence": f"相对上一周期：{gap.get('delta_text') or '无可比基线'}",
+            "action": f"下周优先补 {gap['label']}，每次只练一个点。",
+        })
+    else:
+        sections.append({
+            "title": "关键短板",
+            "finding": "本期没有足够数据判定短板。",
+            "evidence": "需要至少 8 个听辨或 4 次跟读。",
+            "action": "继续积累样本，不做过度判断。",
+        })
+
+    next_actions = []
+    if gap:
+        map_action = {
+            "listening": "听辨 20 题，正确率目标 ≥80%",
+            "phoneme": "最小对立对 20 组，正确率目标 ≥80%",
+            "pronunciation": "跟读 10 句，先练连读和词尾",
+            "interaction": "完成 2 个场景，至少办成 1 个",
+            "vocab": "复习 20 个哑巴词，听到能反应",
+            "effort": "本周练满 4 天，每次 ≥10 分钟",
+        }
+        next_actions.append(map_action.get(gap["key"], "下周先补最弱维度"))
+    if strengths:
+        next_actions.append(f"保持 {strengths[0]['label']}，每周复测一次")
+    if not next_actions:
+        next_actions = ["先完成一轮听辨 + 1 段跟读"]
+    sections.append({
+        "title": "下周计划",
+        "finding": "只做 2 件事，避免摊大饼。",
+        "evidence": f"当前覆盖 {active}/{days} 天",
+        "action": "；".join(next_actions[:2]),
     })
 
+    return normalize_report({
+        **facts, "domain": domain, "period": period,
+        "trend": _trend_word(facts.get("verdict", "same")),
+        "headline": facts.get("headline", "本期能力画像"),
+        "sections": sections,
+        "next_week": next_actions[:2],
+        "source": "local",
+    })
 
 def _profile_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     d = profile.get("domains", {}).get(domain, {})
@@ -109,22 +152,30 @@ def _graduation(profile: dict[str, Any]) -> dict[str, Any]:
 
 async def build_report(llm, domain: str, period: str,
                        profile: dict[str, Any]) -> dict[str, Any]:
+    from . import metrics as metrics_mod
+
+    facts = metrics_mod.compute(profile, domain, period)
     if llm is None:
-        return local_report(domain, period, profile)
-    d = profile.get("domains", {}).get(domain, {})
-    recent_errors = (d.get("errors") or [])[-5:]
-    messages = prompts.coach_messages(
-        domain, period, _profile_excerpt(profile, domain),
-        recent_errors, _graduation(profile),
-    )
+        return local_report(domain, period, profile, facts)
     try:
-        text = await llm.chat(messages, temperature=0.5, max_tokens=1000)
+        text = await llm.chat(
+            prompts.report_v2_messages(domain, facts),
+            temperature=0.4, max_tokens=1100,
+        )
+        data = prompts.parse_json_reply(text)
+        if data and data.get("sections"):
+            data = normalize_report(data)
+            out = dict(facts)
+            out.update({
+                "domain": domain,
+                "period": period,
+                "trend": _trend_word(facts.get("verdict", "same")),
+                "headline": data.get("headline") or facts.get("headline"),
+                "sections": data.get("sections"),
+                "next_week": data.get("next_week") or [],
+                "source": "llm",
+            })
+            return out
     except Exception:
-        return local_report(domain, period, profile)
-    data = prompts.parse_json_reply(text)
-    if not data or "sections" not in data:
-        return local_report(domain, period, profile)
-    data.setdefault("domain", domain)
-    data.setdefault("period", period)
-    data["source"] = "llm"
-    return normalize_report(data)
+        pass
+    return local_report(domain, period, profile, facts)

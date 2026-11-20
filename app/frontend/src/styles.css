@@ -207,6 +207,7 @@ label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transfo
 .trend.变好{color:var(--green);border:1px solid rgba(127,176,105,.4)}
 .trend.变差{color:var(--red);border:1px solid rgba(217,84,77,.4)}
 .trend.持平{color:var(--amber);border:1px solid rgba(232,163,61,.4)}
+.trend.无对比{color:var(--muted);border:1px solid var(--hair)}
 .section{border-top:1px solid var(--hair);padding-top:12px;margin-top:12px}
 .section h3{font-size:15px;margin:0 0 6px}
 .evidence{color:#9fb4d8;font-size:13px}
@@ -1301,3 +1302,27 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .sn-quote-notes span{display:block;font-size:14px;line-height:1.55;color:#3b2d20;min-width:0;
   white-space:nowrap}
 .sn-quote-notes b{display:inline-block;min-width:64px;font-size:10px;letter-spacing:.08em;color:#9a5f14;margin-right:6px}
+
+/* ============ 报告 v2：周期 + 六维 ============ */
+.report-meta{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;
+  color:var(--muted);letter-spacing:.04em;margin:-4px 0 12px}
+.dim-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:8px}
+.dim-card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--hair);
+  border-radius:13px;padding:13px 14px;min-width:0}
+.dim-card.low{border-color:rgba(232,163,61,.22)}
+.dim-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.dim-conf{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;border-radius:999px;padding:2px 7px;white-space:nowrap;
+  background:rgba(127,176,105,.10);color:var(--green);border:1px solid rgba(127,176,105,.24)}
+.dim-conf.medium{background:rgba(232,163,61,.08);color:var(--amber);border-color:rgba(232,163,61,.24)}
+.dim-conf.low{background:rgba(217,84,77,.07);color:var(--red);border-color:rgba(217,84,77,.22)}
+.dim-conf.none{background:rgba(242,235,223,.04);color:var(--muted);border-color:var(--hair)}
+.dim-score{display:flex;align-items:baseline;gap:3px;margin-top:6px;font-family:var(--serif);font-size:32px;font-weight:900;line-height:1.05}
+.dim-score small{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500}
+.dim-delta{margin-left:6px;font-family:var(--mono);font-size:11px;font-style:normal;color:var(--muted)}
+.dim-delta.up{color:var(--green)}.dim-delta.down{color:var(--red)}.dim-delta.flat{color:var(--muted)}
+.dim-note{margin-top:5px;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.report-note{margin:2px 0 16px;line-height:1.6}
+@media(max-width:1100px){.dim-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.dim-grid{grid-template-columns:1fr}}
+.report-headline{font-family:var(--serif);font-size:23px;font-weight:900;letter-spacing:-.01em;margin:0 0 10px;color:var(--ink)}
+.report-loading{color:var(--amber);animation:blink 1s steps(1) infinite}

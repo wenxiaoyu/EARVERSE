@@ -1,0 +1,19 @@
+schema: spec-driven
+created: 2026-11-20
+workflow:
+  current_phase: doc
+  schema: spec-driven
+  phases:
+    explore: { status: passed, completed_at: "2026-11-20T03:00:00Z" }
+    propose: { status: passed, completed_at: "2026-11-20T03:10:00Z" }
+    apply: { status: passed, completed_at: "2026-11-20T08:50:00Z" }
+    review: { status: passed, completed_at: "2026-11-20T08:52:00Z" }
+    verify: { status: passed, completed_at: "2026-11-20T08:55:00Z" }
+    doc: { status: in_progress, started_at: "2026-11-20T08:56:00Z" }
+    archive: { status: pending }
+  review_results:
+    explore: { passed: true, retries: 0 }
+    propose: { passed: true, retries: 0 }
+    apply: { passed: true, retries: 0 }
+    review: { passed: true, retries: 0 }
+    verify: { passed: true, retries: 0 }

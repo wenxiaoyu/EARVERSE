@@ -105,5 +105,5 @@ def test_local_report_has_sections_and_evidence():
 def test_build_report_without_llm():
     p = m.empty_profile()
     r = run(rep.build_report(None, "work", "week", p))
-    assert r["trend"] in ("变好", "持平", "变差")
+    assert r["trend"] in ("变好", "持平", "变差", "无对比")
     assert r["sections"]
