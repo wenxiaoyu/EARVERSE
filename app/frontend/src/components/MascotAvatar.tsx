@@ -7,7 +7,7 @@ export default function MascotAvatar({
 }: {
   mood?: MiraMood; gesture?: MiraGesture; speaking?: boolean; amplitude?: number; listening?: boolean;
 }) {
-  const style = { "--mouth": Math.max(0.12, Math.min(1, amplitude)) } as CSSProperties;
+  const style = { "--mouth": Math.min(1.5, 0.15 + amplitude * 1.4) } as CSSProperties;
   const [react, setReact] = useState<"hover" | "click" | null>(null);
 
   return (
@@ -75,7 +75,7 @@ export default function MascotAvatar({
           {/* 嘴 */}
           <path className="mascot-smile" d="M140 238c13 9 27 9 40 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
           <path className="mascot-o" d="M160 246a9 9 0 1 0 .1 0Z" fill="#8a413a" />
-          <ellipse className="mascot-mouth" cx="160" cy="242" rx="14" ry="4" fill="#8a413a" />
+          <ellipse className="mascot-mouth" cx="160" cy="242" rx="13" ry="7" fill="#8a413a" />
         </g>
       </svg>
     </div>
