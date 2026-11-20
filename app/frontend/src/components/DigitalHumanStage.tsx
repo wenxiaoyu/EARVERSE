@@ -61,7 +61,7 @@ export default function DigitalHumanStage({
       const center = box3.getCenter(new THREE.Vector3());
       const dist = camera.position.z;
       const visibleH = 2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      const targetHeight = visibleH * 0.85;
+      const targetHeight = visibleH * 0.68;
       const targetWidth = (w / h) * targetHeight;
       const scale = Math.min(targetWidth / size.x, targetHeight / size.y);
       const targetY = 0.8;
