@@ -84,7 +84,10 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         onend: () => {
           setSpeaking(false); speakingRef.current = false; setAmplitude(0);
           setGesture("none");
-          if (liveRef.current && !busyRef.current && !listeningRef.current) {
+          // Mira 说完后把高门限监听切回正常灵敏度
+          if (liveRef.current && !busyRef.current) {
+            recorder.stop();
+            setListening(false); listeningRef.current = false;
             setTimeout(() => beginListening(), 220);
           }
         },
