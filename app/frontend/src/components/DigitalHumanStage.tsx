@@ -120,7 +120,7 @@ export default function DigitalHumanStage({
     window.addEventListener("mira-gesture", onGesture);
 
     new GLTFLoader().load(
-      "/avatar/glb_out.glb",
+      "/avatar/brunette.glb",
       (gltf) => {
         if (disposed) return;
         model = gltf.scene;
