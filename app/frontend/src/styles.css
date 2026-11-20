@@ -1477,8 +1477,8 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 
 /* ============ 2D AI 萌宠 Mira ============ */
 .mascot-avatar{width:min(360px,72vw);height:auto;display:block;position:relative;z-index:1}
-.coach-mascot{display:flex;align-items:center;justify-content:center;transform:translateY(-6vh);transition:transform .38s cubic-bezier(.2,.8,.2,1)}
-.coach-room.talk-open .coach-mascot{transform:translate(-170px,-6vh)}
+.coach-mascot{display:flex;align-items:center;justify-content:center;transform:translateY(-12vh);transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+.coach-room.talk-open .coach-mascot{transform:translate(-170px,-12vh)}
 .mascot-fig{transform-box:view-box;transform-origin:160px 330px;animation:mascot-float 4.5s ease-in-out infinite;transition:transform .25s ease}
 .mascot-eyes{transform-box:view-box;transform-origin:160px 176px;animation:mascot-blink 5.2s infinite}
 .mascot-mouth{transform-box:fill-box;transform-origin:center;transform:scaleY(var(--mouth,.15));transition:transform .08s linear}
