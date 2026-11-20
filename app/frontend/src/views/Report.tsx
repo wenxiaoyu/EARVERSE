@@ -60,7 +60,7 @@ export default function Report({ domain }: { domain: string }) {
   const [detailBusy, setDetailBusy] = useState(false);
   const [subTab, setSubTab] = useState<"overview" | "calendar">("overview");
   const [shareOpen, setShareOpen] = useState(false);
-  const [calMode, setCalMode] = useState<"day" | "week" | "month">("month");
+  const [calMode, setCalMode] = useState<"day" | "week" | "month">("week");
   const [weekMap, setWeekMap] = useState<Record<string, any>>({});
 
   const loadReport = async () => {
@@ -125,12 +125,6 @@ export default function Report({ domain }: { domain: string }) {
     .filter((p: any) => p && typeof p.score === "number")
     .map((p: any) => ({ label: (p.target || "").slice(0, 18) + (p.target?.length > 18 ? "…" : ""), value: Math.round(p.score) }))
     .slice(0, 6);
-
-  const skillVenues = view.skill_venues || {};
-  const grad = Object.entries(skillVenues).map(([id, venues]: any) => ({
-    id, label: skillLabel[id] || id, n: Array.isArray(venues) ? venues.length : 0,
-  })).sort((a, b) => b.n - a.n);
-  const graduated = grad.filter((g) => g.n >= 3).length;
 
   const errors = (view.errors || []).slice(-8).reverse();
 
@@ -356,27 +350,6 @@ export default function Report({ domain }: { domain: string }) {
           <h2>表达回避 <span className="hint">累计</span></h2>
           {avoidance.length ? <Bars rows={avoidance} suffix=" 次" /> : <p className="empty">暂无回避记录。</p>}
         </div>
-      </div>
-
-      {/* 毕业进度 */}
-      <div className="panel">
-        <div className="block-head">
-          <h2 style={{ margin: 0 }}>技能毕业进度 <span className="hint">累计</span></h2>
-          <span className="hint">{graduated} 已毕业 / {grad.length} 在练 · 每项需 3 个不同场合</span>
-        </div>
-        {grad.length ? (
-          <div style={{ marginTop: 8 }}>
-            {grad.map((g) => (
-              <div className="grad-row" key={g.id}>
-                <span>{g.label}</span>
-                <span className="grad-dots">
-                  {[0, 1, 2].map((i) => <i key={i} className={i < g.n ? "on" : ""} />)}
-                </span>
-                <span className="hint">{Math.min(g.n, 3)}/3</span>
-              </div>
-            ))}
-          </div>
-        ) : <p className="empty">还没有办成过的技能。去「实战」把一件事办成。</p>}
       </div>
 
       {/* 错误原句表 */}

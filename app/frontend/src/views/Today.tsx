@@ -58,10 +58,10 @@ function TaskHead({
   );
 }
 
-function fmtClock(sec: number) {
-  const m = Math.floor(Math.max(0, sec) / 60);
-  const r = Math.max(0, sec) % 60;
-  return `${m}:${String(r).padStart(2, "0")}`;
+/** 只显示分钟，不显示秒。 */
+function fmtMin(sec: number, up = false) {
+  const m = Math.max(0, sec) / 60;
+  return String(up ? Math.ceil(m) : Math.floor(m));
 }
 
 export default function Today({
@@ -418,8 +418,8 @@ export default function Today({
             </div>
           </div>
           <div className="readout">今日已练</div>
-          <div className="big" title={`${fmtClock(session.elapsed)} / ${fmtClock(session.total)}`}>
-            {fmtClock(session.elapsed)}<small> / {Math.round(session.total / 60)} min</small>
+          <div className="big" title={`${fmtMin(session.left, true)} min 剩余`}>
+            {fmtMin(session.elapsed)}<small> / {Math.round(session.total / 60)} min</small>
           </div>
           <div className="vu"><i /><i /><i /><i /><i /><i /></div>
           <div className="state-switch">
@@ -489,11 +489,11 @@ export default function Today({
       <div className="work-head">
         <h2>今日工作台</h2>
         <div className="session-clock">
-          <span className="sc-label">已练 {fmtClock(session.elapsed)}</span>
+          <span className="sc-label">已练 {fmtMin(session.elapsed)}′</span>
           <div className="sc-track">
             <i style={{ width: `${Math.min(100, (session.elapsed / session.total) * 100)}%` }} />
           </div>
-          <span className="sc-time">{fmtClock(session.left)} 剩余</span>
+          <span className="sc-time">{fmtMin(session.left, true)}′ 剩余</span>
           {session.finished ? (
             <>
               <span className="sc-done">已满 1 小时</span>
