@@ -13,6 +13,16 @@ type Block = { kind: string; title: string; minutes: number; focus: string };
 type Item = { id: string; w: string; zh: string; difficulty: number };
 type StepStatus = "idle" | "active" | "done";
 
+/** 判断 localStorage 里的进度是否属于今天；防止跨午夜把昨天写进新一天。 */
+function savedForDay(saved: any, todayKey: string): boolean {
+  if (!saved) return false;
+  if (saved.savedFor) return saved.savedFor === todayKey;
+  if (saved.roundId) {
+    return new Date(saved.roundId).toDateString() === new Date().toDateString();
+  }
+  return true;
+}
+
 const TABS = ["激活复习", "新内容训练", "场景实战", "复盘收尾"];
 const CIRCLED = ["①", "②", "③", "④"];
 
@@ -109,13 +119,14 @@ export default function Today({
       setGoal(r.goal || null);
     });
   };
-  useEffect(load, [domain, state]);
+  useEffect(load, [domain, state, todayKey]);
 
-  // 切换场景：优先恢复今天的进度，否则重新生成
+  // 切换场景/跨天：优先恢复今天的进度，否则重新生成
   useEffect(() => {
     const key = `aicoach.today.v1:${todayKey}:${domain}`;
     let saved: any = null;
     try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch { saved = null; }
+    if (!savedForDay(saved, todayKey)) saved = null;
 
     setScenarioReview(null); setScenarioRecord(null);
     tabPicked.current = false; setTab(0);
@@ -148,7 +159,7 @@ export default function Today({
       .then((r) => { if (alive) { setShadowItems(r.items || []); setShadowAudioReady(Boolean(r.audio_ready)); } })
       .catch(() => {});
     return () => { alive = false; };
-  }, [domain]);
+  }, [domain, todayKey]);
 
   // 今天已生成过复盘：刷新后继续显示
   useEffect(() => {
@@ -156,7 +167,7 @@ export default function Today({
       .then((d) => { if (d?.recap?.diagnosis) setDiagnosis(d.recap.diagnosis); })
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [domain]);
+  }, [domain, todayKey]);
 
   // 今天是否已完成过场景实战（用于复盘收尾判断）
   const refreshScenarioDone = () => {
@@ -173,7 +184,7 @@ export default function Today({
     window.addEventListener("focus", refreshScenarioDone);
     return () => window.removeEventListener("focus", refreshScenarioDone);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [domain]);
+  }, [domain, todayKey]);
 
   const total = schedule.reduce((s, b) => s + b.minutes, 0);
   const mins = (kind: string) => schedule.find((b) => b.kind === kind)?.minutes;
@@ -187,12 +198,18 @@ export default function Today({
     return () => window.clearInterval(id);
   }, []);
 
+  // 跨天时允许新一天重新自动起表
+  useEffect(() => {
+    autoClockStarted.current = false;
+  }, [todayKey]);
+
   // 首次进入「今天」自动起表；暂停/重置仍由用户控制
   useEffect(() => {
     if (autoClockStarted.current) return;
+    if (session.running || session.finished || session.elapsed > 0) return;
     autoClockStarted.current = true;
-    if (!session.running && !session.finished && session.elapsed === 0) session.start();
-  }, [session.running, session.finished, session.elapsed]);
+    session.start();
+  }, [todayKey, session.running, session.finished, session.elapsed]);
 
   const practice = async () => {
     const r = await api.generate(domain, "cards", 8);
@@ -291,11 +308,12 @@ export default function Today({
     setMpIdx(next);
     pickMp(mpItems[next], mpArmed.current);
   };
-  // 进入页面/切换场景时按场景生成（首屏静默）
+  // 进入页面/切换场景/跨天时按场景生成（首屏静默）
   useEffect(() => {
     const key = `aicoach.today.v1:${todayKey}:${domain}`;
     let saved: any = null;
     try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch { saved = null; }
+    if (!savedForDay(saved, todayKey)) saved = null;
     if (saved?.mpItems?.length) {
       setMpItems(saved.mpItems);
       setMpIdx(saved.mpIdx || 0);
@@ -310,19 +328,22 @@ export default function Today({
     mpArmed.current = false;
     loadMp(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [domain]);
+  }, [domain, todayKey]);
 
   // 持久化今天的练习进度（刷新恢复）
   useEffect(() => {
     const key = `aicoach.today.v1:${todayKey}:${domain}`;
     try {
       localStorage.setItem(key, JSON.stringify({
+        savedFor: todayKey,
         items, results, revealed, roundId, recapStale,
         shadowItems, shadowIdx, shadowGroup, shadowSeen, shadowScores, shadowAudioReady,
         mpItems, mpIdx, mpPair, mpTarget, mpPick, mpStat, mpSource,
       }));
     } catch { /* ignore */ }
-  }, [todayKey, domain, items, results, revealed, roundId, recapStale, shadowItems, shadowIdx,
+  // 注意：不要把 todayKey 放进依赖；否则跨午夜时会先把昨天的 items 写进新一天。
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domain, items, results, revealed, roundId, recapStale, shadowItems, shadowIdx,
       shadowGroup, shadowSeen, shadowScores, shadowAudioReady, mpItems, mpIdx,
       mpPair, mpTarget, mpPick, mpStat, mpSource]);
 

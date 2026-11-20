@@ -23,6 +23,13 @@ export function useSessionClock(key: string, totalMinutes: number) {
   const [now, setNow] = useState(() => Date.now());
 
   const running = Boolean(c.running);
+
+  // 跨天/换 key 时重新加载，避免把昨天的累计时间带到新一天
+  useEffect(() => {
+    setC(load(key));
+    setNow(Date.now());
+  }, [key]);
+
   useEffect(() => {
     if (!running) return;
     const id = window.setInterval(() => setNow(Date.now()), 1000);
