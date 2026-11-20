@@ -1474,16 +1474,23 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 
 
 /* ============ 2D AI 萌宠 Mira ============ */
+.mascot-wrap{display:inline-block;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mascot-avatar{width:min(360px,72vw);height:auto;display:block;position:relative;z-index:1}
-.mascot-fig{transform-box:view-box;transform-origin:160px 330px;animation:mascot-float 4.5s ease-in-out infinite}
+.mascot-fig{transform-box:view-box;transform-origin:160px 330px;animation:mascot-float 4.5s ease-in-out infinite;transition:transform .25s ease}
 .mascot-eyes{transform-box:view-box;transform-origin:160px 176px;animation:mascot-blink 5.2s infinite}
 .mascot-mouth{transform-box:fill-box;transform-origin:center;transform:scaleY(var(--mouth,.15));transition:transform .08s linear}
 .mascot-arm{transform-box:view-box;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .mascot-arm-l{transform-origin:74px 214px}
 .mascot-arm-r{transform-origin:246px 214px}
-.mascot-antenna{transform-box:view-box;transform-origin:160px 74px;animation:mascot-antenna 3s ease-in-out infinite}
-.mascot-tip{animation:mascot-tip 1.8s ease-in-out infinite}
+.mascot-happy,.mascot-worry,.mascot-frown,.mascot-o{opacity:0;transition:opacity .2s}
 
+/* 悬停 / 点击互动 */
+.mascot-wrap.react-hover .mascot-fig{transform:translateY(-4px) rotate(-2deg) scale(1.03)}
+.mascot-wrap.react-hover .mascot-arm-r{transform:translate(-6px,-10px) rotate(-12deg)}
+.mascot-wrap.react-click .mascot-fig{animation:mascot-bounce .5s ease}
+.mascot-wrap.react-click .mascot-arm-r{animation:mascot-wave .9s ease-in-out}
+
+/* 表情随语义 */
 .mascot-avatar.gesture-wave .mascot-arm-r{transform:translate(-6px,-30px) rotate(-30deg)}
 .mascot-avatar.gesture-wave .mascot-arm-r .mascot-arm{animation:mascot-wave 1.6s ease-in-out}
 .mascot-avatar.gesture-nod .mascot-fig{animation:mascot-nod 1.1s ease-in-out}
@@ -1491,14 +1498,28 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.gesture-open_palm .mascot-arm-r{transform:translate(-14px,-26px) rotate(-20deg)}
 .mascot-avatar.gesture-thumbs_up .mascot-arm-r{transform:translate(-10px,-30px) rotate(-28deg)}
 .mascot-avatar.speaking .mascot-smile{opacity:.3}
-.mascot-avatar.listening .mascot-tip{animation:mascot-listen 1s ease-in-out infinite}
+.mascot-avatar.listening .mascot-fig{animation:mascot-listen-fig 1.6s ease-in-out infinite}
+
+.mascot-avatar.mood-curious .mascot-fig{transform:rotate(-3deg)}
+.mascot-avatar.mood-curious .mascot-smile,.mascot-avatar.mood-curious .mascot-mouth{opacity:0}
+.mascot-avatar.mood-curious .mascot-o{opacity:1}
+.mascot-avatar.mood-thinking .mascot-fig{transform:rotate(2deg)}
+.mascot-avatar.mood-thinking .mascot-eyes{transform:translateY(-4px)}
+.mascot-avatar.mood-celebrating .mascot-eyes,.mascot-avatar.mood-celebrating .mascot-lashes{opacity:0}
+.mascot-avatar.mood-celebrating .mascot-happy{opacity:1}
+.mascot-avatar.mood-celebrating .mascot-smile{opacity:1}
+.mascot-avatar.mood-confused .mascot-fig{transform:rotate(-5deg)}
+.mascot-avatar.mood-confused .mascot-worry{opacity:1}
+.mascot-avatar.mood-concerned .mascot-worry{opacity:1}
+.mascot-avatar.mood-concerned .mascot-smile,.mascot-avatar.mood-concerned .mascot-mouth{opacity:0}
+.mascot-avatar.mood-concerned .mascot-frown{opacity:1}
+.mascot-avatar.mood-encouraging .mascot-eyes{transform:scale(1.06) translateY(-2px)}
 
 @keyframes mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes mascot-blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
-@keyframes mascot-antenna{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
-@keyframes mascot-tip{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.18)}}
 @keyframes mascot-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(10deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(6deg)}}
 @keyframes mascot-nod{0%,100%{transform:translateY(0)}35%{transform:translateY(8px) rotate(1deg)}70%{transform:translateY(3px) rotate(-1deg)}}
 @keyframes mascot-lean{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(5px) scale(1.03)}}
-@keyframes mascot-listen{0%,100%{box-shadow:0 0 0 0 rgba(127,176,105,.5)}70%{box-shadow:0 0 0 14px rgba(127,176,105,0)}}
+@keyframes mascot-bounce{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-14px) scale(1.05)}70%{transform:translateY(4px) scale(.98)}100%{transform:translateY(0) scale(1)}}
+@keyframes mascot-listen-fig{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(1deg)}}
 @media(prefers-reduced-motion:reduce){.mascot-avatar *{animation:none!important;transition:none!important}}
