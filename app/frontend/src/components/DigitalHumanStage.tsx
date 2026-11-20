@@ -84,8 +84,8 @@ export default function DigitalHumanStage({
         if (!dict || !inf) continue;
         if (morphs.open != null) inf[morphs.open] = THREE.MathUtils.lerp(inf[morphs.open], amp * 0.85, 0.5);
         if (morphs.blink != null) {
-          const t = (performance.now() % 5200) / 5200;
-          inf[morphs.blink] = t > 0.985 ? 1 : 0;
+          const t = (performance.now() % 3200) / 3200;
+          inf[morphs.blink] = t > 0.96 ? 1 : 0;
         }
         if (morphs.smile != null && mood === "celebrating") {
           inf[morphs.smile] = THREE.MathUtils.lerp(inf[morphs.smile], 0.7, 0.3);
@@ -136,8 +136,8 @@ export default function DigitalHumanStage({
             if (mesh.morphTargetDictionary) {
               meshMorphs.push(mesh);
               if (morphs.open == null) {
-                morphs.open = mesh.morphTargetDictionary["viseme_aa"]
-                  ?? mesh.morphTargetDictionary["mouthOpen"]
+                morphs.open = mesh.morphTargetDictionary["mouthOpen"]
+                  ?? mesh.morphTargetDictionary["viseme_aa"]
                   ?? mesh.morphTargetDictionary["jawOpen"]
                   ?? mesh.morphTargetDictionary["mouth_open"];
               }
