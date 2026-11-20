@@ -143,7 +143,7 @@ export default function App() {
         <span className="led">DAY {confirmed ? "ON" : "NEW"}</span>
       </header>
 
-      <div className="shell">
+      <div className={`shell ${tab === "coach" ? "coach-fill" : ""}`}>
         <nav className="rail">
           {TABS.map((t) => (
             <button
