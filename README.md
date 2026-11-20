@@ -167,6 +167,18 @@ irm https://raw.githubusercontent.com/wenxiaoyu/EARVERSE/main/install.ps1 | iex
 
 打开 **http://127.0.0.1:8000**
 
+### 自动更新
+
+安装器默认会检查远程最新版本（Gitee / GitHub 的 commit）：
+
+```bash
+./install.sh --check-update     # 只检查是否有新版本
+./install.sh --no-update-check  # 跳过检查
+./install.sh --update           # 强制更新（保留画像/设置）
+```
+
+发现新版本时会自动下载代码并保留 `app/backend/data/`。更新后如果服务正在运行，重启一次即可生效。
+
 ### 本地仓库
 
 ```bash
