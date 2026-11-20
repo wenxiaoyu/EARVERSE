@@ -219,7 +219,7 @@ export default function DigitalHumanStage({
         const breathe = Math.sin(performance.now() / 2200) * 0.01;
         head.rotation.x = head.userData.nodX || 0;
         head.rotation.z = head.userData.nodZ || 0;
-        head.position.y = 1.5 + breathe;
+        head.position.y = breathe;
       }
       renderer!.render(scene, camera);
     };
