@@ -92,6 +92,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ domain, text, history }),
     }),
+  coachEnd: (domain: string, history: any[] = []) =>
+    json<any>("/api/coach/end", {
+      method: "POST",
+      body: JSON.stringify({ domain, history }),
+    }),
   speechTts: (text: string) =>
     track((async () => {
       const res = await fetch("/api/speech/tts", {

@@ -1447,3 +1447,24 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .voice-fixed b{font-size:14px}
 .voice-fixed span:not(.badge){font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.03em}
 .voice-fixed .badge{margin-left:auto}
+
+/* ============ Coach 会话总结 ============ */
+.coach-summary-backdrop{position:fixed;inset:0;z-index:600;display:grid;place-items:center;
+  background:rgba(8,10,8,.62);backdrop-filter:blur(6px);padding:22px}
+.coach-summary{width:min(520px,100%);max-height:82vh;overflow:auto;border:1px solid rgba(232,163,61,.32);
+  border-radius:16px;background:linear-gradient(180deg,#1c201b,#141714);padding:22px 24px;
+  box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.coach-summary .eyebrow{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.14em;margin-bottom:12px}
+.cs-summary{font-family:var(--serif);font-size:21px;line-height:1.4;margin:0 0 16px}
+.cs-block{margin-bottom:10px;font-size:13px;line-height:1.6}
+.cs-block b{display:block;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px}
+.cs-block span{display:block;color:#e8dfcd}
+.cs-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+/* ============ Live2D 舞台 ============ */
+.live2d-stage{position:relative;width:100%;height:100%;min-height:340px;z-index:1}
+.live2d-stage canvas{display:block;width:100%;height:100%}
+.live2d-ring{position:absolute;left:50%;bottom:12%;width:120px;height:120px;margin-left:-60px;border-radius:50%;
+  border:1px solid rgba(127,176,105,.4);box-shadow:0 0 30px rgba(127,176,105,.15);animation:live2d-pulse 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes live2d-pulse{50%{transform:scale(1.06);opacity:.6}}
+@media(prefers-reduced-motion:reduce){.live2d-ring{animation:none}}

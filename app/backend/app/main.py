@@ -1140,6 +1140,17 @@ async def coach_turn(request: Request):
     )
 
 
+@app.post("/api/coach/end")
+async def coach_end(request: Request):
+    body = await request.json()
+    profile = _profile()
+    out = await coach.end(_llm(), profile, str(body.get("domain") or "work"),
+                          body.get("history") or [])
+    if out.get("saved"):
+        storage.save(profile)
+    return out
+
+
 @app.post("/api/speech/tts")
 async def speech_tts_endpoint(request: Request):
     body = await request.json()

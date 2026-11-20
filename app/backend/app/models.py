@@ -122,6 +122,13 @@ def _empty_domain() -> dict[str, Any]:
         "goal": None,           # 今日目标（来自昨日复盘，for_date 当天有效）
         "recent_pron_issues": [],  # 最近发音/听辨错点（供下一组题定向）
         "recitation": _recitation_default(),
+        "coach": {                 # 陪练会话摘要与回流焦点
+            "sessions": [],
+            "weak_points": [],
+            "next_focus": [],
+            "last_summary": "",
+            "updated_at": "",
+        },
     }
 
 

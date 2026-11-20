@@ -5,6 +5,7 @@ import json
 import re
 from typing import Any
 
+from .. import models
 from ..llm.client import LLMClient
 from . import context, guard, prompts
 
@@ -114,3 +115,85 @@ async def turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
         # 含中文：带更严格提示重试一次
     # LLM 失败/连续中文 -> 本地英文回退
     return _normalize(None, _local_reply(text), text)
+
+
+def _clean_history(history: list[dict]) -> list[dict]:
+    out = []
+    for m in (history or [])[-20:]:
+        role = m.get("role")
+        text = str(m.get("text") or "").strip()
+        if role in ("user", "assistant") and text and not guard.has_cjk(text):
+            out.append({"role": role, "text": text})
+    return out
+
+
+def _local_summary(history: list[dict]) -> dict[str, Any]:
+    turns = sum(1 for m in history if m.get("role") == "user")
+    summary = (f"We had a {turns}-turn conversation in English. "
+               if turns else "We didn't get much talking in this session. ")
+    summary += "Try a little more speaking next time."
+    return {"summary": summary, "wins": [], "gaps": [],
+            "next_focus": ["Keep the conversation going in English"],
+            "corrections": []}
+
+
+async def end(llm: LLMClient | None, profile: dict[str, Any], domain: str,
+              history: list[dict] | None = None) -> dict[str, Any]:
+    """生成英文会话摘要，并把弱项/改写回流到学习档案。"""
+    hist = _clean_history(history or [])
+    b = context.brief(profile, domain)
+    if not hist or not any(m["role"] == "user" for m in hist):
+        return {**_local_summary(hist), "saved": False, "english_only": True}
+
+    data: dict[str, Any] | None = None
+    if llm is not None:
+        try:
+            raw = await llm.chat(prompts.summary_messages(b, hist),
+                                 temperature=0.4, max_tokens=260)
+            data = _parse(raw)
+        except Exception:
+            data = None
+    out = _local_summary(hist) if not data else {
+        "summary": guard.english_or(str(data.get("summary") or "").strip(),
+                                    _local_summary(hist)["summary"]),
+        "wins": [guard.english_or(str(x), "") for x in (data.get("wins") or []) if x][:3],
+        "gaps": [guard.english_or(str(x), "") for x in (data.get("gaps") or []) if x][:3],
+        "next_focus": [guard.english_or(str(x), "") for x in (data.get("next_focus") or []) if x][:3],
+        "corrections": [
+            {"original": str(c.get("original") or "").strip()[:160],
+             "better": guard.english_or(str(c.get("better") or "").strip(), "")}
+            for c in (data.get("corrections") or [])[:3]
+            if isinstance(c, dict) and c.get("better")
+        ],
+    }
+    out["wins"] = [x for x in out["wins"] if x]
+    out["gaps"] = [x for x in out["gaps"] if x]
+    out["next_focus"] = [x for x in out["next_focus"] if x]
+    if not out["next_focus"]:
+        out["next_focus"] = ["Keep the conversation going in English"]
+
+    # 回流到画像：会话日志 + 弱项焦点 + 口语改写写入错误史
+    d = models.ensure_domain(profile, domain)
+    log = d.setdefault("coach", {})
+    entry = {
+        "at": models.now_iso(),
+        "summary": out["summary"],
+        "wins": out["wins"],
+        "gaps": out["gaps"],
+        "next_focus": out["next_focus"],
+        "turns": sum(1 for m in hist if m["role"] == "user"),
+    }
+    sessions = log.setdefault("sessions", [])
+    sessions.append(entry)
+    log["sessions"] = sessions[-20:]
+    log["weak_points"] = (log.get("weak_points") or []) + out["gaps"]
+    log["weak_points"] = log["weak_points"][-20:]
+    log["next_focus"] = out["next_focus"]
+    log["last_summary"] = out["summary"]
+    log["updated_at"] = models.now_iso()
+    for c in out.get("corrections", []):
+        if c.get("original") and c.get("better"):
+            models.record_error(profile, domain, "speaking",
+                                c["original"], c["better"], "coach")
+    models._touch(profile)
+    return {**out, "saved": True, "english_only": True}

@@ -1,10 +1,17 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, Suspense, lazy, useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { playMira, stopMira } from "../voice";
-import TeacherAvatar, { type MiraGesture, type MiraMood } from "../components/TeacherAvatar";
+import TeacherAvatar from "../components/TeacherAvatar";
+import type { MiraGesture, MiraMood } from "../components/TeacherAvatar";
+
+const Live2DStage = lazy(() => import("../components/Live2DStage"));
 import { useVadRecorder } from "../components/useVadRecorder";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
+type Summary = {
+  summary?: string; wins?: string[]; gaps?: string[]; next_focus?: string[];
+  saved?: boolean; english_only?: boolean;
+};
 type Brief = {
   today_goal?: { kind?: string; words?: string[]; hearing?: string[]; skills?: string[] };
   weak_hearing?: { rule: string; count: number }[];
@@ -23,6 +30,8 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const [amplitude, setAmplitude] = useState(0);
   const [mood, setMood] = useState<MiraMood>("warm");
   const [gesture, setGesture] = useState<MiraGesture>("wave");
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [ending, setEnding] = useState(false);
   const liveRef = useRef(false);
   const busyRef = useRef(false);
   const speakingRef = useRef(false);
@@ -70,7 +79,9 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         onend: () => {
           setSpeaking(false); speakingRef.current = false; setAmplitude(0);
           setGesture("none");
-          if (liveRef.current && !busyRef.current) setTimeout(() => beginListening(), 220);
+          if (liveRef.current && !busyRef.current && !listeningRef.current) {
+            setTimeout(() => beginListening(), 220);
+          }
         },
       });
     } catch {
@@ -95,6 +106,8 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
       }]);
       setMood(out.mood || "warm"); setGesture(out.gesture || "nod");
       setBusy(false); busyRef.current = false;
+      // 全双工：在 Mira 开口前就开始监听，用户可随时插话
+      if (liveRef.current) await beginListening(true);
       await playTeacher(out.reply || "Let's keep going in English.");
     } catch {
       setMessages((m) => [...m, { role: "assistant", text: "I lost that one. Could you try again in English?" }]);
@@ -102,9 +115,18 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     }
   };
 
-  const beginListening = async () => {
-    if (busyRef.current || listeningRef.current || speakingRef.current) return;
+  const bargeIn = () => {
+    if (!speakingRef.current) return;
+    stopMira();
+    setSpeaking(false); speakingRef.current = false; setAmplitude(0);
+    setMood("curious"); setGesture("lean_in");
+  };
+
+  const beginListening = async (high = false) => {
+    if (busyRef.current || listeningRef.current) return;
     setListening(true); listeningRef.current = true; setMood("curious"); setGesture("lean_in");
+    // Mira 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
+    const threshold = high || speakingRef.current ? 0.035 : 0.018;
     try {
       await recorder.start(async (blob) => {
         setListening(false); listeningRef.current = false;
@@ -119,7 +141,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         } catch {
           setMood("confused"); setGesture("shrug");
         }
-      });
+      }, bargeIn, threshold);
     } catch {
       setListening(false); listeningRef.current = false; setLive(false); liveRef.current = false;
       setMessages((m) => [...m, { role: "assistant", text: "I need microphone access to listen. You can type in English instead." }]);
@@ -141,10 +163,19 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     send(text);
   };
 
-  const end = () => {
+  const end = async () => {
+    if (ending) return;
+    setEnding(true);
     setLive(false); liveRef.current = false; recorder.stop(); setListening(false); listeningRef.current = false;
     stopMira();
-    onExit();
+    try {
+      const r = await api.coachEnd(domain, history);
+      setSummary(r || {});
+    } catch {
+      setSummary({ summary: "Thanks for talking with me. Keep practicing in English.", saved: false });
+    } finally {
+      setEnding(false);
+    }
   };
 
   const focus = brief.today_goal?.words?.length
@@ -161,7 +192,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         </div>
         <div className="coach-head-right">
           <span className="coach-only">ENGLISH ONLY</span>
-          <button className="btn sm" onClick={end}>结束对话</button>
+          <button className="btn sm" onClick={end} disabled={ending}>{ending ? "总结中…" : "结束对话"}</button>
         </div>
       </div>
 
@@ -171,7 +202,9 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
             {busy ? "Mira is thinking…" : speaking ? "Mira is speaking…" : listening ? "Listening…" : live ? "Live" : "Ready"}
           </div>
-          <TeacherAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
+          <Suspense fallback={<TeacherAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />}>
+            <Live2DStage mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
+          </Suspense>
           <div className="coach-context">
             {focus && <span>Focus · {focus}</span>}
             {brief.active_days_this_week != null && <span>{brief.active_days_this_week} active days this week</span>}
@@ -212,6 +245,28 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
           <p className="coach-hint">Mira only speaks English. 中文会被拒绝，并引导你用英语重说。</p>
         </section>
       </div>
+
+      {summary && (
+        <div className="coach-summary-backdrop">
+          <div className="coach-summary">
+            <div className="eyebrow">SESSION DEBRIEF · {summary.saved ? "已回流学习档案" : "本地总结"}</div>
+            <p className="cs-summary">{summary.summary || "Good session. Keep talking in English."}</p>
+            {(summary.wins || []).length > 0 && (
+              <div className="cs-block"><b>Wins</b>{summary.wins!.map((w, i) => <span key={i}>· {w}</span>)}</div>
+            )}
+            {(summary.gaps || []).length > 0 && (
+              <div className="cs-block"><b>Gaps</b>{summary.gaps!.map((g, i) => <span key={i}>· {g}</span>)}</div>
+            )}
+            {(summary.next_focus || []).length > 0 && (
+              <div className="cs-block"><b>Next focus</b>{summary.next_focus!.map((n, i) => <span key={i}>· {n}</span>)}</div>
+            )}
+            <div className="cs-actions">
+              <button className="btn sm ghost" onClick={() => setSummary(null)}>继续聊聊</button>
+              <button className="btn sm primary" onClick={onExit}>完成</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

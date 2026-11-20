@@ -10,8 +10,8 @@ export function useVadRecorder() {
     ctx?: AudioContext; stream?: MediaStream; node?: ScriptProcessorNode;
     an?: AnalyserNode; gain?: GainNode; chunks: Float32Array[]; active: boolean;
     speech: boolean; silence: number; started: number; timer?: number;
-    done?: Cb;
-  }>({ chunks: [], active: false, speech: false, silence: 0, started: 0 });
+    done?: Cb; onSpeech?: () => void; threshold: number;
+  }>({ chunks: [], active: false, speech: false, silence: 0, started: 0, threshold: 0.018 });
 
   const cleanup = () => {
     const r = ref.current;
@@ -38,7 +38,7 @@ export function useVadRecorder() {
     if (blob.size > 44 && cb) cb(blob);
   };
 
-  const start = async (onDone: Cb) => {
+  const start = async (onDone: Cb, onSpeech?: () => void, threshold = 0.018) => {
     const r = ref.current;
     if (r.active) return;
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -55,7 +55,7 @@ export function useVadRecorder() {
     const chunks: Float32Array[] = [];
     r.ctx = ctx; r.stream = stream; r.node = node; r.an = an; r.gain = gain;
     r.chunks = chunks; r.active = true; r.speech = false; r.silence = 0;
-    r.started = Date.now(); r.done = onDone;
+    r.started = Date.now(); r.done = onDone; r.onSpeech = onSpeech; r.threshold = threshold;
     node.onaudioprocess = (e) => {
       if (!r.active) return;
       chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
@@ -71,7 +71,8 @@ export function useVadRecorder() {
       let sum = 0;
       for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
       const rms = Math.sqrt(sum / buf.length);
-      if (rms > 0.018) {
+      if (rms > r.threshold) {
+        if (!r.speech) r.onSpeech?.();
         r.speech = true;
         r.silence = 0;
       } else if (r.speech) {

@@ -105,3 +105,39 @@ def test_no_llm_local_fallback():
     out = run(service.turn(None, p, "work", "Hello", []))
     assert out["english_only"] is True
     assert not guard.has_cjk(out["reply"])
+
+
+def test_end_saves_english_summary_and_records_corrections():
+    class LLM:
+        async def chat(self, messages, **kw):
+            return ('{"summary":"You spoke about your workday in English.",'
+                    '"wins":["You kept going"],"gaps":["Verb tense slipped"],'
+                    '"next_focus":["Try past tense"],'
+                    '"corrections":[{"original":"I goed home","better":"I went home"}]}')
+    p = m.empty_profile()
+    out = run(service.end(LLM(), p, "work",
+               [{"role": "user", "text": "I goed home"},
+                {"role": "assistant", "text": "I went home. Good!"}]))
+    assert out["saved"] is True
+    assert not guard.has_cjk(str(out))
+    assert "I went home" in out["corrections"][0]["better"]
+    d = m.ensure_domain(p, "work")
+    assert d["coach"]["sessions"][-1]["summary"].startswith("You spoke")
+    assert any(e["kind"] == "speaking" for e in d["errors"])
+
+
+def test_end_empty_history_does_not_fake_feedback():
+    p = m.empty_profile()
+    out = run(service.end(None, p, "work", []))
+    assert out["saved"] is False
+    assert not guard.has_cjk(out["summary"])
+
+
+def test_brief_includes_coach_feedback():
+    p = m.empty_profile()
+    d = m.ensure_domain(p, "work")
+    d["coach"] = {"sessions": [], "weak_points": [], "next_focus": ["Try past tense"],
+                  "last_summary": "Good session.", "updated_at": ""}
+    b = context.brief(p, "work")
+    assert b["coach_next_focus"] == ["Try past tense"]
+    assert b["coach_last_summary"] == "Good session."

@@ -57,6 +57,7 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         active_days = int(m.get("active_days") or 0)
     except Exception:
         dims, active_days = {}, 0
+    coach_log = d.get("coach") or {}
     return {
         "domain": domain,
         "active_days_this_week": active_days,
@@ -74,6 +75,8 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         "pronunciation_issues": pron,
         "recent_scenarios": scenarios,
         "recitation_level": models.recitation_level(profile, domain),
+        "coach_last_summary": coach_log.get("last_summary") or "",
+        "coach_next_focus": list(coach_log.get("next_focus") or [])[:3],
     }
 
 

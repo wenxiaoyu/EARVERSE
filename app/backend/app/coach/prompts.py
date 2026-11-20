@@ -29,6 +29,28 @@ Return ONE JSON object, no markdown:
 The "reply" is what you say out loud. The "correction" is optional and must be English."""
 
 
+SUMMARY_SYSTEM = """You are Mira. Write a short English debrief of the conversation.
+You only speak English. Do not output Chinese. Be specific and honest.
+Return ONE JSON object:
+{"summary": "1-2 English sentences", "wins": ["short English bullet"], 
+ "gaps": ["short English bullet"], "next_focus": ["one actionable English goal"],
+ "corrections": [{"original": "what the learner said", "better": "a more natural English phrase"}]}"""
+
+
+def summary_messages(brief: dict[str, Any], history: list[dict]) -> list[dict]:
+    convo = []
+    for m in (history or [])[-20:]:
+        role = m.get("role")
+        text = str(m.get("text") or "").strip()
+        if role in ("user", "assistant") and text and not guard.has_cjk(text):
+            convo.append({"role": role, "content": text[:600]})
+    payload = {"learner_brief": brief, "conversation": convo}
+    return [
+        {"role": "system", "content": SUMMARY_SYSTEM},
+        {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+    ]
+
+
 def coach_messages(brief: dict[str, Any], history: list[dict], user_text: str,
                    strict: bool = False) -> list[dict]:
     system = SYSTEM
