@@ -1410,9 +1410,11 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .live-dot.on{background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 1.2s steps(1) infinite}
 .coach-context{position:absolute;left:0;right:0;bottom:14px;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .coach-context span{font-family:var(--mono);font-size:8.5px;color:var(--muted);border:1px solid var(--hair);border-radius:999px;padding:4px 8px;background:rgba(0,0,0,.14)}
-.coach-talk{position:absolute;right:14px;top:14px;bottom:14px;width:min(420px,92%);display:flex;flex-direction:column;
-  border:1px solid rgba(232,163,61,.28);border-radius:16px;background:rgba(16,19,16,.9);overflow:hidden;z-index:20;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(10px);animation:coach-float .25s ease-out}
+.coach-talk{position:absolute;right:14px;top:14px;bottom:auto;height:min(62vh,560px);width:min(420px,92%);
+  display:flex;flex-direction:column;border:1px solid rgba(242,235,223,.14);border-radius:16px;
+  background:rgba(20,24,20,.42);overflow:hidden;z-index:20;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);backdrop-filter:blur(18px) saturate(1.15);
+  -webkit-backdrop-filter:blur(18px) saturate(1.15);animation:coach-float .25s ease-out}
 .coach-talk-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--hair);
   font-family:var(--serif);font-size:15px}
 .coach-livebar{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);z-index:10;display:flex;gap:8px}
