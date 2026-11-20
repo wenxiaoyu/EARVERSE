@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { MiraGesture, MiraMood } from "./TeacherAvatar";
 
 /** 2D 萌系 AI 少女助手 Mira：低双马尾、大眼睛；支持悬停/点击互动与情绪表情。 */
@@ -8,6 +8,22 @@ export default function MascotAvatar({
   mood?: MiraMood; gesture?: MiraGesture; speaking?: boolean; amplitude?: number; listening?: boolean;
 }) {
   const style = { "--mouth": Math.min(1.5, 0.15 + amplitude * 1.4) } as CSSProperties;
+  const [mouthY, setMouthY] = useState(0.15);
+  const rafRef = useRef(0);
+
+  // 说话时用程序化张合驱动口型，不依赖音频振幅/CSS 动画，确保一定能动
+  useEffect(() => {
+    if (!speaking) { setMouthY(0.15); return; }
+    let t = 0; let last = performance.now();
+    const tick = (now: number) => {
+      t += (now - last) / 1000; last = now;
+      const s = (Math.sin(t * Math.PI * 7) + 1) / 2; // 0..1，约 3.5Hz
+      setMouthY(0.2 + s * 2.3);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [speaking]);
 
   return (
     <svg
@@ -68,7 +84,7 @@ export default function MascotAvatar({
           {/* 嘴：闭嘴是微笑，说话时张开口腔并露出牙齿 */}
           <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
           <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" />
-          <g className="mascot-mouth">
+          <g className="mascot-mouth" style={{ transformBox: "fill-box", transformOrigin: "center", transform: `scaleY(${mouthY})` }}>
             <ellipse cx="160" cy="242" rx="17" ry="12" fill="#8a413a" />
             <rect className="mascot-teeth" x="147" y="233" width="26" height="8" rx="3" fill="#fff8e8" />
           </g>
