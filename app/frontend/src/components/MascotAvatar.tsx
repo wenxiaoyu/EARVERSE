@@ -48,14 +48,6 @@ export default function MascotAvatar({
             <circle cx="246" cy="196" r="8" fill="#d7a04a" />
           </g>
 
-          {/* 小手臂 */}
-          <g className="mascot-arm mascot-arm-l">
-            <path d="M96 262c-16 8-20 22-14 34 4 8 14 10 22 6" fill="none" stroke="#b9742a" strokeWidth="13" strokeLinecap="round" />
-          </g>
-          <g className="mascot-arm mascot-arm-r">
-            <path d="M224 262c16 8 20 22 14 34-4 8-14 10-22 6" fill="none" stroke="#b9742a" strokeWidth="13" strokeLinecap="round" />
-          </g>
-
           {/* 身体 */}
           <circle className="mascot-body" cx="160" cy="210" r="128" fill="url(#mascot-body)" />
           <circle cx="160" cy="200" r="120" fill="url(#mascot-glow)" opacity=".5" />
@@ -76,19 +68,12 @@ export default function MascotAvatar({
             <path d="M109 178c4-7 14-7 18 0" />
             <path d="M193 178c4-7 14-7 18 0" />
           </g>
-          {/* 困惑眉（confused/concerned 时显示） */}
-          <g className="mascot-worry" stroke="#5a4030" strokeWidth="3.5" strokeLinecap="round">
-            <path d="M106 156c6-4 14-3 18 2" />
-            <path d="M196 158c6-4 14-3 18 2" />
-          </g>
-
           {/* 腮红 */}
           <circle cx="94" cy="218" r="15" fill="#e8927c" opacity=".35" />
           <circle cx="226" cy="218" r="15" fill="#e8927c" opacity=".35" />
 
           {/* 嘴 */}
           <path className="mascot-smile" d="M140 238c13 9 27 9 40 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
-          <path className="mascot-frown" d="M142 246c12-7 24-7 36 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
           <path className="mascot-o" d="M160 246a9 9 0 1 0 .1 0Z" fill="#8a413a" />
           <ellipse className="mascot-mouth" cx="160" cy="242" rx="14" ry="4" fill="#8a413a" />
         </g>
