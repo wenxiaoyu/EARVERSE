@@ -168,7 +168,15 @@ export default function DigitalHumanStage({
               }
             }
           }
-          if ((o as THREE.Bone).isBone && /head|neck/i.test(o.name)) headRef.current = o;
+          if ((o as THREE.Bone).isBone) {
+            const bone = o as THREE.Bone;
+            // 把 T/A-pose 的手臂放下来，接近自然站姿
+            if (bone.name === "LeftArm") bone.rotation.z = 1.15;
+            else if (bone.name === "RightArm") bone.rotation.z = -1.15;
+            else if (bone.name === "LeftForeArm") bone.rotation.z = 0.35;
+            else if (bone.name === "RightForeArm") bone.rotation.z = -0.35;
+            if (/head|neck/i.test(bone.name)) headRef.current = bone;
+          }
         });
         layout();
       },
