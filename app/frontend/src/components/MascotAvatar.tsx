@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import type { MiraGesture, MiraMood } from "./TeacherAvatar";
 
 /** 2D 萌系 AI 少女助手 Mira：低双马尾、大眼睛；支持悬停/点击互动与情绪表情。 */
@@ -8,16 +8,9 @@ export default function MascotAvatar({
   mood?: MiraMood; gesture?: MiraGesture; speaking?: boolean; amplitude?: number; listening?: boolean;
 }) {
   const style = { "--mouth": Math.min(1.5, 0.15 + amplitude * 1.4) } as CSSProperties;
-  const [react, setReact] = useState<"hover" | "click" | null>(null);
 
   return (
-    <div
-      className={`mascot-wrap ${react ? `react-${react}` : ""}`}
-      onPointerEnter={() => setReact("hover")}
-      onPointerLeave={() => setReact((v) => (v === "click" ? "click" : null))}
-      onClick={() => { setReact((v) => (v === "click" ? null : "click")); }}
-    >
-      <svg
+    <svg
         className={`mascot-avatar mood-${mood} gesture-${gesture} ${speaking ? "speaking" : ""} ${listening ? "listening" : ""}`}
         viewBox="0 0 320 360" style={style} role="img" aria-label="Mira AI mascot"
       >
@@ -81,6 +74,5 @@ export default function MascotAvatar({
           </g>
         </g>
       </svg>
-    </div>
   );
 }

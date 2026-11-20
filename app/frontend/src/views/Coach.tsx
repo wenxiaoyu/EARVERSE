@@ -263,13 +263,15 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         </div>
       </div>
 
-      <div className="coach-room">
+      <div className={`coach-room ${chatOpen ? "talk-open" : ""}`}>
         <section className="coach-stage">
           <div className="coach-status">
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
             {busy ? "Mira 思考中…" : speaking ? "Mira 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
           </div>
-          <MascotAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
+          <div className="coach-mascot">
+            <MascotAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
+          </div>
           <div className="coach-context">
             {focus && <span>Focus · {focus}</span>}
             {brief.active_days_this_week != null && <span>{brief.active_days_this_week} active days this week</span>}
