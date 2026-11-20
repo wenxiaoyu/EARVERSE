@@ -1,4 +1,4 @@
-/* 全站统一语音：所有英文朗读优先使用 Mira（服务端 stella 神经音色），
+/* 全站统一语音：所有英文朗读优先使用 Manbo（服务端 stella 神经音色），
    失败才回退浏览器英文音色。同一句文本做内存缓存，避免重复合成。 */
 import { speak as browserSpeak } from "./tts";
 
@@ -86,7 +86,7 @@ export function stopMira() {
 }
 
 /**
- * 播放一句 Mira。
+ * 播放一句 Manbo。
  * - 服务端可用时：同一音色、同一语速、同一缓存
  * - 失败：回退浏览器英文音色，保证功能不中断
  */
@@ -166,7 +166,7 @@ export function prefetchSpeech(text: string, style: "real" | "plain" = "real", s
   void fetchSpeech(line, style, speed).catch(() => {});
 }
 
-/** 兼容旧调用：`speak(text, "real")`。不阻塞 UI，统一走 Mira。 */
+/** 兼容旧调用：`speak(text, "real")`。不阻塞 UI，统一走 Manbo。 */
 export function speak(text: string, style: "real" | "plain" = "real", speed = MIRA_RATE): void {
   void playMira(text, { style, speed });
 }

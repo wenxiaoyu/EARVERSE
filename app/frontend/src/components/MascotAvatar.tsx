@@ -1,6 +1,6 @@
 import type { MiraGesture, MiraMood } from "./TeacherAvatar";
 
-/** 2D 萌系 AI 少女助手 Mira：低双马尾、大眼睛。
+/** 2D 萌系 AI 少女助手 Manbo：低双马尾、大眼睛。
     说话不再用张嘴巴，改用「声波弧线 + 身体微光」表达正在说话。 */
 export default function MascotAvatar({
   mood = "warm", gesture = "none", speaking = false, listening = false,
@@ -10,7 +10,7 @@ export default function MascotAvatar({
   return (
     <svg
       className={`mascot-avatar mood-${mood} gesture-${gesture} ${speaking ? "speaking" : ""} ${listening ? "listening" : ""}`}
-      viewBox="0 0 320 360" role="img" aria-label="Mira AI mascot"
+      viewBox="0 0 320 360" role="img" aria-label="Manbo AI mascot"
     >
       <defs>
         <linearGradient id="mascot-body" x1="0" y1="0" x2="1" y2="1">
@@ -70,9 +70,9 @@ export default function MascotAvatar({
 
         {/* 说话声波涟漪：发光能量核 + 向外扩散的圆弧 */}
         <g className="mascot-sonar">
-          <path className="mascot-sonar s1" d="M146 250 a14 14 0 0 1 28 0" />
-          <path className="mascot-sonar s2" d="M138 250 a22 22 0 0 1 44 0" />
-          <path className="mascot-sonar s3" d="M130 250 a30 30 0 0 1 60 0" />
+          <circle className="mascot-sonar-ring s1" cx="160" cy="250" r="8" />
+          <circle className="mascot-sonar-ring s2" cx="160" cy="250" r="16" />
+          <circle className="mascot-sonar-ring s3" cx="160" cy="250" r="24" />
           <circle className="mascot-sonar-core" cx="160" cy="250" r="3.5" />
         </g>
       </g>

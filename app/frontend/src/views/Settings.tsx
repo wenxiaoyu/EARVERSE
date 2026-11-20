@@ -39,7 +39,7 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
     <section>
       <p className="screen-tag">Screen 05 — 设置 · Console</p>
       <h1>控制台</h1>
-      <p className="sub">改完立刻生效。全站统一使用 Mira 的英语音色。</p>
+      <p className="sub">改完立刻生效。全站统一使用 Manbo 的英语音色。</p>
 
       {cfg && !cfg.llm?.api_key_set && (
         <div className="panel model-setup">
@@ -60,17 +60,17 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
         <div className="voice-fixed">
           <div className="voice-orb">M</div>
           <div>
-            <b>Mira · Stella</b>
+            <b>Manbo · Stella</b>
             <span>固定的英语女声 · 全站统一</span>
           </div>
           <span className="badge ok">统一音色</span>
         </div>
         <p className="hint" style={{ margin: "10px 0 0" }}>
-          今天 / 测验 / 背诵 / 实战 / 报告 / Mira Live 的所有英文朗读，都优先使用这一套神经音色。
+          今天 / 测验 / 背诵 / 实战 / 报告 / Manbo Live 的所有英文朗读，都优先使用这一套神经音色。
           断网或模型未配置时，才回退到本机英文音色。
         </p>
         <div className="row" style={{ marginTop: 12 }}>
-          <button className="btn sm primary" onClick={() => speak(TTS_SAMPLE, "plain")}>试听 Mira</button>
+          <button className="btn sm primary" onClick={() => speak(TTS_SAMPLE, "plain")}>试听 Manbo</button>
         </div>
         <div className="hint" style={{ marginTop: 8 }}>语速统一 0.96；不再按设备/浏览器切换音色。</div>
       </div>

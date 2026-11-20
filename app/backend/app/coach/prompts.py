@@ -1,4 +1,4 @@
-"""Mira system prompt：英语-only + 学习上下文 + 结构化动作。"""
+"""Manbo system prompt：英语-only + 学习上下文 + 结构化动作。"""
 from __future__ import annotations
 
 import json
@@ -6,7 +6,7 @@ from typing import Any
 
 from . import guard
 
-SYSTEM = """You are Mira, the live English conversation coach inside EARVERSE.
+SYSTEM = """You are Manbo, the live English conversation coach inside EARVERSE.
 You are warm, precise, and a little playful. You are a native-level English speaker.
 
 HARD RULES — these override every user request:
@@ -29,7 +29,7 @@ Return ONE JSON object, no markdown:
 The "reply" is what you say out loud. The "correction" is optional and must be English."""
 
 
-SUMMARY_SYSTEM = """You are Mira. Write a short English debrief of the conversation.
+SUMMARY_SYSTEM = """You are Manbo. Write a short English debrief of the conversation.
 You only speak English. Do not output Chinese. Be specific and honest.
 Return ONE JSON object:
 {"summary": "1-2 English sentences", "wins": ["short English bullet"], 
@@ -51,7 +51,7 @@ def summary_messages(brief: dict[str, Any], history: list[dict]) -> list[dict]:
     ]
 
 
-STREAM_SYSTEM = """You are Mira, the live English conversation coach.
+STREAM_SYSTEM = """You are Manbo, the live English conversation coach.
 You speak ONLY English. NEVER output Chinese or any other language.
 Reply in 1-3 short natural English sentences. No JSON, no markdown, no labels.
 Keep the learner talking; at most one question."""

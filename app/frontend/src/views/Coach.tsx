@@ -52,14 +52,14 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     api.coachStart(domain).then((r) => {
       if (!alive) return;
       setBrief(r.brief || {});
-      setMessages([{ role: "assistant", text: r.greeting || "Hey, I'm Mira. Tell me about your day — in English." }]);
+      setMessages([{ role: "assistant", text: r.greeting || "Hey, I'm Manbo. Tell me about your day — in English." }]);
       setMood(r.mood || "warm");
       setGesture(r.gesture || "wave");
       // 进入 Live 直接开始收音，不需要点「开始」
       void beginListening();
     }).catch(() => {
       if (alive) {
-        setMessages([{ role: "assistant", text: "Hey, I'm Mira. Tell me about your day — in English." }]);
+        setMessages([{ role: "assistant", text: "Hey, I'm Manbo. Tell me about your day — in English." }]);
         void beginListening();
       }
     });
@@ -84,7 +84,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         onend: () => {
           setSpeaking(false); speakingRef.current = false; setAmplitude(0);
           setGesture("none");
-          // Mira 说完后把高门限监听切回正常灵敏度
+          // Manbo 说完后把高门限监听切回正常灵敏度
           if (liveRef.current && !busyRef.current) {
             recorder.stop();
             setListening(false); listeningRef.current = false;
@@ -191,7 +191,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const beginListening = async (high = false, allowBusy = false) => {
     if ((busyRef.current && !allowBusy) || listeningRef.current) return;
     setListening(true); listeningRef.current = true; setMood("curious"); setGesture("lean_in");
-    // Mira 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
+    // Manbo 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
     const threshold = high || speakingRef.current ? 0.035 : 0.018;
     try {
       await recorder.start(async (blob) => {
@@ -253,7 +253,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
       <div className="coach-head">
         <div>
           <div className="eyebrow">LIVE COACH · MIRA</div>
-          <h1>和 Mira 聊聊。</h1>
+          <h1>和 Manbo 聊聊。</h1>
           <p className="sub">她知道你的练习状态；只用英语和你说话。</p>
         </div>
         <div className="coach-head-right">
@@ -267,7 +267,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
         <section className="coach-stage">
           <div className="coach-status">
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
-            {busy ? "Mira 思考中…" : speaking ? "Mira 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
+            {busy ? "Manbo 思考中…" : speaking ? "Manbo 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
           </div>
           <div className="coach-mascot">
             <MascotAvatar mood={mood} gesture={gesture} speaking={speaking} amplitude={amplitude} listening={listening} />
@@ -313,7 +313,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
                 <button className="btn sm primary" type="submit" disabled={busy || speaking || !text.trim()}>Send</button>
               </form>
             </div>
-            <p className="coach-hint">Mira only speaks English. 中文会被拒绝，并引导你用英语重说。</p>
+            <p className="coach-hint">Manbo only speaks English. 中文会被拒绝，并引导你用英语重说。</p>
           </section>
         ) : (
           <div className="coach-livebar">

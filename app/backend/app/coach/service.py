@@ -1,4 +1,4 @@
-"""Live Coach Mira：一轮对话编排 + 英语门禁 + 结构化动作。"""
+"""Live Coach Manbo：一轮对话编排 + 英语门禁 + 结构化动作。"""
 from __future__ import annotations
 
 import json
@@ -85,7 +85,7 @@ def _normalize(data: dict[str, Any] | None, raw: str, user_text: str) -> dict[st
 
 async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
                     user_text: str, history: list[dict] | None = None):
-    """SSE：流式输出 Mira 的英文回复。用户插话时前端中断即可。"""
+    """SSE：流式输出 Manbo 的英文回复。用户插话时前端中断即可。"""
     text = (user_text or "").strip()[:800]
     if not text:
         yield {"type": "done", "reply": guard.EMPTY_REPLY, "correction": "",

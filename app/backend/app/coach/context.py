@@ -1,4 +1,4 @@
-"""Mira 的学习者上下文：把画像压成英文 LearnerBrief（不把中文标签喂给模型）。"""
+"""Manbo 的学习者上下文：把画像压成英文 LearnerBrief（不把中文标签喂给模型）。"""
 from __future__ import annotations
 
 import re
@@ -94,4 +94,4 @@ def greeting(brief_data: dict[str, Any]) -> str:
     if (brief_data.get("deaf_words") or []):
         return ("Hey! I've got a few words I think you know by sight but not by ear. "
                 "Want to test one, or just chat first?")
-    return "Hey, I'm Mira. Tell me one thing about your day — in English."
+    return "Hey, I'm Manbo. Tell me one thing about your day — in English."

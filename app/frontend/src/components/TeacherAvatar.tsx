@@ -6,31 +6,42 @@ export type MiraGesture = "none" | "nod" | "lean_in" | "open_palm" | "point_up" 
   "hand_on_chest" | "shrug" | "thumbs_up" | "wave" | "chin_tap";
 
 /** 侧栏入口用的小肖像。 */
+/** 侧栏入口用的小肖像（新萌宠 Manbo）。 */
 export function MiraFace({ listening = false }: { listening?: boolean }) {
   return (
     <svg className={`mira-face ${listening ? "listening" : ""}`} viewBox="0 0 120 120" aria-hidden>
       <defs>
-        <linearGradient id="mf-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#dca754" />
-          <stop offset="1" stopColor="#7b4c22" />
+        <linearGradient id="mf-body" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f2c87d" />
+          <stop offset="1" stopColor="#e8a94e" />
+        </linearGradient>
+        <linearGradient id="mf-hair" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#5a4030" />
+          <stop offset="1" stopColor="#3a281c" />
         </linearGradient>
       </defs>
-      <circle cx="60" cy="60" r="57" fill="url(#mf-bg)" />
-      <path d="M23 112c2-24 16-36 37-36s35 12 37 36" fill="#263027" />
-      <path d="M33 92c7-8 16-12 27-12s20 4 27 12" fill="#efe3cd" />
-      <path d="M39 52c0-15 9-24 21-24s21 9 21 24v11c0 14-9 23-21 23S39 77 39 63Z" fill="#d8a77e" />
-      <path d="M37 48c2-16 11-24 23-24 14 0 23 9 23 26-5-5-11-8-21-8-9 0-17 2-25 10Z" fill="#2c211b" />
-      <path d="M37 57c-4-1-6 3-4 7 1 3 3 5 5 4M83 57c4-1 6 3 4 7-1 3-3 5-5 4" fill="none" stroke="#c18d68" strokeWidth="2" />
-      <ellipse cx="51" cy="59" rx="2.3" ry="2.7" fill="#2c211b" />
-      <ellipse cx="69" cy="59" rx="2.3" ry="2.7" fill="#2c211b" />
-      <path d="M46 52c3-2 6-2 9 0M65 52c3-2 6-2 9 0" fill="none" stroke="#2c211b" strokeWidth="2" strokeLinecap="round" />
-      <path d="M54 70c4 3 8 3 12 0" fill="none" stroke="#8b4e44" strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="66" cy="76" r="2" fill="#b85a4d" opacity=".35" />
+      {/* 低双马尾 */}
+      <path d="M13 46c-8 0-12 15-6 23 4 6 10 5 12-1 3-6-1-14-6-22Z" fill="url(#mf-hair)" />
+      <path d="M107 46c8 0 12 15 6 23-4 6-10 5-12-1-3-6 1-14 6-22Z" fill="url(#mf-hair)" />
+      {/* 头 */}
+      <circle cx="60" cy="60" r="45" fill="url(#mf-body)" />
+      {/* 眼睛 + 高光 */}
+      <ellipse cx="46" cy="53" rx="4.5" ry="6" fill="#241b16" />
+      <ellipse cx="74" cy="53" rx="4.5" ry="6" fill="#241b16" />
+      <circle cx="48" cy="50" r="1.6" fill="#fff8e8" />
+      <circle cx="76" cy="50" r="1.6" fill="#fff8e8" />
+      {/* 腮红 */}
+      <circle cx="35" cy="69" r="5" fill="#e8927c" opacity=".4" />
+      <circle cx="85" cy="69" r="5" fill="#e8927c" opacity=".4" />
+      {/* 微笑 */}
+      <path d="M50 73c6 4 14 4 20 0" fill="none" stroke="#a25045" strokeWidth="3" strokeLinecap="round" />
+      {/* 声波能量核 */}
+      <circle cx="60" cy="85" r="2.6" fill="#62e7d0" />
     </svg>
   );
 }
 
-/** Mira 半身形象：状态、手势、口型全部由对话驱动。 */
+/** Manbo 半身形象：状态、手势、口型全部由对话驱动。 */
 export default function TeacherAvatar({
   mood = "warm", gesture = "none", speaking = false, amplitude = 0, listening = false,
 }: {
@@ -40,7 +51,7 @@ export default function TeacherAvatar({
   return (
     <svg
       className={`mira-avatar mood-${mood} gesture-${gesture} ${speaking ? "speaking" : ""} ${listening ? "listening" : ""}`}
-      viewBox="0 0 360 500" style={style} role="img" aria-label="Mira, your English coach"
+      viewBox="0 0 360 500" style={style} role="img" aria-label="Manbo, your English coach"
     >
       <defs>
         <linearGradient id="mira-jacket" x1="0" y1="0" x2="1" y2="1">
