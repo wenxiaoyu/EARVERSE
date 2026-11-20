@@ -58,8 +58,12 @@ export default function DigitalHumanStage({
       if (!model) return;
       const box3 = new THREE.Box3().setFromObject(model);
       const size = box3.getSize(new THREE.Vector3());
+      if (size.x <= 0 || size.y <= 0) return;
       const center = box3.getCenter(new THREE.Vector3());
-      const scale = Math.min(w / size.x, h / size.y) * 0.82;
+      // 用世界单位缩放，避免把像素当米导致模型巨大/摄像机进入模型
+      const targetHeight = 1.55;
+      const targetWidth = (w / h) * targetHeight;
+      const scale = Math.min(targetWidth / size.x, targetHeight / size.y);
       model.scale.setScalar(scale);
       model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
     };
