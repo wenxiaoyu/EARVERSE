@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api, speak } from "../api";
+import { prefetchSpeech } from "../voice";
 import { toast } from "../toast";
 import { createWavRecorder } from "../wavRecorder";
 
@@ -80,6 +81,10 @@ function MiniBar({ label, value, tone }: { label: string; value: number; tone?: 
 
 export default function Recitation({ domain }: { domain: string }) {
   const [passage, setPassage] = useState<Passage | null>(null);
+
+  useEffect(() => {
+    if (passage?.text) prefetchSpeech(passage.text, "real");
+  }, [passage?.id]);
   const [meta, setMeta] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [stage, setStage] = useState<"ready" | "recite" | "scoring" | "result">("ready");

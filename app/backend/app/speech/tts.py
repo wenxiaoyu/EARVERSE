@@ -21,7 +21,10 @@ def is_deepseek(base_url: str) -> bool:
     return "deepseek" in (base_url or "").lower()
 
 
-def deepseek_voice(cfg: AudioConfig) -> str:
+def deepseek_voice(cfg: AudioConfig, voice: str | None = None) -> str:
+    """Mira 固定 stella；显式 voice 仅允许 stella/tide。"""
+    if voice in ("stella", "tide"):
+        return voice
     v = (cfg.tts_voice or "").lower()
     return "tide" if any(h in v for h in _DEEPSEEK_MALE_HINTS) else "stella"
 
@@ -44,12 +47,13 @@ def tts_endpoint(base_url: str) -> str:
 
 
 def build_tts_payload(text: str, base_url: str, cfg: AudioConfig,
-                      style: str = "real", speed: float = 1.0) -> dict:
+                      style: str = "real", speed: float = 1.0,
+                      voice: str | None = None) -> dict:
     """按供应商构造 TTS 请求体。"""
     if is_deepseek(base_url):
         return {
             "text": text,
-            "voice_id": deepseek_voice(cfg),
+            "voice_id": deepseek_voice(cfg, voice),
             "format": "wav",
             "filter_markdown": True,
         }
@@ -67,14 +71,14 @@ def build_tts_payload(text: str, base_url: str, cfg: AudioConfig,
 
 async def synthesize(text: str, base_url: str, api_key: str,
                      cfg: AudioConfig, style: str = "real",
-                     speed: float = 1.0) -> tuple[bytes, str]:
+                     speed: float = 1.0, voice: str | None = None) -> tuple[bytes, str]:
     """调用 TTS，返回 (音频字节, content-type)。"""
     import httpx
 
     if not text or not text.strip():
         raise ValueError("待合成文本为空")
     url = tts_endpoint(base_url)
-    payload = build_tts_payload(text, base_url, cfg, style=style, speed=speed)
+    payload = build_tts_payload(text, base_url, cfg, style=style, speed=speed, voice=voice)
     headers = {"Content-Type": "application/json"}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"

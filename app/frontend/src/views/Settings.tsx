@@ -1,64 +1,12 @@
 import AsyncButton from "../components/AsyncButton";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../api";
 import { toast } from "../toast";
 import { getBg, setBg } from "../bgTheme";
-import {
-  TTS_SAMPLE,
-  getSettings,
-  getVoices,
-  loadVoices,
-  prepareText,
-  saveSettings,
-  speak,
-  subscribe,
-  voiceKey,
-  voiceTag,
-  type VoiceSettings,
-} from "../tts";
+import { TTS_SAMPLE } from "../tts";
+import { speak } from "../voice";
 
 export default function Settings({ onSaved }: { onSaved: () => void }) {
-  const [v, setV] = useState(getSettings());
-  const [voices, setVoices] = useState(getVoices());
-
-  // 拖动时只更新本地状态；停顿/松手后再落盘，避免每个像素都写 localStorage。
-  const pending = useRef<Partial<VoiceSettings>>({});
-  const saveTimer = useRef<number | null>(null);
-
-  const flushVoiceSettings = () => {
-    if (saveTimer.current != null) {
-      window.clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-    const patch = pending.current;
-    pending.current = {};
-    if (Object.keys(patch).length) saveSettings(patch);
-  };
-
-  const changeVoiceSetting = (patch: Partial<VoiceSettings>) => {
-    setV((prev) => ({ ...prev, ...patch }));
-    pending.current = { ...pending.current, ...patch };
-    if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
-    saveTimer.current = window.setTimeout(flushVoiceSettings, 160);
-  };
-
-  useEffect(() => {
-    const unsub = subscribe(() => setV(getSettings()));
-    loadVoices();
-    setVoices(getVoices());
-    const t = setTimeout(() => setVoices(getVoices()), 300);
-    const synth = window.speechSynthesis;
-    const onVoices = () => setVoices(loadVoices());
-    synth?.addEventListener?.("voiceschanged", onVoices);
-    return () => {
-      unsub();
-      clearTimeout(t);
-      synth?.removeEventListener?.("voiceschanged", onVoices);
-      if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
   const [apiKey, setApiKey] = useState("");
@@ -87,42 +35,11 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
     }
   };
 
-  const sample = (mode: "plain" | "real" | "slow" | "ab") => {
-    if (!("speechSynthesis" in window)) {
-      toast("当前浏览器不支持语音合成");
-      return;
-    }
-    if (mode === "plain") {
-      saveSettings({ reduce: 0 });
-      speak(TTS_SAMPLE, { reduce: 0 });
-      toast("教科书念法 · 已记住");
-    } else if (mode === "real") {
-      saveSettings({ reduce: 1 });
-      speak(TTS_SAMPLE, { reduce: 1 });
-      toast("口语化念法 · 已记住");
-    } else if (mode === "slow") {
-      speak(TTS_SAMPLE, { rate: v.rate * 0.75 });
-      toast("试听：慢速 0.75x");
-    } else {
-      speak(TTS_SAMPLE, { reduce: 0, onend: () => setTimeout(() => speak(TTS_SAMPLE, { reduce: 1 }), 480) });
-      toast("A/B 对比播放中…");
-    }
-  };
-
-  const reduceOn = Number(v.reduce) > 0;
-  const selectedVoiceKey = (() => {
-    if (!v.voiceURI) return "";
-    const byKey = voices.find((x) => voiceKey(x) === v.voiceURI);
-    if (byKey) return voiceKey(byKey);
-    const byUri = voices.find((x) => x.voiceURI === v.voiceURI);
-    return byUri ? voiceKey(byUri) : "";
-  })();
-
   return (
     <section>
       <p className="screen-tag">Screen 05 — 设置 · Console</p>
       <h1>控制台</h1>
-      <p className="sub">改完立刻生效。声音按这台电脑上的音色朗读。</p>
+      <p className="sub">改完立刻生效。全站统一使用 Mira 的英语音色。</p>
 
       {cfg && !cfg.llm?.api_key_set && (
         <div className="panel model-setup">
@@ -140,72 +57,22 @@ export default function Settings({ onSaved }: { onSaved: () => void }) {
       {/* 声音 */}
       <div className="panel">
         <h2>声音</h2>
-
-        <label>音色</label>
-        <select value={selectedVoiceKey} onChange={(e) => { saveSettings({ voiceURI: e.target.value }); toast("音色已切换"); }} style={{ width: "100%" }}>
-          <option value="">自动选择（推荐）</option>
-          {voices.length === 0 && <option value="">正在检测音色…</option>}
-          {voices.map((voice) => (
-            <option key={voiceKey(voice)} value={voiceKey(voice)}>
-              {voice.name}{voiceTag(voice) ? `（${voiceTag(voice)}）` : ""} · {voice.lang}
-            </option>
-          ))}
-        </select>
-        <div className="hint" style={{ marginTop: 6 }}>
-          {voices.length ? `共 ${voices.length} 个英文音色，已按质量排序。` : "没检测到英文音色，请用 Chrome / Edge / Safari。"}
+        <div className="voice-fixed">
+          <div className="voice-orb">M</div>
+          <div>
+            <b>Mira · Stella</b>
+            <span>固定的英语女声 · 全站统一</span>
+          </div>
+          <span className="badge ok">统一音色</span>
         </div>
-
-        <label>语速 · <b style={{ color: "var(--amber)" }}>{v.rate.toFixed(2)}</b></label>
-        <input
-          className="range"
-          type="range" min={0.6} max={1.3} step={0.05} value={v.rate}
-          style={{ ["--p" as any]: `${Math.max(0, Math.min(100, ((v.rate - 0.6) / 0.7) * 100))}%` }}
-          onChange={(e) => changeVoiceSetting({ rate: parseFloat(e.target.value) })}
-          onPointerUp={flushVoiceSettings}
-          onKeyUp={flushVoiceSettings}
-          onBlur={flushVoiceSettings}
-        />
-        <div className="row" style={{ marginTop: 8 }}>
-          <button className="btn sm" onClick={() => { speak(TTS_SAMPLE); toast("试听：语速 " + v.rate.toFixed(2)); }}>试听</button>
-          <span className="hint">1.0 接近真人；0.75 只用于第一遍听写。</span>
+        <p className="hint" style={{ margin: "10px 0 0" }}>
+          今天 / 测验 / 背诵 / 实战 / 报告 / Mira Live 的所有英文朗读，都优先使用这一套神经音色。
+          断网或模型未配置时，才回退到本机英文音色。
+        </p>
+        <div className="row" style={{ marginTop: 12 }}>
+          <button className="btn sm primary" onClick={() => speak(TTS_SAMPLE, "plain")}>试听 Mira</button>
         </div>
-
-        <label>音高 · <b style={{ color: "var(--amber)" }}>{v.pitch.toFixed(2)}</b></label>
-        <input
-          className="range"
-          type="range" min={0.8} max={1.2} step={0.02} value={v.pitch}
-          style={{ ["--p" as any]: `${Math.max(0, Math.min(100, ((v.pitch - 0.8) / 0.4) * 100))}%` }}
-          onChange={(e) => changeVoiceSetting({ pitch: parseFloat(e.target.value) })}
-          onPointerUp={flushVoiceSettings}
-          onKeyUp={flushVoiceSettings}
-          onBlur={flushVoiceSettings}
-        />
-        <div className="row" style={{ marginTop: 8 }}>
-          <button className="btn sm" onClick={() => { speak(TTS_SAMPLE); toast("试听：音高 " + v.pitch.toFixed(2)); }}>试听</button>
-          <span className="hint">1.00 原声；0.94–0.98 压掉一点播音腔。</span>
-        </div>
-
-        <label>口语化</label>
-        <div className="seg">
-          <button className={reduceOn ? "on" : ""} onClick={() => { saveSettings({ reduce: 1 }); speak(TTS_SAMPLE, { reduce: 1 }); }}>开 · 像真人</button>
-          <button className={!reduceOn ? "on" : ""} onClick={() => { saveSettings({ reduce: 0 }); speak(TTS_SAMPLE, { reduce: 0 }); }}>关 · 念满</button>
-        </div>
-        <div className="hint" style={{ marginTop: 6 }}>开启后 going to 读成 gonna、for 读成 fer；批改时两种写法都算对。</div>
-
-        <label>试听同一句话</label>
-        <div className="row">
-          <button className={`btn sm ${!reduceOn ? "primary" : ""}`} onClick={() => sample("plain")}>教科书</button>
-          <button className={`btn sm ${reduceOn ? "primary" : ""}`} onClick={() => sample("real")}>口语化</button>
-          <button className="btn sm" onClick={() => sample("slow")}>慢速</button>
-          <button className="btn sm" onClick={() => sample("ab")}>A/B 对比</button>
-        </div>
-        <div className="hint" style={{ marginTop: 6 }}>
-          教科书 / 口语化 会记住并作用于所有朗读；慢速与 A/B 仅本次试听。
-        </div>
-        <div className="hint" style={{ marginTop: 10 }}>当前朗读内容：</div>
-        <div className="pron-target" style={{ fontSize: 15, padding: "10px 12px" }}>
-          {prepareText(TTS_SAMPLE, reduceOn ? 1 : 0)}
-        </div>
+        <div className="hint" style={{ marginTop: 8 }}>语速统一 0.96；不再按设备/浏览器切换音色。</div>
       </div>
 
       {/* 外观 */}

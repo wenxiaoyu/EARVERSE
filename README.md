@@ -71,7 +71,7 @@
 - **后端**：Python · FastAPI · Uvicorn · SQLite（画像）
 - **前端**：React · Vite · TypeScript
 - **AI**：DeepSeek（对话 `/v1/chat/completions`、ASR `/v1/tools/asr`、TTS `/v1/tools/tts`）
-- **发音播放**：浏览器 SpeechSynthesis（音色/语速/音高可调）
+- **全站语音**：统一 Mira / DeepSeek `stella` 服务端 TTS；短句自动补标点，失败回退浏览器英文音色
 - **常驻**：macOS launchd（LaunchDaemon 开机自启 + 崩溃自愈）
 
 ---

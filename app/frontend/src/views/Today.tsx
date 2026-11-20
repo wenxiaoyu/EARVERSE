@@ -1,6 +1,7 @@
 import AsyncButton from "../components/AsyncButton";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { api, speak } from "../api";
+import { prefetchSpeech } from "../voice";
 import { toast } from "../toast";
 import SceneSelector from "../components/SceneSelector";
 import { createWavRecorder } from "../wavRecorder";
@@ -120,6 +121,10 @@ export default function Today({
     });
   };
   useEffect(load, [domain, state, todayKey]);
+
+  useEffect(() => {
+    items.forEach((it) => prefetchSpeech(it.w, "real"));
+  }, [items]);
 
   // 切换场景/跨天：优先恢复今天的进度，否则重新生成
   useEffect(() => {

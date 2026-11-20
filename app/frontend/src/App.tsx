@@ -9,6 +9,7 @@ import Settings from "./views/Settings";
 import About from "./views/About";
 import Coach from "./views/Coach";
 import MiraCard from "./components/MiraCard";
+import { stopMira } from "./voice";
 import NavIcon from "./components/NavIcon";
 import SceneDrawer, { type SceneGroup } from "./components/SceneDrawer";
 
@@ -80,6 +81,9 @@ export default function App() {
   const [inflight, setInflight] = useState(0);
 
   useEffect(() => onInflight(setInflight), []);
+
+  // 切页时停止上一页的朗读，避免两段声音叠在一起
+  useEffect(() => { stopMira(); }, [tab]);
 
   // 鼠标聚光：记录光标位置到 CSS 变量
   useEffect(() => {

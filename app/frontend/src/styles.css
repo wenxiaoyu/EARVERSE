@@ -1436,3 +1436,14 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 @media(max-width:980px){.coach-room{grid-template-columns:1fr}.coach-stage{min-height:420px}.coach-stage .mira-avatar{max-height:340px}.coach-messages{max-height:42vh}}
 @media(max-width:640px){.coach-head{flex-direction:column}.coach-head-right{width:100%;justify-content:space-between}.coach-controls{position:sticky;bottom:0;background:rgba(16,19,16,.96)}}
 @media(prefers-reduced-motion:reduce){.mira-avatar *,.mira-card *{animation:none!important;transition:none!important}}
+
+/* ============ 全站统一 Mira 音色 ============ */
+.voice-fixed{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid rgba(232,163,61,.24);
+  border-radius:12px;background:linear-gradient(135deg,rgba(232,163,61,.09),rgba(242,235,223,.02));margin-top:4px}
+.voice-orb{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-family:var(--serif);font-size:19px;font-weight:900;color:#1b2118;
+  background:radial-gradient(circle at 32% 28%,#f0c87d,#b47824);box-shadow:0 0 18px rgba(232,163,61,.18)}
+.voice-fixed > div:nth-child(2){display:flex;flex-direction:column;gap:2px;min-width:0}
+.voice-fixed b{font-size:14px}
+.voice-fixed span:not(.badge){font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.03em}
+.voice-fixed .badge{margin-left:auto}

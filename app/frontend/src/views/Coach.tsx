@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { api, speak } from "../api";
+import { api } from "../api";
+import { playMira, stopMira } from "../voice";
 import TeacherAvatar, { type MiraGesture, type MiraMood } from "../components/TeacherAvatar";
 import { useVadRecorder } from "../components/useVadRecorder";
 
@@ -26,7 +27,6 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const busyRef = useRef(false);
   const speakingRef = useRef(false);
   const listeningRef = useRef(false);
-  const playRef = useRef<{ audio: HTMLAudioElement; ctx?: AudioContext; raf?: number; url?: string } | null>(null);
   const recorder = useVadRecorder();
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -53,13 +53,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   }, [domain]);
 
   useEffect(() => () => {
-    const p = playRef.current;
-    if (p) {
-      if (p.raf) cancelAnimationFrame(p.raf);
-      p.audio.pause();
-      if (p.url) URL.revokeObjectURL(p.url);
-      p.ctx?.close().catch(() => {});
-    }
+    stopMira();
     recorder.stop();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,45 +64,18 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     setSpeaking(true); speakingRef.current = true;
     setAmplitude(0.2);
     try {
-      const blob = await api.speechTts(line);
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      const ctx = new AudioContext();
-      if (ctx.state === "suspended") await ctx.resume();
-      const src = ctx.createMediaElementSource(audio);
-      const an = ctx.createAnalyser();
-      an.fftSize = 512;
-      src.connect(an);
-      an.connect(ctx.destination);
-      const p = { audio, ctx, url } as NonNullable<typeof playRef.current>;
-      playRef.current = p;
-      const buf = new Float32Array(an.fftSize);
-      const tick = () => {
-        an.getFloatTimeDomainData(buf);
-        let sum = 0;
-        for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
-        setAmplitude(Math.min(1, Math.sqrt(sum / buf.length) * 6));
-        p.raf = requestAnimationFrame(tick);
-      };
-      audio.onended = () => {
-        if (p.raf) cancelAnimationFrame(p.raf);
-        setSpeaking(false); speakingRef.current = false; setAmplitude(0);
-        setGesture("none");
-        if (playRef.current === p) playRef.current = null;
-        URL.revokeObjectURL(url);
-        ctx.close().catch(() => {});
-        if (liveRef.current && !busyRef.current) setTimeout(() => beginListening(), 220);
-      };
-      await audio.play();
-      tick();
+      await playMira(line, {
+        style: "plain",
+        onAmplitude: setAmplitude,
+        onend: () => {
+          setSpeaking(false); speakingRef.current = false; setAmplitude(0);
+          setGesture("none");
+          if (liveRef.current && !busyRef.current) setTimeout(() => beginListening(), 220);
+        },
+      });
     } catch {
-      // 服务端 TTS 不可用时回退浏览器英文音色
-      speak(line, "plain");
-      setSpeaking(true);
-      setTimeout(() => {
-        setSpeaking(false); speakingRef.current = false; setAmplitude(0); setGesture("none");
-        if (liveRef.current && !busyRef.current) setTimeout(() => beginListening(), 220);
-      }, Math.min(12000, line.length * 65));
+      setSpeaking(false); speakingRef.current = false; setAmplitude(0);
+      setGesture("none");
     }
   };
 
@@ -176,8 +143,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
 
   const end = () => {
     setLive(false); liveRef.current = false; recorder.stop(); setListening(false); listeningRef.current = false;
-    const p = playRef.current;
-    if (p) { p.audio.pause(); if (p.raf) cancelAnimationFrame(p.raf); }
+    stopMira();
     onExit();
   };
 

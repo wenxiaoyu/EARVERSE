@@ -37,6 +37,12 @@ def test_tts_payload_deepseek_male_voice():
     assert p["voice_id"] == "tide"
 
 
+def test_tts_payload_voice_override_for_mira():
+    cfg = AudioConfig(tts_voice="onyx")
+    p = tts.build_tts_payload("hi", "https://api.deepseek.com/v1", cfg, voice="stella")
+    assert p["voice_id"] == "stella"
+
+
 def test_tts_payload_openai():
     cfg = AudioConfig(tts_voice="alloy")
     p = tts.build_tts_payload("hi", "https://api.openai.com/v1", cfg)

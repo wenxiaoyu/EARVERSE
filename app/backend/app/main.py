@@ -12,6 +12,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import uuid
 from pathlib import Path
 from typing import Any
@@ -54,6 +55,7 @@ app.add_middleware(
 storage = ProfileStorage(DB_PATH)
 _probe_sessions: dict[str, dict[str, Any]] = {}
 _scenario_sessions: dict[str, dict[str, Any]] = {}
+_TTS_CACHE: dict[str, tuple[bytes, str]] = {}
 
 
 def _load_scenario_session(sid: str | None) -> dict[str, Any] | None:
@@ -1142,12 +1144,27 @@ async def coach_turn(request: Request):
 async def speech_tts_endpoint(request: Request):
     body = await request.json()
     cfg = _config()
+    text = str(body.get("text", "") or "").strip()
+    style = str(body.get("style", "real") or "real")
+    speed = float(body.get("speed", 1.0) or 1.0)
+    voice = body.get("voice") or "stella"
+    key = hashlib.sha256(
+        f"{voice}|{style}|{speed}|{text}".encode("utf-8")
+    ).hexdigest()
+    if key in _TTS_CACHE:
+        audio, ctype = _TTS_CACHE[key]
+        return Response(content=audio, media_type=ctype,
+                        headers={"X-TTS-Cache": "hit"})
     try:
         audio, ctype = await speech_tts.synthesize(
-            body.get("text", ""), cfg.audio.base_url, cfg.audio.api_key, cfg.audio,
-            style=body.get("style", "real"), speed=body.get("speed", 1.0),
+            text, cfg.audio.base_url, cfg.audio.api_key, cfg.audio,
+            style=style, speed=speed, voice=voice,
         )
-        return Response(content=audio, media_type=ctype)
+        if len(_TTS_CACHE) >= 200:
+            _TTS_CACHE.pop(next(iter(_TTS_CACHE)))
+        _TTS_CACHE[key] = (audio, ctype)
+        return Response(content=audio, media_type=ctype,
+                        headers={"X-TTS-Cache": "miss"})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=502)
 

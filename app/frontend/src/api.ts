@@ -134,15 +134,11 @@ export const api = {
     })()),
 };
 
-import { getSettings, speak as ttsSpeak } from "./tts";
+import { speak as miraSpeak } from "./voice";
 
 /** 播放发音：遵循设置页的音色/语速/音高/口语化。speed 为相对倍率。 */
-export function speak(text: string, style: "real" | "plain" = "real", speed = 1.0) {
-  const s = getSettings();
-  ttsSpeak(text, {
-    reduce: style === "plain" ? 0 : 1,
-    rate: speed !== 1.0 ? s.rate * speed : undefined,
-  });
+export function speak(text: string, style: "real" | "plain" = "real", speed = 0.96) {
+  miraSpeak(text, style, speed);
 }
 
 /** 录音工具（MediaRecorder）。 */
