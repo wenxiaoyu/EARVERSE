@@ -43,6 +43,17 @@ export default function MascotAvatar({
         <circle className="mascot-body" cx="160" cy="210" r="128" fill="url(#mascot-body)" />
         <circle cx="160" cy="200" r="120" fill="url(#mascot-glow)" opacity=".5" />
 
+        {/* 毛茸茸刘海：一排蓬松发团 + 头顶呆毛 */}
+        <g className="mascot-fringe">
+          <circle cx="94" cy="106" r="28" fill="url(#mascot-hair)" />
+          <circle cx="118" cy="92" r="30" fill="url(#mascot-hair)" />
+          <circle cx="144" cy="84" r="32" fill="url(#mascot-hair)" />
+          <circle cx="176" cy="84" r="32" fill="url(#mascot-hair)" />
+          <circle cx="202" cy="92" r="30" fill="url(#mascot-hair)" />
+          <circle cx="226" cy="106" r="28" fill="url(#mascot-hair)" />
+          <path className="mascot-ahoge" d="M160 62c-9-13 0-24 10-27 3 10-1 19-10 27Z" fill="url(#mascot-hair)" />
+        </g>
+
         {/* 眼睛 + 睫毛 */}
         <g className="mascot-eyes">
           <ellipse cx="122" cy="176" rx="13" ry="17" fill="#241b16" />
@@ -70,9 +81,9 @@ export default function MascotAvatar({
 
         {/* 说话动作：嘴巴旁弹出对话气泡 + 三点依次亮起 */}
         <g className="mascot-talk">
-          <circle className="mascot-talk-dot d1" cx="150" cy="242" r="3.5" />
-          <circle className="mascot-talk-dot d2" cx="160" cy="242" r="3.5" />
-          <circle className="mascot-talk-dot d3" cx="170" cy="242" r="3.5" />
+          <circle className="mascot-talk-dot d1" cx="150" cy="247" r="3.5" />
+          <circle className="mascot-talk-dot d2" cx="160" cy="247" r="3.5" />
+          <circle className="mascot-talk-dot d3" cx="170" cy="247" r="3.5" />
         </g>
       </g>
     </svg>
