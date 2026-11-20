@@ -75,7 +75,7 @@ export default function MascotAvatar({
           {/* 嘴 */}
           <path className="mascot-smile" d="M140 238c13 9 27 9 40 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
           <path className="mascot-o" d="M160 246a9 9 0 1 0 .1 0Z" fill="#8a413a" />
-          <ellipse className="mascot-mouth" cx="160" cy="242" rx="13" ry="7" fill="#8a413a" />
+          <ellipse className="mascot-mouth" cx="160" cy="242" rx="14" ry="9" fill="#8a413a" />
         </g>
       </svg>
     </div>

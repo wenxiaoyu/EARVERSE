@@ -1489,7 +1489,7 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.gesture-wave .mascot-fig{animation:mascot-nod 1.1s ease-in-out}
 .mascot-avatar.gesture-nod .mascot-fig{animation:mascot-nod 1.1s ease-in-out}
 .mascot-avatar.gesture-lean_in .mascot-fig{animation:mascot-lean 1.2s ease-in-out}
-.mascot-avatar.speaking .mascot-smile{opacity:.3}
+.mascot-avatar.speaking .mascot-smile{opacity:0}
 .mascot-avatar.speaking .mascot-mouth{animation:mascot-talk .16s ease-in-out infinite alternate}
 .mascot-avatar.listening .mascot-fig{animation:mascot-listen-fig 1.6s ease-in-out infinite}
 
@@ -1508,7 +1508,7 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.mood-encouraging .mascot-eyes{transform:scale(1.06) translateY(-2px)}
 
 @keyframes mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes mascot-talk{from{transform:scaleY(.2)}to{transform:scaleY(1.15)}}
+@keyframes mascot-talk{from{transform:scaleY(.15)}to{transform:scaleY(2.2)}}
 @keyframes mascot-blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
 @keyframes mascot-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(10deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(6deg)}}
 @keyframes mascot-nod{0%,100%{transform:translateY(0)}35%{transform:translateY(8px)}70%{transform:translateY(3px)}}
