@@ -224,6 +224,7 @@ export default function Today({
   // 第 1 步：边做边存（不生成诊断，诊断在第 4 步汇总）
   const markItem = (it: Item, correct: boolean) => {
     setResults((r) => ({ ...r, [it.id]: correct }));
+    setRevealed((r) => ({ ...r, [it.id]: true }));
     api.trainingRecord({
       domain, kind: "listening", item_key: `${roundId}-${it.id}`, text: it.w,
       correct, detail: `难度${it.difficulty}`, difficulty: it.difficulty,
@@ -542,16 +543,14 @@ export default function Today({
               {items.map((it) => {
                 const rev = revealed[it.id];
                 const res = results[it.id];
+                const showAnswer = Boolean(rev) || res !== undefined;
                 return (
                   <div className={`p-card ${res === true ? "ok" : res === false ? "bad" : ""}`} key={it.id}>
                     <div className="p-top">
                       <button className="p-play" onClick={() => speak(it.w, "real")} aria-label="播放">▶</button>
                     </div>
                     <div className="p-body">
-                      {rev ? (<><div className="w">{it.w}</div><div className="z">{it.zh || "—"}</div></>) : (<span className="mask">听发音，判断听没听出</span>)}
-                    </div>
-                    <div className="p-foot">
-                      <button className="p-view" onClick={() => setRevealed((r) => ({ ...r, [it.id]: !r[it.id] }))}>{rev ? "隐藏" : "查看"}</button>
+                      {showAnswer ? (<><div className="w">{it.w}</div><div className="z">{it.zh || "—"}</div></>) : (<span className="mask">听发音，判断听没听出</span>)}
                     </div>
                     <div className="p-mark">
                       <button className={res === true ? "on" : ""} onClick={() => markItem(it, true)}>听出</button>

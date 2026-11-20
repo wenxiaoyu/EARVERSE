@@ -338,9 +338,6 @@ label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transfo
 .p-body .mask{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted)}
 .p-body .w{font-family:var(--serif);font-size:20px;font-weight:900;line-height:1.15}
 .p-body .z{color:var(--amber);font-size:13px;margin-top:3px}
-.p-foot{display:flex;justify-content:center}
-.p-view{background:transparent;border:1px dashed var(--hair);color:var(--muted);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:var(--sans)}
-.p-view:hover{color:var(--amber);border-color:rgba(232,163,61,.5)}
 .p-mark{display:flex;gap:6px}
 .p-mark button{flex:1;background:transparent;border:1px solid var(--hair);color:var(--muted);border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer}
 .p-mark button.on{border-color:var(--green);color:var(--green);background:rgba(127,176,105,.1)}
