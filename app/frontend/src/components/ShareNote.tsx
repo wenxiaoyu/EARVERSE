@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { api } from "../api";
 import { toast } from "../toast";
+import { MiraFace } from "./TeacherAvatar";
 
 type Template = "score" | "quote";
 
@@ -197,6 +198,15 @@ export default function ShareNote({
                   </>
                 )}
 
+                {data.coach_comment && (
+                  <div className="sn-coach">
+                    <div className="sn-coach-avatar"><MiraFace /></div>
+                    <div className="sn-coach-body">
+                      <b>MANBO 老师说</b>
+                      <span>{data.coach_comment}</span>
+                    </div>
+                  </div>
+                )}
                 <div className="sn-foot">{data.date} · 今日练习记录</div>
               </div>
             </div>

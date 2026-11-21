@@ -139,6 +139,15 @@ def _profile_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     }
 
 
+def _coach_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
+    """把 Manbo 最近一次复盘/评语带进报告。"""
+    c = (models.ensure_domain(profile, domain).get("coach") or {})
+    return {
+        "coach_comment": (c.get("last_summary") or "")[:200],
+        "coach_next": [str(x)[:60] for x in (c.get("next_focus") or [])][:2],
+    }
+
+
 def _graduation(profile: dict[str, Any]) -> dict[str, Any]:
     out = {}
     for domain in profile.get("domains", {}).values():
@@ -155,6 +164,7 @@ async def build_report(llm, domain: str, period: str,
     from . import metrics as metrics_mod
 
     facts = metrics_mod.compute(profile, domain, period)
+    facts.update(_coach_excerpt(profile, domain))
     if llm is None:
         return local_report(domain, period, profile, facts)
     try:

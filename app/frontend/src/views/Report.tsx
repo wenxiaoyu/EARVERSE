@@ -397,6 +397,12 @@ export default function Report({ domain }: { domain: string }) {
               ))}
             </div>
           )}
+          {report.coach_comment && (
+            <div className="coach-quote">
+              <b>MANBO 教练说</b>
+              <p>{report.coach_comment}</p>
+            </div>
+          )}
         </div>
       )}
 

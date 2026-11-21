@@ -413,6 +413,8 @@ def share_note_messages(domain: str, facts: dict) -> list[dict]:
         "next": facts.get("next"),
         "quote": facts.get("quote"),
         "today": facts.get("today"),
+        "coach_comment": facts.get("coach_comment"),
+        "coach_next": facts.get("coach_next"),
     }
     system = (
         "你是英语学习者的朋友，不是营销号。写一条小红书风格的学习日记。\n"
@@ -421,6 +423,7 @@ def share_note_messages(domain: str, facts: dict) -> list[dict]:
         "- 文案必须和 verdict 一致：说退步时不要写“有进步/变好”，说变好时不要写“退步”；\n"
         "- 第一行固定：用耳界练英语的第 N 天。N 用 facts.day_no；\n"
         "- 正文 3–5 行：一个真实进步、一个具体卡点、一个明天动作；\n"
+        "- 如果 facts.coach_comment 非空，加一句 Manbo 老师今天的中文转述点评（如“Manbo 老师提醒我：…”），不超过 40 字；不要照搬英文；\n"
         "- 每条不超过 20 个汉字，避免长句；\n"
         "- 口语化、具体、有共鸣，不写“英语大神”“30 天流利”这类夸张承诺；\n"
         "- 不出现具体错误原句、录音、公司名、真实姓名；\n"
@@ -453,6 +456,8 @@ def report_v2_messages(domain: str, facts: dict) -> list[dict]:
         "strengths": facts.get("strengths"),
         "gaps": facts.get("gaps"),
         "recitation": facts.get("recitation"),
+        "coach_comment": facts.get("coach_comment"),
+        "coach_next": facts.get("coach_next"),
     }
     system = (
         "你是严谨的英语学习评估师，不是营销号。根据给定的周期 facts 写报告。\\n"
@@ -461,6 +466,7 @@ def report_v2_messages(domain: str, facts: dict) -> list[dict]:
         "- 每条结论必须能对应到某个指标；低置信/小样本必须明确说“样本不足/低置信”，不得下强结论；\\n"
         "- 不要把累计词汇快照说成本周变化；不要用“英语大神/流利”等承诺；\\n"
         "- 不出现具体错误原句、录音、公司名、真实姓名；\\n"
+        "- 如果 facts.coach_comment 非空，可作为教练点评参考并用中文概括（不要照搬英文），可并入本期结论或下周计划；\\n"
         "- 最多 3 个 section：本期结论、关键短板、下周计划；\\n"
         "- 下周计划只给 1–2 个可验证动作，带目标数字（目标也应来自合理设定，不要声称已达成）；\\n"
         "- 全部用中文。\\n"
