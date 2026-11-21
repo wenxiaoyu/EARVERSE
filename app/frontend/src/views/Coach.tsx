@@ -215,6 +215,8 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
           else {
             setMood("confused"); setGesture("shrug");
             setMessages((m) => [...m, { role: "assistant", text: "I didn't catch that. Could you say it once more in English?" }]);
+            // 识别为空：保持收音，别停在死状态
+            if (liveRef.current) setTimeout(() => beginListening(), 300);
           }
         } catch {
           setMood("confused"); setGesture("shrug");

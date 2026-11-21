@@ -1,17 +1,21 @@
 /* 浏览器自动停顿录音：检测到说话后，静音约 800ms 自动结束。
-   输出 16-bit PCM WAV，供 DeepSeek ASR 使用。 */
+   输出 16-bit PCM WAV，供 DeepSeek ASR 使用。
+   抗噪：需连续 240ms 有声才确认「说话」，且总时长 ≥ 400ms 才触发识别；
+   否则视为噪声丢弃，静默超时自动清空缓冲继续监听。 */
 import { useRef } from "react";
 import { encodeWav } from "../wavRecorder";
 
 type Cb = (blob: Blob) => void;
 
+const MIN_SPEECH_MS = 400;
+
 export function useVadRecorder() {
   const ref = useRef<{
     ctx?: AudioContext; stream?: MediaStream; node?: ScriptProcessorNode;
     an?: AnalyserNode; gain?: GainNode; chunks: Float32Array[]; active: boolean;
-    speech: boolean; speechCount: number; silence: number; started: number; timer?: number;
+    speech: boolean; speechCount: number; speechMs: number; silence: number; started: number; timer?: number;
     done?: Cb; onSpeech?: () => void; threshold: number;
-  }>({ chunks: [], active: false, speech: false, speechCount: 0, silence: 0, started: 0, threshold: 0.018 });
+  }>({ chunks: [], active: false, speech: false, speechCount: 0, speechMs: 0, silence: 0, started: 0, threshold: 0.018 });
 
   const cleanup = () => {
     const r = ref.current;
@@ -26,7 +30,8 @@ export function useVadRecorder() {
     r.active = false;
   };
 
-  const stop = () => {
+  /** final=false 只停麦不识别（静音/切页/打断用）；final=true 才把音频交给 ASR。 */
+  const stop = (final = false) => {
     const r = ref.current;
     if (!r.active) return;
     const rate = r.ctx?.sampleRate ?? 44100;
@@ -35,7 +40,7 @@ export function useVadRecorder() {
     cleanup();
     const blob = encodeWav(chunks, rate);
     r.chunks = [];
-    if (blob.size > 44 && cb) cb(blob);
+    if (final && blob.size > 44 && cb) cb(blob);
   };
 
   const start = async (onDone: Cb, onSpeech?: () => void, threshold = 0.018) => {
@@ -54,7 +59,7 @@ export function useVadRecorder() {
     gain.gain.value = 0;
     const chunks: Float32Array[] = [];
     r.ctx = ctx; r.stream = stream; r.node = node; r.an = an; r.gain = gain;
-    r.chunks = chunks; r.active = true; r.speech = false; r.speechCount = 0; r.silence = 0;
+    r.chunks = chunks; r.active = true; r.speech = false; r.speechCount = 0; r.speechMs = 0; r.silence = 0;
     r.started = Date.now(); r.done = onDone; r.onSpeech = onSpeech; r.threshold = threshold;
     node.onaudioprocess = (e) => {
       if (!r.active) return;
@@ -78,14 +83,32 @@ export function useVadRecorder() {
           r.onSpeech?.();
           r.speech = true;
         }
-        if (r.speech) r.silence = 0;
+        if (r.speech) { r.silence = 0; r.speechMs += 120; }
       } else {
         r.speechCount = 0;
         if (r.speech) r.silence += 120;
       }
+
       const tooLong = Date.now() - r.started > 45_000;
       const silentDone = r.speech && r.silence >= 800;
-      if (tooLong || silentDone) stop();
+
+      if (tooLong) {
+        if (r.speechMs >= MIN_SPEECH_MS) {
+          stop(true);
+        } else {
+          // 45s 内没有有效语音：丢弃缓冲，继续监听，不触发 ASR
+          r.started = Date.now();
+          r.chunks.length = 0;
+          r.speech = false; r.speechCount = 0; r.silence = 0; r.speechMs = 0;
+        }
+      } else if (silentDone) {
+        if (r.speechMs >= MIN_SPEECH_MS) {
+          stop(true);
+        } else {
+          // 太短的「说话」视为噪声，忽略并继续监听
+          r.speech = false; r.speechCount = 0; r.silence = 0; r.speechMs = 0;
+        }
+      }
     }, 120);
   };
 
