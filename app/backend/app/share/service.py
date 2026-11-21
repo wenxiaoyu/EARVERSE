@@ -235,6 +235,7 @@ def compute_facts(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         "worse_label": "卡一下",
         "next": next_action,
         "quote": quote,
+        "discuss": "你们练英语是精听还是泛听？评论区聊聊。",
         "hashtags": list(HASHTAGS),
     }
     coach = (models.ensure_domain(profile, domain).get("coach") or {})
@@ -296,6 +297,8 @@ def _normalize_ai(data: dict | None, facts: dict[str, Any],
     # AI 负责 quote 和完整的小红书文案。
     if data.get("quote"):
         out["quote"] = _clip(data["quote"], 28)
+    if channel == "xhs" and data.get("discuss"):
+        out["discuss"] = _clip(data["discuss"], 24)
     if data.get("caption"):
         out["caption"] = str(data["caption"]).strip()
     tags = data.get("hashtags")

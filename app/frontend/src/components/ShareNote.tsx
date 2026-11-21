@@ -4,7 +4,7 @@ import { api } from "../api";
 import { toast } from "../toast";
 import { MiraFace } from "./TeacherAvatar";
 
-type Template = "score" | "quote";
+type Template = "score" | "quote" | "xhs";
 
 function metricDelta(m: any) {
   if (!m?.delta_text) return null;
@@ -130,7 +130,7 @@ export default function ShareNote({
       }
       setData(r);
       setCaption(r.caption || "");
-      setTemplate("quote");
+      setTemplate("xhs");
       await new Promise((res) => setTimeout(res, 120));
       try { await navigator.clipboard.writeText(r.caption || ""); } catch { /* ignore */ }
       const url = await exportPng();
@@ -150,6 +150,10 @@ export default function ShareNote({
 
   const canShare = typeof navigator !== "undefined" && Boolean(navigator.canShare);
   const done = data?.practiced_today !== false;
+  const metricList = data?.metrics || [];
+  const bigMetric = metricList.length
+    ? metricList.slice().sort((a: any, b: any) => Math.abs(b.delta || 0) - Math.abs(a.delta || 0))[0]
+    : null;
 
   return (
     <div className="share-mask" onMouseDown={onClose}>
@@ -191,7 +195,23 @@ export default function ShareNote({
 
                 <div className={`sn-verdict ${data.verdict}`}>{data.verdict_label}</div>
 
-                {template === "score" ? (
+                {template === "xhs" ? (
+                  <div className="xhs-body">
+                    <div className="xhs-hook">“{data.quote}”</div>
+                    {bigMetric && (
+                      <div className="xhs-big">
+                        <b>{bigMetric.today_text}</b>
+                        <span>{bigMetric.label}</span>
+                        {metricDelta(bigMetric)}
+                      </div>
+                    )}
+                    <div className="xhs-notes">
+                      <div><b>卡在</b><span>{data.worse}</span></div>
+                      <div><b>明天</b><span>{data.next}</span></div>
+                    </div>
+                    {data.discuss && <div className="xhs-discuss">{data.discuss}</div>}
+                  </div>
+                ) : template === "score" ? (
                   <>
                     <div className="sn-metrics">
                       {(data.metrics || []).map((m: any) => (
@@ -245,7 +265,7 @@ export default function ShareNote({
               <div className="share-tabs">
                 <button className={template === "score" ? "on" : ""} onClick={() => setTemplate("score")}>成绩单</button>
                 <button className={template === "quote" ? "on" : ""} onClick={() => setTemplate("quote")}>金句</button>
-                <button className="xhs-tab" onClick={shareXhs} disabled={busy}>
+                <button className={`xhs-tab ${template === "xhs" ? "on" : ""}`} onClick={shareXhs} disabled={busy}>
                   {busy ? "准备中…" : "📕 小红书"}
                 </button>
               </div>

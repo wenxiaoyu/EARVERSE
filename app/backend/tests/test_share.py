@@ -128,3 +128,17 @@ def test_build_note_xhs_without_llm_uses_local_xhs():
     assert note["source"] == "local"
     assert note["channel"] == "xhs"
     assert "精听还是泛听" in note["caption"]
+
+
+def test_xhs_discuss_default_and_ai():
+    facts = share.compute_facts(_profile(), "work")
+    assert "评论区" in facts["discuss"]
+
+    class FakeLLM:
+        async def chat(self, *a, **k):
+            return ('{"quote":"听顺了一点。","discuss":"精听还是泛听？",'
+                    '"caption":"用耳界练英语的第 2 天。\\n#英语学习",'
+                    '"hashtags":["#英语学习"]}')
+
+    note = asyncio.run(share.build_note(FakeLLM(), "work", _profile(), "xhs"))
+    assert note["discuss"] == "精听还是泛听？"

@@ -1305,14 +1305,34 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .sn-quote-notes span{display:block;font-size:14px;line-height:1.55;color:#3b2d20;min-width:0;
   white-space:nowrap}
 .sn-quote-notes b{display:inline-block;min-width:64px;font-size:10px;letter-spacing:.08em;color:#9a5f14;margin-right:6px}
-.sn-coach{position:absolute;left:40px;right:40px;bottom:66px;display:flex;align-items:center;gap:10px;
+.sn-coach{margin-top:12px;display:flex;align-items:center;gap:10px;
   padding:9px 11px;border:1px solid rgba(53,195,240,.35);border-radius:12px;
-  background:rgba(255,255,255,.55);backdrop-filter:blur(2px);z-index:2}
+  background:rgba(255,255,255,.55);backdrop-filter:blur(2px);position:relative;z-index:2}
 .sn-coach-avatar{width:34px;height:34px;flex:none}
 .sn-coach-avatar .mira-face{width:34px;height:34px}
 .sn-coach-body{min-width:0;display:flex;flex-direction:column;gap:2px}
 .sn-coach-body b{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:#0f8fa8}
 .sn-coach-body span{font-size:12px;line-height:1.45;color:#3b2d20;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* 小红书专属版式：大字钩子 + 一个最大数字 + 讨论引导 */
+.sn-card.xhs{background:radial-gradient(820px 460px at 82% -12%,rgba(255,92,120,.18),transparent 60%),
+  linear-gradient(165deg,#FBF4E8 0%,#F4E8D5 58%,#EFE1CA 100%)}
+.sn-card.xhs .sn-verdict{margin-top:16px}
+.xhs-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;position:relative;z-index:1}
+.xhs-hook{font-family:var(--serif);font-size:37px;line-height:1.34;font-weight:900;letter-spacing:-.02em;
+  margin-top:20px;color:#241B12;word-break:break-word}
+.xhs-big{display:flex;align-items:baseline;gap:10px;margin-top:auto;padding-top:12px}
+.xhs-big b{font-family:var(--serif);font-size:74px;line-height:.9;font-weight:900;color:#241B12;letter-spacing:-.035em}
+.xhs-big span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#8b7458}
+.xhs-big .sn-delta{font-size:15px}
+.xhs-notes{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.xhs-notes > div{display:flex;gap:10px;align-items:baseline}
+.xhs-notes b{flex:0 0 34px;font-size:11px;letter-spacing:.06em;color:#9a5f14;font-weight:700}
+.xhs-notes span{flex:1 1 auto;font-size:13.5px;line-height:1.5;color:#3b2d20;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xhs-discuss{margin-top:13px;padding-top:11px;border-top:1px dashed rgba(70,50,28,.28);
+  font-size:13.5px;line-height:1.5;color:#7a5a34;font-weight:600}
+.share-tabs button.xhs-tab.on{background:rgba(255,46,77,.26);color:#ffb3bf}
+
 .coach-quote{margin-top:14px;padding:12px 14px;border:1px solid rgba(127,231,240,.28);border-radius:12px;
   background:linear-gradient(135deg,rgba(127,231,240,.10),rgba(127,231,240,.03))}
 .coach-quote b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#4dd0e1;margin-bottom:6px}
