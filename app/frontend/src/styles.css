@@ -1401,27 +1401,8 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
   border:1px solid rgba(127,176,105,.3);border-radius:999px;padding:5px 9px;background:rgba(127,176,105,.06)}
 .coach-room{display:block;position:relative;flex:1;min-height:calc(100vh - 130px)}
 .shell.coach-fill .coach-room{height:100%;min-height:0}
-.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;
-  background:
-    radial-gradient(1100px 720px at 50% 40%, rgba(53,195,240,.06), transparent 70%),
-    radial-gradient(900px 620px at 82% 72%, rgba(232,163,61,.04), transparent 66%),
-    radial-gradient(760px 520px at 18% 80%, rgba(53,195,240,.04), transparent 66%);
+.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;background:transparent;
   display:flex;align-items:center;justify-content:center}
-.coach-stage:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(820px 820px at 50% 45%, rgba(98,231,208,.06), transparent 70%)}
-.coach-stage:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.22;mask-image:radial-gradient(circle at 50% 45%,#000 30%,transparent 72%);
-  background-image:linear-gradient(rgba(98,231,208,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(98,231,208,.025) 1px,transparent 1px);
-  background-size:44px 44px}
-.coach-bg-deco{position:absolute;inset:0;z-index:0;pointer-events:none;mask-image:radial-gradient(circle at 50% 45%,#000 35%,transparent 78%);
-  background-image:
-    radial-gradient(2px 2px at 10% 18%, rgba(127,231,240,.55), transparent 100%),
-    radial-gradient(1.5px 1.5px at 22% 64%, rgba(127,231,240,.45), transparent 100%),
-    radial-gradient(2px 2px at 35% 30%, rgba(127,231,240,.4), transparent 100%),
-    radial-gradient(1.5px 1.5px at 48% 82%, rgba(127,231,240,.5), transparent 100%),
-    radial-gradient(2px 2px at 62% 20%, rgba(127,231,240,.45), transparent 100%),
-    radial-gradient(1.5px 1.5px at 74% 66%, rgba(127,231,240,.5), transparent 100%),
-    radial-gradient(2px 2px at 88% 40%, rgba(127,231,240,.4), transparent 100%),
-    radial-gradient(1.5px 1.5px at 92% 12%, rgba(127,231,240,.55), transparent 100%)}
 .coach-stage .mira-avatar{position:absolute;inset:0;z-index:1;max-height:none;max-width:none;margin:0}
 .coach-status{position:absolute;top:16px;left:18px;z-index:2;display:flex;align-items:center;gap:7px;
   font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted)}

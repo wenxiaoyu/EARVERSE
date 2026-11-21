@@ -279,7 +279,6 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
 
       <div className={`coach-room ${chatOpen ? "talk-open" : ""}`}>
         <section className="coach-stage">
-          <div className="coach-bg-deco" />
           <div className="coach-status">
             <span className={`live-dot ${listening || speaking ? "on" : ""}`} />
             {busy ? "Manbo 思考中…" : speaking ? "Manbo 说话中…" : listening ? "收音中…" : live ? "收音待命" : "已静音"}
