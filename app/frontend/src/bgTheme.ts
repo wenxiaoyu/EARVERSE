@@ -1,12 +1,14 @@
-/* 背景氛围：soft(柔光) | bold(张扬) | ultra(炸裂)。持久化到 localStorage，切换 <html> class。 */
+/* 背景氛围：soft(柔光) | bold(张扬) | ultra(炸裂)。持久化到 localStorage，切换 <html> class。
+   默认：柔光（soft）——更安静、耐看，也不抢内容。*/
 export type BgMode = "soft" | "bold" | "ultra";
 const KEY = "aicoach.bg.v2";
+const DEFAULT_BG: BgMode = "soft";
 
 export function getBg(): BgMode {
   try {
-    return (localStorage.getItem(KEY) as BgMode) || "ultra";
+    return (localStorage.getItem(KEY) as BgMode) || DEFAULT_BG;
   } catch {
-    return "ultra";
+    return DEFAULT_BG;
   }
 }
 
