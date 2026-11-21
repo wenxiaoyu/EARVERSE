@@ -127,12 +127,14 @@ function MascotTech({
 
         {/* LED 数字眼 */}
         <g className="mascot-eyes">
-          <ellipse cx="122" cy="176" rx="13" ry="17" fill="#06233a" />
-          <ellipse cx="198" cy="176" rx="13" ry="17" fill="#06233a" />
-          <ellipse cx="122" cy="178" rx="6" ry="8" fill="#7fe7f0" />
-          <ellipse cx="198" cy="178" rx="6" ry="8" fill="#7fe7f0" />
-          <circle cx="124" cy="174" r="3" fill="#eaffff" />
-          <circle cx="200" cy="174" r="3" fill="#eaffff" />
+          <ellipse cx="122" cy="176" rx="16" ry="21" fill="#06233a" />
+          <ellipse cx="198" cy="176" rx="16" ry="21" fill="#06233a" />
+          <ellipse cx="122" cy="179" rx="8" ry="11" fill="#7fe7f0" />
+          <ellipse cx="198" cy="179" rx="8" ry="11" fill="#7fe7f0" />
+          <circle cx="125" cy="173" r="4" fill="#eaffff" />
+          <circle cx="201" cy="173" r="4" fill="#eaffff" />
+          <circle cx="118" cy="182" r="2" fill="#eaffff" opacity=".8" />
+          <circle cx="194" cy="182" r="2" fill="#eaffff" opacity=".8" />
         </g>
 
         {/* 腮红：青色柔光 */}
