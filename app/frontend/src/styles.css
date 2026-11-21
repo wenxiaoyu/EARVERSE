@@ -1403,17 +1403,16 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .shell.coach-fill .coach-room{height:100%;min-height:0}
 .coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;
   background:
-    radial-gradient(1200px 760px at 50% 34%, rgba(98,231,208,.13), transparent 62%),
+    radial-gradient(1100px 720px at 50% 40%, rgba(53,195,240,.16), transparent 62%),
     radial-gradient(900px 620px at 82% 72%, rgba(232,163,61,.10), transparent 60%),
-    radial-gradient(760px 520px at 18% 80%, rgba(98,231,208,.10), transparent 62%),
-    linear-gradient(160deg,#0b1220 0%,#0a0f18 48%,#0c1326 100%);
+    radial-gradient(760px 520px at 18% 80%, rgba(53,195,240,.10), transparent 62%);
   display:flex;align-items:center;justify-content:center}
 .coach-stage:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(560px 560px at 50% 42%, rgba(98,231,208,.18), transparent 66%)}
-.coach-stage:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+.coach-stage:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;mask-image:radial-gradient(120% 120% at 50% 45%,#000 40%,transparent 78%);
   background-image:linear-gradient(rgba(98,231,208,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(98,231,208,.05) 1px,transparent 1px);
   background-size:44px 44px}
-.coach-bg-deco{position:absolute;inset:0;z-index:0;pointer-events:none;
+.coach-bg-deco{position:absolute;inset:0;z-index:0;pointer-events:none;mask-image:radial-gradient(120% 120% at 50% 45%,#000 45%,transparent 82%);
   background-image:
     radial-gradient(2px 2px at 10% 18%, rgba(127,231,240,.55), transparent 100%),
     radial-gradient(1.5px 1.5px at 22% 64%, rgba(127,231,240,.45), transparent 100%),
