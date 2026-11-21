@@ -76,18 +76,14 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     except Exception:
         dims, active_days = {}, 0
     coach_log = d.get("coach") or {}
-    conversation = [
-        {"role": str(t.get("role") or ""), "text": str(t.get("text") or "")[:300]}
-        for t in (coach_log.get("conversation") or [])[-8:]
-        if t.get("role") in ("user", "assistant") and str(t.get("text") or "").strip()
-    ]
-    facts = [str(f.get("text") or "")[:200]
-             for f in (coach_log.get("facts") or [])[-10:] if f.get("text")]
-    answer_log = [
-        {"focus": str(a.get("focus") or ""), "answer": str(a.get("answer") or "")[:160],
-         "correct": bool(a.get("correct")), "correction": str(a.get("correction") or "")[:160]}
-        for a in (coach_log.get("answer_log") or [])[-10:]
-    ]
+    facts = [str(f.get("text") or "")[:100]
+             for f in (coach_log.get("facts") or [])[-5:] if f.get("text")]
+    recent_mistakes = [
+        (f"{str(a.get('answer') or '')[:80]} -> {str(a.get('correction') or '')[:80]}"
+         if a.get("correction") else str(a.get("answer") or "")[:80])
+        for a in (coach_log.get("answer_log") or [])[-12:]
+        if not a.get("correct") and str(a.get("answer") or "").strip()
+    ][-5:]
     focus = _focus_text({"today_goal": goal, "deaf_words": models.deaf_words(d)[:6],
                           "weak_hearing": hearing})
     return {
@@ -111,9 +107,8 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         "recitation_level": models.recitation_level(profile, domain),
         "coach_last_summary": coach_log.get("last_summary") or "",
         "coach_next_focus": list(coach_log.get("next_focus") or [])[:3],
-        "conversation": conversation,
         "facts": facts,
-        "answer_log": answer_log,
+        "recent_mistakes": recent_mistakes,
     }
 
 

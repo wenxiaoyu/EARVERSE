@@ -55,16 +55,20 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     let alive = true;
     api.coachStart(domain).then((r) => {
       if (!alive) return;
+      const greeting = r.greeting || "Hey, I'm Manbo. Tell me about your day — in English.";
       setBrief(r.brief || {});
-      setMessages([{ role: "assistant", text: r.greeting || "Hey, I'm Manbo. Tell me about your day — in English." }]);
+      setMessages([{ role: "assistant", text: greeting }]);
       setMood(r.mood || "warm");
       setGesture(r.gesture || "wave");
-      // 进入 Live 直接开始收音，不需要点「开始」
-      void beginListening();
+      // 主动开场：先高门限监听（可插话），再播放开场白；说完自动恢复低门限收音
+      void beginListening(true, true);
+      void playTeacher(greeting);
     }).catch(() => {
       if (alive) {
-        setMessages([{ role: "assistant", text: "Hey, I'm Manbo. Tell me about your day — in English." }]);
-        void beginListening();
+        const greeting = "Hey, I'm Manbo. Tell me about your day — in English.";
+        setMessages([{ role: "assistant", text: greeting }]);
+        void beginListening(true, true);
+        void playTeacher(greeting);
       }
     });
     return () => { alive = false; };
