@@ -1135,22 +1135,29 @@ async def coach_start(request: Request):
 @app.post("/api/coach/turn")
 async def coach_turn(request: Request):
     body = await request.json()
-    return await coach.turn(
-        _llm(), _profile(), str(body.get("domain") or "work"),
+    profile = _profile()
+    out = await coach.turn(
+        _llm(), profile, str(body.get("domain") or "work"),
         str(body.get("text") or ""), body.get("history") or [],
     )
+    storage.save(profile)
+    return out
 
 
 @app.post("/api/coach/turn/stream")
 async def coach_turn_stream(request: Request):
     body = await request.json()
+    profile = _profile()
 
     async def gen():
-        async for ev in coach.stream_turn(
-            _llm(), _profile(), str(body.get("domain") or "work"),
-            str(body.get("text") or ""), body.get("history") or [],
-        ):
-            yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
+        try:
+            async for ev in coach.stream_turn(
+                _llm(), profile, str(body.get("domain") or "work"),
+                str(body.get("text") or ""), body.get("history") or [],
+            ):
+                yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
+        finally:
+            storage.save(profile)
 
     return StreamingResponse(gen(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache"})

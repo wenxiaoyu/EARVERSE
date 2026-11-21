@@ -128,6 +128,9 @@ def _empty_domain() -> dict[str, Any]:
             "next_focus": [],
             "last_summary": "",
             "updated_at": "",
+            "conversation": [],     # 最近跨会话对话 [{role, text, at}]
+            "facts": [],            # 学习者主动说过的个人事实 [{text, at}]
+            "answer_log": [],       # 每道题作答记录 [{focus, answer, correct, correction, at}]
         },
     }
 

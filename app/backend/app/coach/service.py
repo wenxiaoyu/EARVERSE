@@ -55,6 +55,19 @@ def _local_reply(user_text: str) -> str:
     return "Got it. Tell me a little more — what happened next?"
 
 
+def _remember_turn(profile: dict[str, Any], domain: str, role: str, text: str) -> None:
+    """把一轮英文对话写入跨会话记忆（实时、截断防膨胀）。"""
+    text = (text or "").strip()
+    if not text or guard.has_cjk(text):
+        return
+    d = models.ensure_domain(profile, domain)
+    log = d.setdefault("coach", {})
+    conv = log.setdefault("conversation", [])
+    conv.append({"role": role, "text": text[:300], "at": models.now_iso()})
+    log["conversation"] = conv[-60:]
+    models._touch(profile)
+
+
 def _normalize(data: dict[str, Any] | None, raw: str, user_text: str) -> dict[str, Any]:
     if data:
         reply = guard.english_or(str(data.get("reply") or "").strip())
@@ -96,7 +109,10 @@ async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: st
                "mood": "confused", "gesture": "shrug", "blocked": True, "english_only": True}
         return
     if llm is None:
-        yield {"type": "done", "reply": _local_reply(text), "correction": "",
+        reply = _local_reply(text)
+        _remember_turn(profile, domain, "user", text)
+        _remember_turn(profile, domain, "assistant", reply)
+        yield {"type": "done", "reply": reply, "correction": "",
                "mood": "warm", "gesture": "nod", "english_only": True}
         return
     b = context.brief(profile, domain)
@@ -113,11 +129,15 @@ async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: st
                 yield {"type": "delta", "text": chunk}
         reply = guard.english_or(full.strip(), _local_reply(text))
         actions = _infer_actions(reply)
+        _remember_turn(profile, domain, "user", text)
+        _remember_turn(profile, domain, "assistant", reply)
         yield {"type": "done", "reply": reply, "correction": "",
                "mood": actions["mood"], "gesture": actions["gesture"],
                "english_only": True}
     except Exception:
         reply = _local_reply(text)
+        _remember_turn(profile, domain, "user", text)
+        _remember_turn(profile, domain, "assistant", reply)
         yield {"type": "done", "reply": reply, "correction": "",
                "mood": "warm", "gesture": "nod", "english_only": True}
 
@@ -125,10 +145,12 @@ async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: st
 async def start(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     b = context.brief(profile, domain)
     return {
-        "greeting": context.greeting(b),
+        "greeting": context.opening(b),
         "brief": b,
+        "focus": b.get("focus") or "",
+        "first_time": bool(b.get("first_time")),
         "mood": "warm",
-        "gesture": "nod",
+        "gesture": "wave",
         "english_only": True,
     }
 
@@ -145,6 +167,8 @@ async def turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
         return guard.redirect()
     if llm is None:
         out = _normalize(None, _local_reply(text), text)
+        _remember_turn(profile, domain, "user", text)
+        _remember_turn(profile, domain, "assistant", out["reply"])
         return out
 
     b = context.brief(profile, domain)
@@ -158,13 +182,22 @@ async def turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
         data = _parse(raw)
         reply = str((data or {}).get("reply") or "").strip()
         if data and reply and not guard.has_cjk(reply):
-            return _normalize(data, raw, text)
+            out = _normalize(data, raw, text)
+            _remember_turn(profile, domain, "user", text)
+            _remember_turn(profile, domain, "assistant", out["reply"])
+            return out
         # 模型直接返回英文文本（非 JSON）也可用
         if not data and raw.strip() and not guard.has_cjk(raw):
-            return _normalize(None, raw, text)
+            out = _normalize(None, raw, text)
+            _remember_turn(profile, domain, "user", text)
+            _remember_turn(profile, domain, "assistant", out["reply"])
+            return out
         # 含中文：带更严格提示重试一次
     # LLM 失败/连续中文 -> 本地英文回退
-    return _normalize(None, _local_reply(text), text)
+    out = _normalize(None, _local_reply(text), text)
+    _remember_turn(profile, domain, "user", text)
+    _remember_turn(profile, domain, "assistant", out["reply"])
+    return out
 
 
 def _clean_history(history: list[dict]) -> list[dict]:
@@ -184,7 +217,7 @@ def _local_summary(history: list[dict]) -> dict[str, Any]:
     summary += "Try a little more speaking next time."
     return {"summary": summary, "wins": [], "gaps": [],
             "next_focus": ["Keep the conversation going in English"],
-            "corrections": []}
+            "corrections": [], "facts": []}
 
 
 async def end(llm: LLMClient | None, profile: dict[str, Any], domain: str,
@@ -215,10 +248,12 @@ async def end(llm: LLMClient | None, profile: dict[str, Any], domain: str,
             for c in (data.get("corrections") or [])[:3]
             if isinstance(c, dict) and c.get("better")
         ],
+        "facts": [guard.english_or(str(x), "") for x in (data.get("facts") or []) if x][:10],
     }
     out["wins"] = [x for x in out["wins"] if x]
     out["gaps"] = [x for x in out["gaps"] if x]
     out["next_focus"] = [x for x in out["next_focus"] if x]
+    out["facts"] = [x for x in out.get("facts", []) if x]
     if not out["next_focus"]:
         out["next_focus"] = ["Keep the conversation going in English"]
 
@@ -241,6 +276,38 @@ async def end(llm: LLMClient | None, profile: dict[str, Any], domain: str,
     log["next_focus"] = out["next_focus"]
     log["last_summary"] = out["summary"]
     log["updated_at"] = models.now_iso()
+
+    # 跨会话记忆：完整对话 + 个人事实
+    log["conversation"] = [
+        {"role": m["role"], "text": m["text"][:300], "at": models.now_iso()}
+        for m in hist[-60:]
+    ]
+    if out.get("facts"):
+        facts = log.setdefault("facts", [])
+        for f in out["facts"]:
+            if not any(x.get("text") == f for x in facts):
+                facts.append({"text": f, "at": models.now_iso()})
+        log["facts"] = facts[-40:]
+
+    # 每道题的作答记录（长期）：与 corrections 比对判对错
+    corr_by_orig = {c["original"]: c["better"] for c in out.get("corrections", [])
+                    if c.get("original")}
+    answer_log = log.setdefault("answer_log", [])
+    focus = b.get("focus") or ""
+    for m in hist:
+        if m["role"] != "user":
+            continue
+        ans = m["text"][:160]
+        better = corr_by_orig.get(ans) or ""
+        answer_log.append({
+            "focus": focus,
+            "answer": ans,
+            "correct": not bool(better),
+            "correction": better,
+            "at": models.now_iso(),
+        })
+    log["answer_log"] = answer_log[-80:]
+
     for c in out.get("corrections", []):
         if c.get("original") and c.get("better"):
             models.record_error(profile, domain, "speaking",

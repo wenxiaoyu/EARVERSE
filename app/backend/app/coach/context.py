@@ -25,6 +25,24 @@ def _en_rule(rule_id: str) -> str:
     return HEARING_EN.get(rid, re.sub(r"[-_]+", " ", rid) or "connected speech")
 
 
+def _focus_text(b: dict[str, Any]) -> str:
+    """今天的练习焦点，用一句英文概括（供开场/教练使用）。"""
+    goal = b.get("today_goal") or {}
+    words = goal.get("words") or []
+    hearing = goal.get("hearing") or []
+    deaf = b.get("deaf_words") or []
+    weak = b.get("weak_hearing") or []
+    if words:
+        return f"using the words {', '.join(words[:2])} naturally"
+    if hearing:
+        return f"hearing and saying {hearing[0]} correctly"
+    if deaf:
+        return f"catching the words {', '.join(deaf[:2])} by ear"
+    if weak:
+        return f"the sound pattern '{weak[0].get('rule', 'connected speech')}'"
+    return "speaking more naturally and confidently"
+
+
 def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     """English-only snapshot used in the system prompt."""
     d = models.ensure_domain(profile, domain)
@@ -58,8 +76,24 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
     except Exception:
         dims, active_days = {}, 0
     coach_log = d.get("coach") or {}
+    conversation = [
+        {"role": str(t.get("role") or ""), "text": str(t.get("text") or "")[:300]}
+        for t in (coach_log.get("conversation") or [])[-8:]
+        if t.get("role") in ("user", "assistant") and str(t.get("text") or "").strip()
+    ]
+    facts = [str(f.get("text") or "")[:200]
+             for f in (coach_log.get("facts") or [])[-10:] if f.get("text")]
+    answer_log = [
+        {"focus": str(a.get("focus") or ""), "answer": str(a.get("answer") or "")[:160],
+         "correct": bool(a.get("correct")), "correction": str(a.get("correction") or "")[:160]}
+        for a in (coach_log.get("answer_log") or [])[-10:]
+    ]
+    focus = _focus_text({"today_goal": goal, "deaf_words": models.deaf_words(d)[:6],
+                          "weak_hearing": hearing})
     return {
         "domain": domain,
+        "first_time": not bool(coach_log.get("sessions")),
+        "focus": focus,
         "active_days_this_week": active_days,
         "today_goal": {
             "kind": goal.get("kind") or "",
@@ -77,6 +111,9 @@ def brief(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         "recitation_level": models.recitation_level(profile, domain),
         "coach_last_summary": coach_log.get("last_summary") or "",
         "coach_next_focus": list(coach_log.get("next_focus") or [])[:3],
+        "conversation": conversation,
+        "facts": facts,
+        "answer_log": answer_log,
     }
 
 
@@ -95,3 +132,23 @@ def greeting(brief_data: dict[str, Any]) -> str:
         return ("Hey! I've got a few words I think you know by sight but not by ear. "
                 "Want to test one, or just chat first?")
     return "Hey, I'm Manbo. Tell me one thing about your day — in English."
+
+
+def opening(brief_data: dict[str, Any]) -> str:
+    """主动开场：第一次自我介绍；熟了以后不再重复自我介绍，只打招呼+回忆+今日焦点。"""
+    focus = brief_data.get("focus") or "speaking more naturally"
+    first = bool(brief_data.get("first_time"))
+    facts = brief_data.get("facts") or []
+    last = brief_data.get("coach_last_summary") or ""
+    if first:
+        return (f"Hi, I'm Manbo — your English coach. Nice to meet you! "
+                f"I've looked at your practice, and today we should work on {focus}. "
+                f"Let's start simple: tell me one thing about your day, in English.")
+    if facts:
+        return (f"Hey, good to see you again! I remember you mentioned: {facts[0]}. "
+                f"Today let's focus on {focus}. Ready? Tell me one thing you did today.")
+    if last:
+        return (f"Hey, welcome back! Last time we worked on improving your English. "
+                f"Today let's focus on {focus}. How has your day been so far?")
+    return (f"Hey, welcome back! Today we'll focus on {focus}. "
+            f"Let's start — tell me about your day.")

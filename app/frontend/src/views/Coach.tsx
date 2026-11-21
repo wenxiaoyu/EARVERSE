@@ -11,6 +11,8 @@ type Summary = {
   saved?: boolean; english_only?: boolean;
 };
 type Brief = {
+  focus?: string;
+  first_time?: boolean;
   today_goal?: { kind?: string; words?: string[]; hearing?: string[]; skills?: string[] };
   weak_hearing?: { rule: string; count: number }[];
   active_days_this_week?: number;
@@ -258,17 +260,18 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     }
   };
 
-  const focus = brief.today_goal?.words?.length
-    ? brief.today_goal.words.slice(0, 2).join(" · ")
-    : brief.weak_hearing?.[0]?.rule || "";
+  const focus = brief.focus
+    || (brief.today_goal?.words?.length
+      ? brief.today_goal.words.slice(0, 2).join(" · ")
+      : brief.weak_hearing?.[0]?.rule || "");
 
   return (
     <div className="coach-page">
       <div className="coach-head">
         <div>
-          <div className="eyebrow">LIVE COACH · MIRA</div>
+          <div className="eyebrow">LIVE COACH · MANBO</div>
           <h1>和 Manbo 聊聊。</h1>
-          <p className="sub">她知道你的练习状态；只用英语和你说话。</p>
+          <p className="sub">它了解你的练习状态，记得你们聊过什么；只用英语和你说话。</p>
         </div>
         <div className="coach-head-right">
           <span className="coach-only">ENGLISH ONLY</span>

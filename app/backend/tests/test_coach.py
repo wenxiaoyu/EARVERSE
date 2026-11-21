@@ -155,3 +155,52 @@ def test_end_sets_tomorrow_goal_from_next_focus():
     d = m.ensure_domain(p, "work")
     assert d["goal"]["text"] == "Practice past tense"
     assert d["goal"]["for_date"] == m.local_date(1)
+
+
+def test_opening_first_time_vs_returning_with_memory():
+    p = m.empty_profile()
+    b = context.brief(p, "work")
+    assert b["first_time"] is True
+    assert "focus" in b
+    first = context.opening(b)
+    assert "Nice to meet you" in first
+    assert not guard.has_cjk(first)
+
+    d = m.ensure_domain(p, "work")
+    d["coach"]["sessions"] = [{"at": "x", "summary": "first"}]
+    d["coach"]["facts"] = [{"text": "I work in marketing", "at": "x"}]
+    b2 = context.brief(p, "work")
+    assert b2["first_time"] is False
+    second = context.opening(b2)
+    assert "Nice to meet you" not in second
+    assert "marketing" in second
+    assert not guard.has_cjk(second)
+
+
+def test_turn_remembers_conversation():
+    p = m.empty_profile()
+    out = run(service.turn(None, p, "work", "Hello there", []))
+    d = m.ensure_domain(p, "work")
+    conv = d["coach"].get("conversation", [])
+    assert any(x["role"] == "user" and x["text"] == "Hello there" for x in conv)
+    assert any(x["role"] == "assistant" for x in conv)
+    assert not guard.has_cjk(out["reply"])
+
+
+def test_end_persists_facts_and_answer_log():
+    class LLM:
+        async def chat(self, messages, **kw):
+            return ('{"summary":"Good talk.","wins":[],"gaps":[],'
+                    '"next_focus":["Practice past tense"],'
+                    '"corrections":[{"original":"I goed home","better":"I went home"}],'
+                    '"facts":["I work in marketing"]}')
+    p = m.empty_profile()
+    run(service.end(LLM(), p, "work",
+        [{"role": "user", "text": "I goed home"},
+         {"role": "assistant", "text": "I went home. Good!"}]))
+    d = m.ensure_domain(p, "work")
+    assert d["coach"]["facts"][-1]["text"] == "I work in marketing"
+    assert any(a["answer"] == "I goed home" and a["correct"] is False
+               and a["correction"] == "I went home"
+               for a in d["coach"]["answer_log"])
+    assert any(t["role"] == "user" for t in d["coach"]["conversation"])
