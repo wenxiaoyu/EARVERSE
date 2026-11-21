@@ -100,6 +100,21 @@ function MascotTech({
           <stop offset="0" stopColor="#dffbff" stopOpacity=".9" />
           <stop offset="1" stopColor="#dffbff" stopOpacity="0" />
         </radialGradient>
+        <linearGradient id="tech-blush" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#7fe7f0" />
+          <stop offset="1" stopColor="#ff8fc0" />
+        </linearGradient>
+        <pattern id="tech-scan" width="100" height="9" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="1" x2="100" y2="1" stroke="#7fe7f0" strokeWidth="1" opacity=".5" />
+        </pattern>
+        <linearGradient id="tech-scanband" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#7fe7f0" stopOpacity="0" />
+          <stop offset=".5" stopColor="#7fe7f0" stopOpacity=".32" />
+          <stop offset="1" stopColor="#7fe7f0" stopOpacity="0" />
+        </linearGradient>
+        <clipPath id="tech-clip">
+          <circle cx="160" cy="210" r="127" />
+        </clipPath>
       </defs>
 
       {/* 全息投影地台 */}
@@ -108,10 +123,22 @@ function MascotTech({
         <ellipse className="tech-base2" cx="160" cy="326" rx="80" ry="16" fill="none" stroke="#7fe7f0" strokeWidth="1.5" opacity=".5" />
       </g>
 
-      <g className="mascot-fig">
+      <g className="mascot-fig tech-fig">
         {/* 身体：全息渐变 + 青色霓虹描边 */}
         <circle className="tech-body" cx="160" cy="210" r="128" fill="url(#tech-body)" stroke="#7fe7f0" strokeWidth="3" />
         <circle cx="160" cy="200" r="120" fill="url(#tech-glow)" opacity=".5" />
+
+        {/* 身体扫描线 + 移动扫描带 */}
+        <g clipPath="url(#tech-clip)">
+          <rect x="32" y="82" width="256" height="256" fill="url(#tech-scan)" opacity=".18" />
+          <rect className="tech-scanband" x="32" y="82" width="256" height="26" fill="url(#tech-scanband)" />
+        </g>
+
+        {/* 头顶全息环 */}
+        <g className="tech-halo-wrap">
+          <circle className="tech-halo" cx="160" cy="52" r="18" fill="none" stroke="#7fe7f0" strokeWidth="2" strokeDasharray="8 6" />
+          <circle cx="160" cy="52" r="3" fill="#aef6ff" />
+        </g>
 
         {/* 通讯头戴：深灰耳罩 + 青色灯环 + 麦克风臂 */}
         <g className="mascot-headphones">
@@ -129,17 +156,19 @@ function MascotTech({
         <g className="mascot-eyes">
           <ellipse cx="122" cy="176" rx="16" ry="21" fill="#06233a" />
           <ellipse cx="198" cy="176" rx="16" ry="21" fill="#06233a" />
-          <ellipse cx="122" cy="179" rx="8" ry="11" fill="#7fe7f0" />
-          <ellipse cx="198" cy="179" rx="8" ry="11" fill="#7fe7f0" />
-          <circle cx="125" cy="173" r="4" fill="#eaffff" />
-          <circle cx="201" cy="173" r="4" fill="#eaffff" />
-          <circle cx="118" cy="182" r="2" fill="#eaffff" opacity=".8" />
-          <circle cx="194" cy="182" r="2" fill="#eaffff" opacity=".8" />
+          <g className="tech-eye-glow">
+            <ellipse cx="122" cy="179" rx="8" ry="11" fill="#7fe7f0" />
+            <ellipse cx="198" cy="179" rx="8" ry="11" fill="#7fe7f0" />
+            <circle cx="125" cy="173" r="4" fill="#eaffff" />
+            <circle cx="201" cy="173" r="4" fill="#eaffff" />
+            <circle cx="118" cy="182" r="2" fill="#eaffff" opacity=".8" />
+            <circle cx="194" cy="182" r="2" fill="#eaffff" opacity=".8" />
+          </g>
         </g>
 
         {/* 腮红：青色柔光 */}
-        <circle cx="94" cy="218" r="13" fill="#7fe7f0" opacity=".18" />
-        <circle cx="226" cy="218" r="13" fill="#7fe7f0" opacity=".18" />
+        <circle cx="94" cy="218" r="13" fill="url(#tech-blush)" opacity=".3" />
+        <circle cx="226" cy="218" r="13" fill="url(#tech-blush)" opacity=".3" />
 
         {/* 胸口能量核心 */}
         <g className="tech-core">
@@ -157,6 +186,15 @@ function MascotTech({
           <rect className="tech-eq e3" x="160" y="230" width="4" height="20" rx="2" />
           <rect className="tech-eq e4" x="166" y="234" width="4" height="16" rx="2" />
           <rect className="tech-eq e5" x="172" y="238" width="4" height="10" rx="2" />
+        </g>
+
+        {/* 地台粒子上升 */}
+        <g className="tech-particles">
+          <circle className="tech-particle p1" cx="120" cy="318" r="2.5" />
+          <circle className="tech-particle p2" cx="162" cy="322" r="2" />
+          <circle className="tech-particle p3" cx="204" cy="318" r="2.5" />
+          <circle className="tech-particle p4" cx="140" cy="326" r="1.8" />
+          <circle className="tech-particle p5" cx="182" cy="326" r="1.8" />
         </g>
       </g>
     </svg>

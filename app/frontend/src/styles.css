@@ -1534,5 +1534,22 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 @keyframes tech-spin{to{stroke-dashoffset:-80}}
 @keyframes tech-core{0%,100%{opacity:.7;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
 @keyframes tech-eq{from{transform:scaleY(.3)}to{transform:scaleY(1.6)}}
+.mascot-fig.tech-fig{animation:mascot-sway 7s ease-in-out infinite}
+.tech-halo{transform-box:fill-box;transform-origin:center;animation:tech-halo 6s linear infinite}
+.tech-scanband{animation:tech-scanmove 4.5s linear infinite}
+.tech-particle{fill:#7fe7f0;opacity:0;transform-box:fill-box;transform-origin:center;animation:tech-rise 3.2s ease-in-out infinite}
+.tech-particle.p2{animation-delay:.6s}
+.tech-particle.p3{animation-delay:1.2s}
+.tech-particle.p4{animation-delay:1.8s}
+.tech-particle.p5{animation-delay:2.4s}
+.mascot-avatar.speaking .tech-core{animation:tech-core-fast .5s ease-in-out infinite}
+.mascot-avatar.speaking .tech-eye-glow{animation:tech-eyeglow .6s ease-in-out infinite}
+@keyframes mascot-sway{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-6px)}50%{transform:translate(0,-10px)}75%{transform:translate(-3px,-6px)}}
+@keyframes tech-halo{to{transform:rotate(360deg)}}
+@keyframes tech-scanmove{0%{transform:translateY(0)}100%{transform:translateY(256px)}}
+@keyframes tech-rise{0%{opacity:0;transform:translateY(0)}20%{opacity:.8}100%{opacity:0;transform:translateY(-60px)}}
+@keyframes tech-core-fast{0%,100%{opacity:.7;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes tech-eyeglow{0%,100%{opacity:1}50%{opacity:.62}}
+
 
 @media(prefers-reduced-motion:reduce){.mascot-avatar *{animation:none!important;transition:none!important}}
