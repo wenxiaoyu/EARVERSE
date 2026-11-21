@@ -9,9 +9,9 @@ export function useVadRecorder() {
   const ref = useRef<{
     ctx?: AudioContext; stream?: MediaStream; node?: ScriptProcessorNode;
     an?: AnalyserNode; gain?: GainNode; chunks: Float32Array[]; active: boolean;
-    speech: boolean; silence: number; started: number; timer?: number;
+    speech: boolean; speechCount: number; silence: number; started: number; timer?: number;
     done?: Cb; onSpeech?: () => void; threshold: number;
-  }>({ chunks: [], active: false, speech: false, silence: 0, started: 0, threshold: 0.018 });
+  }>({ chunks: [], active: false, speech: false, speechCount: 0, silence: 0, started: 0, threshold: 0.018 });
 
   const cleanup = () => {
     const r = ref.current;
@@ -54,7 +54,7 @@ export function useVadRecorder() {
     gain.gain.value = 0;
     const chunks: Float32Array[] = [];
     r.ctx = ctx; r.stream = stream; r.node = node; r.an = an; r.gain = gain;
-    r.chunks = chunks; r.active = true; r.speech = false; r.silence = 0;
+    r.chunks = chunks; r.active = true; r.speech = false; r.speechCount = 0; r.silence = 0;
     r.started = Date.now(); r.done = onDone; r.onSpeech = onSpeech; r.threshold = threshold;
     node.onaudioprocess = (e) => {
       if (!r.active) return;
@@ -72,11 +72,16 @@ export function useVadRecorder() {
       for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
       const rms = Math.sqrt(sum / buf.length);
       if (rms > r.threshold) {
-        if (!r.speech) r.onSpeech?.();
-        r.speech = true;
-        r.silence = 0;
-      } else if (r.speech) {
-        r.silence += 120;
+        r.speechCount += 1;
+        // 连续 2 个采样（约 240ms）才算「开始说话」，避免噪声瞬间打断 AI
+        if (!r.speech && r.speechCount >= 2) {
+          r.onSpeech?.();
+          r.speech = true;
+        }
+        if (r.speech) r.silence = 0;
+      } else {
+        r.speechCount = 0;
+        if (r.speech) r.silence += 120;
       }
       const tooLong = Date.now() - r.started > 45_000;
       const silentDone = r.speech && r.silence >= 800;

@@ -38,13 +38,15 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const recorder = useVadRecorder();
   const scroller = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const streamAccRef = useRef<string | null>(null);
+  const streamRafRef = useRef(0);
 
   useEffect(() => { liveRef.current = live; }, [live]);
   useEffect(() => { busyRef.current = busy; }, [busy]);
   useEffect(() => { speakingRef.current = speaking; }, [speaking]);
   useEffect(() => { listeningRef.current = listening; }, [listening]);
   useEffect(() => {
-    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
+    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "auto" });
   }, [messages, busy]);
 
   useEffect(() => {
@@ -69,6 +71,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   useEffect(() => () => {
     stopMira();
     recorder.stop();
+    if (streamRafRef.current) cancelAnimationFrame(streamRafRef.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -140,16 +143,25 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     abortRef.current = controller;
     // 全双工：模型还没生成时就开始监听，用户可插话并中止生成
     if (liveRef.current) await beginListening(true, true);
-    const onDelta = (acc: string) => {
+    const flushDelta = () => {
+      streamRafRef.current = 0;
+      const a = streamAccRef.current;
+      if (a == null) return;
+      streamAccRef.current = null;
       setMessages((m) => {
         const copy = [...m];
         const last = copy[copy.length - 1];
-        copy[copy.length - 1] = { ...last, text: acc };
+        copy[copy.length - 1] = { ...last, text: a };
         return copy;
       });
     };
+    const onDelta = (acc: string) => {
+      streamAccRef.current = acc;
+      if (!streamRafRef.current) streamRafRef.current = requestAnimationFrame(flushDelta);
+    };
     try {
       const out = await streamTurn(t, history, controller.signal, onDelta);
+      if (streamRafRef.current) { cancelAnimationFrame(streamRafRef.current); streamRafRef.current = 0; }
       setMessages((m) => {
         const copy = [...m];
         const last = copy[copy.length - 1];
@@ -192,7 +204,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     if ((busyRef.current && !allowBusy) || listeningRef.current) return;
     setListening(true); listeningRef.current = true; setMood("curious"); setGesture("lean_in");
     // Manbo 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
-    const threshold = high || speakingRef.current ? 0.035 : 0.018;
+    const threshold = high || speakingRef.current ? 0.06 : 0.018;
     try {
       await recorder.start(async (blob) => {
         setListening(false); listeningRef.current = false;
