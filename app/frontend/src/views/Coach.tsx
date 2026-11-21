@@ -60,14 +60,12 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
       setMessages([{ role: "assistant", text: greeting }]);
       setMood(r.mood || "warm");
       setGesture(r.gesture || "wave");
-      // 主动开场：先高门限监听（可插话），再播放开场白；说完自动恢复低门限收音
-      void beginListening(true, true);
+      // 主动开场：先播放开场白，说完后 playTeacher 的 onend 会自动恢复低门限收音
       void playTeacher(greeting);
     }).catch(() => {
       if (alive) {
         const greeting = "Hey, I'm Manbo. Tell me about your day — in English.";
         setMessages([{ role: "assistant", text: greeting }]);
-        void beginListening(true, true);
         void playTeacher(greeting);
       }
     });
