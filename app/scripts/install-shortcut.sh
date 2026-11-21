@@ -64,6 +64,7 @@ install_macos() {
   <key>CFBundleIconFile</key><string>icon</string>
   <key>LSMinimumSystemVersion</key><string>11.0</string>
   <key>NSHighResolutionCapable</key><true/>
+  <key>LSUIElement</key><true/>
   <key>LSApplicationCategoryType</key><string>public.app-category.education</string>
 </dict>
 </plist>
@@ -71,7 +72,11 @@ PLIST
 
   cat > "$contents/MacOS/earverse" <<LAUNCH
 #!/bin/bash
-exec "$OPEN_APP"
+# 后台启动器：拉起服务 + detach 开窗后立即退出。
+# 注：.app 主进程不能阻塞，否则 macOS 会报「应用程序无响应 / -1712」。
+mkdir -p "\$HOME/Library/Logs"
+export EARVERSE_DETACH=1
+exec "$OPEN_APP" >> "\$HOME/Library/Logs/EARVERSE-launch.log" 2>&1
 LAUNCH
   chmod +x "$contents/MacOS/earverse"
 
@@ -84,11 +89,13 @@ LAUNCH
   # 注册到 Launchpad / Spotlight
   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app" >/dev/null 2>&1 || true
 
-  # 桌面别名
+  # 桌面快捷方式：符号链接（双击可启动；之前的 -1712 是主进程阻塞导致，已修）
+  rm -rf "$HOME/Desktop/$APP_NAME.app" "$HOME/Desktop/$APP_NAME" 2>/dev/null || true
   ln -sfn "$app" "$HOME/Desktop/$APP_NAME.app" 2>/dev/null || true
 
   say "已创建：$app"
-  say "桌面别名：~/Desktop/$APP_NAME.app（双击即可用）"
+  say "桌面快捷方式：~/Desktop/$APP_NAME.app（双击即可用）"
+  say "启动日志：~/Library/Logs/EARVERSE-launch.log"
   say "启动器：$OPEN_APP"
 }
 

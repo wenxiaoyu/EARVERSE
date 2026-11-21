@@ -80,17 +80,45 @@ find_browser() {
 
 ensure_server
 
+DETACH="${EARVERSE_DETACH:-0}"
+
+# 启动浏览器：
+# - 终端里：前台运行（关窗口才结束）
+# - .app 里：detach 后立即退出（否则 macOS 会把挂起的 shell 当成「无响应」）
+launch_browser() {
+  local browser="$1"; shift
+  if [ "$DETACH" != "1" ]; then
+    exec "$browser" "$@"
+  fi
+  if [ "$OS" = "Darwin" ]; then
+    local app="${browser%/Contents/MacOS/*}"
+    if [ -d "$app" ]; then
+      open -na "$app" --args "$@" || true
+      return 0
+    fi
+  fi
+  nohup "$browser" "$@" >/dev/null 2>&1 &
+  disown 2>/dev/null || true
+  return 0
+}
+
 BROWSER="$(find_browser || true)"
 if [ -n "$BROWSER" ]; then
   say "使用浏览器 App 模式：$(basename "$BROWSER")"
   run mkdir -p "$PROFILE_DIR"
-  run "$BROWSER" \
-    --app="$URL" \
-    --window-size=1180,840 \
-    --user-data-dir="$PROFILE_DIR" \
-    --no-first-run \
-    --no-default-browser-check \
+  ARGS=(
+    --app="$URL"
+    --window-size=1180,840
+    --user-data-dir="$PROFILE_DIR"
+    --no-first-run
+    --no-default-browser-check
     --disable-features=Translate
+  )
+  if [ "$DRY_RUN" = "1" ]; then
+    say "DRY: $BROWSER ${ARGS[*]}"
+    exit 0
+  fi
+  launch_browser "$BROWSER" "${ARGS[@]}"
   exit 0
 fi
 
