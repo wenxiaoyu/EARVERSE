@@ -147,7 +147,6 @@ function MascotTech({
 
         {/* 嘴 */}
         <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#7fe7f0" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
-        <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#35c3f0" style={speaking ? { opacity: 0 } : undefined} />
 
         {/* 说话：迷你频谱条 */}
         <g className="mascot-talk">
