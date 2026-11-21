@@ -31,12 +31,6 @@ export default function MascotAvatar({
       <ellipse cx="160" cy="330" rx="110" ry="20" fill="#0b0d0a" opacity=".35" />
 
       <g className="mascot-fig">
-        {/* 低双马尾 */}
-        <g className="mascot-tails">
-          <path d="M60 160c-34 4-44 46-30 84 8 22 24 28 36 18 14-12 12-34 2-56-8-18-20-34-8-46Z" fill="url(#mascot-hair)" />
-          <path d="M260 160c34 4 44 46 30 84-8 22-24 28-36 18-14-12-12-34-2-56 8-18 20-34 8-46Z" fill="url(#mascot-hair)" />
-        </g>
-
         {/* 身体 */}
         <circle className="mascot-body" cx="160" cy="210" r="128" fill="url(#mascot-body)" />
         <circle cx="160" cy="200" r="120" fill="url(#mascot-glow)" opacity=".5" />
@@ -54,11 +48,11 @@ export default function MascotAvatar({
 
         {/* 耳机：夸张霓虹粉耳罩 + 头梁 */}
         <g className="mascot-headphones">
-          <rect className="mascot-cup" x="34" y="184" width="28" height="38" rx="12" fill="#ff5fa2" />
-          <rect className="mascot-cup" x="258" y="184" width="28" height="38" rx="12" fill="#ff5fa2" />
-          <circle cx="48" cy="203" r="8" fill="#ffb3d4" opacity=".85" />
-          <circle cx="272" cy="203" r="8" fill="#ffb3d4" opacity=".85" />
-          <path className="mascot-band" d="M48 192a112 112 0 0 1 224 0" fill="none" stroke="#ff5fa2" strokeWidth="14" strokeLinecap="round" />
+          <rect className="mascot-cup" x="22" y="170" width="36" height="48" rx="16" fill="#ff5fa2" />
+          <rect className="mascot-cup" x="262" y="170" width="36" height="48" rx="16" fill="#ff5fa2" />
+          <circle cx="40" cy="194" r="10" fill="#ffb3d4" opacity=".85" />
+          <circle cx="280" cy="194" r="10" fill="#ffb3d4" opacity=".85" />
+          <path className="mascot-band" d="M40 172a120 120 0 0 1 240 0" fill="none" stroke="#ff5fa2" strokeWidth="14" strokeLinecap="round" />
         </g>
 
         {/* 眼睛 + 睫毛 */}
