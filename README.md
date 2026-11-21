@@ -281,6 +281,9 @@ python3 -m pytest tests/ -q
 
 - 画像存 SQLite：`app/backend/data/profiles.db`（本地，不入库）。
 - 密钥存 `app/backend/data/env.config.json`（本地，不入库）。
+- TTS 音频缓存：`app/backend/data/tts-cache/`（内存 L1 + 磁盘 L2，重启不丢；默认 300MB，按 LRU 淘汰）。
+  - 命中率/占用：`GET /api/speech/tts/stats`
+  - 清空：`POST /api/speech/tts/clear`
 - 仓库只包含代码、种子语料与规格文档，**不含任何用户数据或密钥**。
 
 ---

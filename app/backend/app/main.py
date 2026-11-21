@@ -12,7 +12,6 @@
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import uuid
 from pathlib import Path
@@ -37,6 +36,7 @@ from .reports import service as reports
 from .scenarios import engine as scenarios
 from .share import service as share
 from .speech import asr as speech_asr
+from .speech import cache as speech_cache
 from .speech import tts as speech_tts
 from .storage import ProfileStorage
 from .training import loop as training
@@ -58,6 +58,25 @@ storage = ProfileStorage(DB_PATH)
 _probe_sessions: dict[str, dict[str, Any]] = {}
 _scenario_sessions: dict[str, dict[str, Any]] = {}
 _TTS_CACHE: dict[str, tuple[bytes, str]] = {}
+_TTS_MEM_MAX = 400
+_TTS_DISK = speech_cache.DiskTtsCache(
+    DB_PATH.parent / "tts-cache", max_bytes=300 * 1024 * 1024
+)
+
+
+def _tts_mem_get(key: str) -> tuple[bytes, str] | None:
+    """命中后移到末尾，实现内存层 LRU。"""
+    hit = _TTS_CACHE.pop(key, None)
+    if hit is not None:
+        _TTS_CACHE[key] = hit
+    return hit
+
+
+def _tts_mem_put(key: str, audio: bytes, ctype: str) -> None:
+    _TTS_CACHE.pop(key, None)
+    _TTS_CACHE[key] = (audio, ctype)
+    while len(_TTS_CACHE) > _TTS_MEM_MAX:
+        _TTS_CACHE.pop(next(iter(_TTS_CACHE)))
 
 
 def _load_scenario_session(sid: str | None) -> dict[str, Any] | None:
@@ -1193,25 +1212,44 @@ async def speech_tts_endpoint(request: Request):
     style = str(body.get("style", "real") or "real")
     speed = float(body.get("speed", 1.0) or 1.0)
     voice = body.get("voice") or "stella"
-    key = hashlib.sha256(
-        f"{voice}|{style}|{speed}|{text}".encode("utf-8")
-    ).hexdigest()
-    if key in _TTS_CACHE:
-        audio, ctype = _TTS_CACHE[key]
+    key = _TTS_DISK.key(voice, style, speed, text)
+    hit = _tts_mem_get(key)
+    if hit is not None:
+        audio, ctype = hit
         return Response(content=audio, media_type=ctype,
-                        headers={"X-TTS-Cache": "hit"})
+                        headers={"X-TTS-Cache": "memory"})
+    if text:
+        cached = _TTS_DISK.get(key)
+        if cached is not None:
+            audio, ctype = cached
+            _tts_mem_put(key, audio, ctype)
+            return Response(content=audio, media_type=ctype,
+                            headers={"X-TTS-Cache": "disk"})
     try:
         audio, ctype = await speech_tts.synthesize(
             text, cfg.audio.base_url, cfg.audio.api_key, cfg.audio,
             style=style, speed=speed, voice=voice,
         )
-        if len(_TTS_CACHE) >= 200:
-            _TTS_CACHE.pop(next(iter(_TTS_CACHE)))
-        _TTS_CACHE[key] = (audio, ctype)
+        _tts_mem_put(key, audio, ctype)
+        try:
+            _TTS_DISK.put(key, audio, ctype)
+        except Exception:
+            pass
         return Response(content=audio, media_type=ctype,
                         headers={"X-TTS-Cache": "miss"})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=502)
+
+
+@app.get("/api/speech/tts/stats")
+def speech_tts_stats():
+    return {"memory": len(_TTS_CACHE), "disk": _TTS_DISK.stats()}
+
+
+@app.post("/api/speech/tts/clear")
+def speech_tts_clear():
+    _TTS_CACHE.clear()
+    return {"removed": _TTS_DISK.clear()}
 
 
 @app.post("/api/speech/asr")
