@@ -74,7 +74,7 @@ const BARS = Array.from({ length: 44 }, (_, i) => ({
 }));
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>("today");
+  const [tab, setTab] = useState<Tab>("coach");
   const [domain, setDomain] = useState<string>("work");
   const [health, setHealth] = useState<{ llm_configured: boolean; model: string } | null>(null);
   const [confirmed, setConfirmed] = useState(false);

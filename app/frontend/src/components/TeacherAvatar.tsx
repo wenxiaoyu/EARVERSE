@@ -6,37 +6,40 @@ export type MiraGesture = "none" | "nod" | "lean_in" | "open_palm" | "point_up" 
   "hand_on_chest" | "shrug" | "thumbs_up" | "wave" | "chin_tap";
 
 /** 侧栏入口用的小肖像。 */
-/** 侧栏入口用的小肖像（新萌宠 Manbo）。 */
+/** 侧栏入口用的小肖像（全息 AI 科技版 Manbo）。 */
 export function MiraFace({ listening = false }: { listening?: boolean }) {
   return (
     <svg className={`mira-face ${listening ? "listening" : ""}`} viewBox="0 0 120 120" aria-hidden>
       <defs>
-        <linearGradient id="mf-body" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f2c87d" />
-          <stop offset="1" stopColor="#e8a94e" />
+        <linearGradient id="mf-tech" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#b8f4ff" />
+          <stop offset="0.5" stopColor="#38c6f0" />
+          <stop offset="1" stopColor="#185a9e" />
         </linearGradient>
-        <linearGradient id="mf-hair" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#5a4030" />
-          <stop offset="1" stopColor="#3a281c" />
+        <linearGradient id="mf-blush" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#7fe7f0" />
+          <stop offset="1" stopColor="#ff8fc0" />
         </linearGradient>
       </defs>
-      {/* 低双马尾 */}
-      <path d="M13 46c-8 0-12 15-6 23 4 6 10 5 12-1 3-6-1-14-6-22Z" fill="url(#mf-hair)" />
-      <path d="M107 46c8 0 12 15 6 23-4 6-10 5-12-1-3-6 1-14 6-22Z" fill="url(#mf-hair)" />
-      {/* 头 */}
-      <circle cx="60" cy="60" r="45" fill="url(#mf-body)" />
-      {/* 眼睛 + 高光 */}
-      <ellipse cx="46" cy="53" rx="4.5" ry="6" fill="#241b16" />
-      <ellipse cx="74" cy="53" rx="4.5" ry="6" fill="#241b16" />
-      <circle cx="48" cy="50" r="1.6" fill="#fff8e8" />
-      <circle cx="76" cy="50" r="1.6" fill="#fff8e8" />
+      {/* 通讯耳机：头梁 + 耳罩 */}
+      <path d="M40 50a20 20 0 0 1 40 0" fill="none" stroke="#1b3a5c" strokeWidth="6" strokeLinecap="round" />
+      <rect x="20" y="46" width="11" height="20" rx="5.5" fill="#12233a" stroke="#35c3f0" strokeWidth="1.5" />
+      <rect x="89" y="46" width="11" height="20" rx="5.5" fill="#12233a" stroke="#35c3f0" strokeWidth="1.5" />
+      {/* 全息脸 */}
+      <circle cx="60" cy="62" r="41" fill="url(#mf-tech)" stroke="#7fe7f0" strokeWidth="2" />
+      {/* LED 眼 */}
+      <ellipse cx="47" cy="58" rx="5" ry="7" fill="#06233a" />
+      <ellipse cx="73" cy="58" rx="5" ry="7" fill="#06233a" />
+      <ellipse cx="47" cy="59" rx="2.5" ry="3.5" fill="#7fe7f0" />
+      <ellipse cx="73" cy="59" rx="2.5" ry="3.5" fill="#7fe7f0" />
+      <circle cx="48" cy="57" r="1.3" fill="#eaffff" />
+      <circle cx="74" cy="57" r="1.3" fill="#eaffff" />
       {/* 腮红 */}
-      <circle cx="35" cy="69" r="5" fill="#e8927c" opacity=".4" />
-      <circle cx="85" cy="69" r="5" fill="#e8927c" opacity=".4" />
-      {/* 微笑 */}
-      <path d="M50 73c6 4 14 4 20 0" fill="none" stroke="#a25045" strokeWidth="3" strokeLinecap="round" />
-      {/* 声波能量核 */}
-      <circle cx="60" cy="85" r="2.6" fill="#62e7d0" />
+      <circle cx="38" cy="73" r="5" fill="url(#mf-blush)" opacity=".4" />
+      <circle cx="82" cy="73" r="5" fill="url(#mf-blush)" opacity=".4" />
+      {/* 嘴巴能量核 */}
+      <circle cx="60" cy="81" r="5" fill="none" stroke="#7fe7f0" strokeWidth="1.5" opacity=".85" />
+      <circle cx="60" cy="81" r="2.6" fill="#aef6ff" />
     </svg>
   );
 }
