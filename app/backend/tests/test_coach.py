@@ -42,12 +42,23 @@ def test_start_returns_english_greeting():
     assert not guard.has_cjk(out["greeting"])
 
 
-def test_turn_chinese_is_blocked_without_llm():
+def test_turn_chinese_is_filtered_not_blocked():
     p = m.empty_profile()
     llm = FakeLLM('{"reply":"你好"}')
+    # 纯中文 → 清洗后无英文，回退为安静的英文提示，不调用模型、不提醒"didn't catch"
     out = run(service.turn(llm, p, "work", "你好，今天怎么样？", []))
-    assert out["blocked"] is True
+    assert out["blocked"] is False
     assert llm.calls == 0
+    assert not guard.has_cjk(out["reply"])
+    assert out["reply"] == guard.EMPTY_REPLY
+
+
+def test_turn_mixed_language_uses_english_part():
+    p = m.empty_profile()
+    llm = FakeLLM('{"reply":"Got it. Tell me more.","mood":"warm","gesture":"nod"}')
+    out = run(service.turn(llm, p, "work", "我今天很 busy with work", []))
+    assert llm.calls == 1
+    assert out["reply"].startswith("Got it")
     assert not guard.has_cjk(out["reply"])
 
 

@@ -31,6 +31,19 @@ def is_english_input(text: str) -> bool:
     return bool(t) and bool(LATIN_RE.search(t)) and not has_cjk(t)
 
 
+def strip_non_english(text: str) -> str:
+    """只保留英文/数字/常见标点，剔除中文、日文、韩文及其它非 ASCII 字符。"""
+    t = (text or "")
+    out: list[str] = []
+    for ch in t:
+        o = ord(ch)
+        if o < 128 and (ch.isalnum() or ch in " '.,?!;:-"):
+            out.append(ch)
+        else:
+            out.append(" ")
+    return " ".join("".join(out).split())
+
+
 def redirect() -> dict:
     return {
         "reply": REDIRECT,

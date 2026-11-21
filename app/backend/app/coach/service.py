@@ -99,14 +99,10 @@ def _normalize(data: dict[str, Any] | None, raw: str, user_text: str) -> dict[st
 async def stream_turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
                     user_text: str, history: list[dict] | None = None):
     """SSE：流式输出 Manbo 的英文回复。用户插话时前端中断即可。"""
-    text = (user_text or "").strip()[:800]
+    text = guard.strip_non_english(user_text)[:800]
     if not text:
         yield {"type": "done", "reply": guard.EMPTY_REPLY, "correction": "",
                "mood": "curious", "gesture": "nod", "english_only": True}
-        return
-    if not guard.is_english_input(text):
-        yield {"type": "done", "reply": guard.REDIRECT, "correction": "",
-               "mood": "confused", "gesture": "shrug", "blocked": True, "english_only": True}
         return
     if llm is None:
         reply = _local_reply(text)
@@ -157,14 +153,11 @@ async def start(profile: dict[str, Any], domain: str) -> dict[str, Any]:
 
 async def turn(llm: LLMClient | None, profile: dict[str, Any], domain: str,
                user_text: str, history: list[dict] | None = None) -> dict[str, Any]:
-    text = (user_text or "").strip()[:800]
+    text = guard.strip_non_english(user_text)[:800]
     if not text:
         return {"reply": guard.EMPTY_REPLY, "correction": "",
                 "mood": "curious", "gesture": "nod", "blocked": False,
                 "english_only": True}
-    # 中文/日文/韩文：不交给模型理解，直接英文引导
-    if not guard.is_english_input(text):
-        return guard.redirect()
     if llm is None:
         out = _normalize(None, _local_reply(text), text)
         _remember_turn(profile, domain, "user", text)

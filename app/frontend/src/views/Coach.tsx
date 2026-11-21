@@ -208,7 +208,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     if ((busyRef.current && !allowBusy) || listeningRef.current) return;
     setListening(true); listeningRef.current = true; setMood("curious"); setGesture("lean_in");
     // Manbo 说话时提高门限，减少扬声器回声误触发；用户一开口就立即打断
-    const threshold = high || speakingRef.current ? 0.06 : 0.018;
+    const threshold = high || speakingRef.current ? 0.08 : 0.018;
     try {
       await recorder.start(async (blob) => {
         setListening(false); listeningRef.current = false;

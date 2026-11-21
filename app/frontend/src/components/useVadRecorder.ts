@@ -14,8 +14,9 @@ export function useVadRecorder() {
     ctx?: AudioContext; stream?: MediaStream; node?: ScriptProcessorNode;
     an?: AnalyserNode; gain?: GainNode; chunks: Float32Array[]; active: boolean;
     speech: boolean; speechCount: number; speechMs: number; silence: number; started: number; timer?: number;
+    pre: Float32Array[]; flushed: boolean;
     done?: Cb; onSpeech?: () => void; threshold: number;
-  }>({ chunks: [], active: false, speech: false, speechCount: 0, speechMs: 0, silence: 0, started: 0, threshold: 0.018 });
+  }>({ chunks: [], active: false, speech: false, speechCount: 0, speechMs: 0, silence: 0, started: 0, threshold: 0.018, pre: [], flushed: false });
 
   const cleanup = () => {
     const r = ref.current;
@@ -61,9 +62,18 @@ export function useVadRecorder() {
     r.ctx = ctx; r.stream = stream; r.node = node; r.an = an; r.gain = gain;
     r.chunks = chunks; r.active = true; r.speech = false; r.speechCount = 0; r.speechMs = 0; r.silence = 0;
     r.started = Date.now(); r.done = onDone; r.onSpeech = onSpeech; r.threshold = threshold;
+    r.pre = []; r.flushed = false;
     node.onaudioprocess = (e) => {
       if (!r.active) return;
-      chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+      const ch = new Float32Array(e.inputBuffer.getChannelData(0));
+      // 只记录「开始说话」之后的音频：说话前保留约 400ms 预滚，丢弃 TTS 回声与静音
+      if (r.speech) {
+        if (!r.flushed) { r.chunks.push(...r.pre); r.pre = []; r.flushed = true; }
+        r.chunks.push(ch);
+      } else {
+        r.pre.push(ch);
+        if (r.pre.length > 4) r.pre.shift();
+      }
     };
     source.connect(an);
     an.connect(node);
