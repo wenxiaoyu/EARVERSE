@@ -16,7 +16,7 @@ else
 fi
 
 # --- python：优先显式设置，其次 miniconda，再次系统 ---
-if [ -z "$PYTHON" ]; then
+if [ -z "${PYTHON:-}" ]; then
   if [ -x "/opt/homebrew/Caskroom/miniconda/base/bin/python3" ]; then
     PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python3"
   else

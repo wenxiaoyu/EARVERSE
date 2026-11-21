@@ -199,6 +199,24 @@ cd app/frontend && npm install && npm run build && cd ../..
 ./app/scripts/restart.sh     # 构建 + 重启 + 健康检查
 ```
 
+### 桌面版（过渡方案）
+
+不想看到浏览器地址栏？用 App 模式打开——复用同一后端，无需额外打包：
+
+```bash
+# macOS：创建 ~/Applications/耳界 EARVERSE.app + 桌面别名（双击即用，自带图标）
+./app/scripts/install-shortcut.sh
+
+# Windows：创建桌面快捷方式（Chrome/Edge App 模式）
+powershell -ExecutionPolicy Bypass -File .\app\scripts\install-shortcut.ps1
+
+# 只想打开一次
+./app/scripts/open-app.sh
+```
+
+服务没启动时会自动在后台拉起；找不到 Chromium 内核浏览器时回退系统默认浏览器。
+这是正式 Electron 桌面版之前的过渡形态。
+
 ### 3. 配置模型（推荐）
 
 进入「设置」页填入 DeepSeek：
