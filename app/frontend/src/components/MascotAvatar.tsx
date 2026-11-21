@@ -159,22 +159,10 @@ function MascotTech({
         <circle cx="94" cy="218" r="13" fill="url(#tech-blush)" opacity=".3" />
         <circle cx="226" cy="218" r="13" fill="url(#tech-blush)" opacity=".3" />
 
-        {/* 胸口能量核心 */}
+        {/* 嘴巴：只保留能量核心（说话时加快脉动） */}
         <g className="tech-core">
-          <circle cx="160" cy="272" r="14" fill="none" stroke="#7fe7f0" strokeWidth="2" opacity=".8" />
-          <circle cx="160" cy="272" r="7" fill="#aef6ff" />
-        </g>
-
-        {/* 嘴 */}
-        <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#7fe7f0" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
-
-        {/* 说话：迷你频谱条 */}
-        <g className="mascot-talk">
-          <rect className="tech-eq e1" x="148" y="238" width="4" height="10" rx="2" />
-          <rect className="tech-eq e2" x="154" y="234" width="4" height="16" rx="2" />
-          <rect className="tech-eq e3" x="160" y="230" width="4" height="20" rx="2" />
-          <rect className="tech-eq e4" x="166" y="234" width="4" height="16" rx="2" />
-          <rect className="tech-eq e5" x="172" y="238" width="4" height="10" rx="2" />
+          <circle cx="160" cy="242" r="14" fill="none" stroke="#7fe7f0" strokeWidth="2" opacity=".8" />
+          <circle cx="160" cy="242" r="7" fill="#aef6ff" />
         </g>
 
         {/* 地台粒子上升 */}
