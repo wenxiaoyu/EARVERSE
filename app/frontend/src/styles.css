@@ -1401,8 +1401,44 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
   border:1px solid rgba(127,176,105,.3);border-radius:999px;padding:5px 9px;background:rgba(127,176,105,.06)}
 .coach-room{display:block;position:relative;flex:1;min-height:calc(100vh - 130px)}
 .shell.coach-fill .coach-room{height:100%;min-height:0}
-.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;background:transparent;display:flex;align-items:center;justify-content:center}
-.coach-stage:before{display:none}
+.coach-stage{position:absolute;inset:0;border:0;border-radius:0;overflow:hidden;
+  background:
+    radial-gradient(1200px 760px at 50% 34%, rgba(98,231,208,.13), transparent 62%),
+    radial-gradient(900px 620px at 82% 72%, rgba(232,163,61,.10), transparent 60%),
+    radial-gradient(760px 520px at 18% 80%, rgba(98,231,208,.10), transparent 62%),
+    linear-gradient(160deg,#0b1220 0%,#0a0f18 48%,#0c1326 100%);
+  display:flex;align-items:center;justify-content:center}
+.coach-stage:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(560px 560px at 50% 42%, rgba(98,231,208,.18), transparent 66%)}
+.coach-stage:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(98,231,208,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(98,231,208,.05) 1px,transparent 1px);
+  background-size:44px 44px}
+.coach-bg-deco{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(2px 2px at 10% 18%, rgba(127,231,240,.55), transparent 100%),
+    radial-gradient(1.5px 1.5px at 22% 64%, rgba(127,231,240,.45), transparent 100%),
+    radial-gradient(2px 2px at 35% 30%, rgba(127,231,240,.4), transparent 100%),
+    radial-gradient(1.5px 1.5px at 48% 82%, rgba(127,231,240,.5), transparent 100%),
+    radial-gradient(2px 2px at 62% 20%, rgba(127,231,240,.45), transparent 100%),
+    radial-gradient(1.5px 1.5px at 74% 66%, rgba(127,231,240,.5), transparent 100%),
+    radial-gradient(2px 2px at 88% 40%, rgba(127,231,240,.4), transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 12%, rgba(127,231,240,.55), transparent 100%)}
+.coach-bg-deco:before{content:"";position:absolute;inset:14px;
+  background:
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 0 0/20px 1px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 0 0/1px 20px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 100% 0/20px 1px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 100% 0/1px 20px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 0 100%/20px 1px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 0 100%/1px 20px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 100% 100%/20px 1px no-repeat,
+    linear-gradient(rgba(127,231,240,.4),rgba(127,231,240,.4)) 100% 100%/1px 20px no-repeat}
+.coach-bg-deco:after{content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg, transparent 0, rgba(127,231,240,.12) 20%, transparent 21%) 0 22%/100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0, rgba(127,231,240,.08) 55%, transparent 56%) 0 78%/100% 1px no-repeat,
+    linear-gradient(180deg, transparent 0, rgba(127,231,240,.08) 40%, transparent 41%) 18% 0/1px 100% no-repeat,
+    linear-gradient(180deg, transparent 0, rgba(127,231,240,.08) 60%, transparent 61%) 82% 0/1px 100% no-repeat}
 .coach-stage .mira-avatar{position:absolute;inset:0;z-index:1;max-height:none;max-width:none;margin:0}
 .coach-status{position:absolute;top:16px;left:18px;z-index:2;display:flex;align-items:center;gap:7px;
   font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted)}
@@ -1477,7 +1513,7 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 
 /* ============ 2D AI 萌宠 Mira ============ */
 .mascot-avatar{width:min(360px,72vw);height:auto;display:block;position:relative;z-index:1}
-.coach-mascot{display:flex;align-items:center;justify-content:center;transform:translateY(-12vh);transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+.coach-mascot{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transform:translateY(-12vh);transition:transform .38s cubic-bezier(.2,.8,.2,1)}
 .coach-room.talk-open .coach-mascot{transform:translate(-170px,-12vh)}
 .mascot-fig{transform-box:view-box;transform-origin:160px 330px;animation:mascot-float 4.5s ease-in-out infinite;transition:transform .25s ease}
 .mascot-eyes{transform-box:view-box;transform-origin:160px 176px;animation:mascot-blink 5.2s infinite}
@@ -1535,7 +1571,6 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 @keyframes tech-core{0%,100%{opacity:.7;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
 @keyframes tech-eq{from{transform:scaleY(.3)}to{transform:scaleY(1.6)}}
 .mascot-fig.tech-fig{animation:mascot-sway 7s ease-in-out infinite}
-.tech-halo{transform-box:fill-box;transform-origin:center;animation:tech-halo 6s linear infinite}
 .tech-scanband{animation:tech-scanmove 4.5s linear infinite}
 .tech-particle{fill:#7fe7f0;opacity:0;transform-box:fill-box;transform-origin:center;animation:tech-rise 3.2s ease-in-out infinite}
 .tech-particle.p2{animation-delay:.6s}
@@ -1545,7 +1580,6 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .mascot-avatar.speaking .tech-core{animation:tech-core-fast .5s ease-in-out infinite}
 .mascot-avatar.speaking .tech-eye-glow{animation:tech-eyeglow .6s ease-in-out infinite}
 @keyframes mascot-sway{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-6px)}50%{transform:translate(0,-10px)}75%{transform:translate(-3px,-6px)}}
-@keyframes tech-halo{to{transform:rotate(360deg)}}
 @keyframes tech-scanmove{0%{transform:translateY(0)}100%{transform:translateY(256px)}}
 @keyframes tech-rise{0%{opacity:0;transform:translateY(0)}20%{opacity:.8}100%{opacity:0;transform:translateY(-60px)}}
 @keyframes tech-core-fast{0%,100%{opacity:.7;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}

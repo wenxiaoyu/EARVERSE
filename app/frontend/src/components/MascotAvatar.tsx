@@ -68,14 +68,8 @@ function MascotCute({
         <circle cx="94" cy="218" r="15" fill="#e8927c" opacity=".35" />
         <circle cx="226" cy="218" r="15" fill="#e8927c" opacity=".35" />
 
-        <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" style={speaking ? { opacity: 0 } : undefined} />
-        <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" style={speaking ? { opacity: 0 } : undefined} />
-
-        <g className="mascot-talk">
-          <circle className="mascot-talk-dot d1" cx="150" cy="247" r="3.5" />
-          <circle className="mascot-talk-dot d2" cx="160" cy="247" r="3.5" />
-          <circle className="mascot-talk-dot d3" cx="170" cy="247" r="3.5" />
-        </g>
+        <path className="mascot-smile" d="M138 238c14 10 30 10 44 0" fill="none" stroke="#a25045" strokeWidth="6" strokeLinecap="round" />
+        <path className="mascot-o" d="M160 246a10 10 0 1 0 .1 0Z" fill="#8a413a" />
       </g>
     </svg>
   );
@@ -134,11 +128,6 @@ function MascotTech({
           <rect className="tech-scanband" x="32" y="82" width="256" height="26" fill="url(#tech-scanband)" />
         </g>
 
-        {/* 头顶全息环 */}
-        <g className="tech-halo-wrap">
-          <circle className="tech-halo" cx="160" cy="52" r="18" fill="none" stroke="#7fe7f0" strokeWidth="2" strokeDasharray="8 6" />
-          <circle cx="160" cy="52" r="3" fill="#aef6ff" />
-        </g>
 
         {/* 通讯头戴：深灰耳罩 + 青色灯环 + 麦克风臂 */}
         <g className="mascot-headphones">
