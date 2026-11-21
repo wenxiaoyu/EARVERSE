@@ -5,25 +5,16 @@
 
 ---
 
-## 一、准备工作（只需一次）
+## 一、准备工作（什么都不用装）
 
-电脑上需要有 **Python 3.10+** 和 **Node.js 18+**。
+**不用提前装 Python / Node。** 安装器会自动检测：
 
-检查方法：打开「终端」（Windows 用 PowerShell），输入：
+- 电脑里已有合适的 Python（3.10+）和 Node（18+）→ 直接复用
+- 没有 → 自动下载**便携版**装到安装目录的 `.runtime/` 里，**不需要 sudo、不改动系统环境**
 
-```bash
-python3 --version
-node -v
-```
+所以只要电脑能上网、有 `curl`（macOS/Linux 自带），一条命令就能装完。
 
-- 看到 `Python 3.10` 以上、`Node v18` 以上 → 可以继续
-- 没有或版本太低 → 先装：
-
-| 系统 | 安装命令 |
-|---|---|
-| macOS | `brew install python node` |
-| Windows | `winget install Python.Python.3.12` 和 `winget install OpenJS.NodeJS.LTS` |
-| Ubuntu/Debian | `sudo apt install python3 python3-venv nodejs npm` |
+> 首次安装会额外下载约 150–250MB（Python + Node + 依赖），国内走清华/阿里镜像，通常 1–5 分钟。
 
 ---
 

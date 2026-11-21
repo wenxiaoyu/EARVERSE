@@ -19,3 +19,7 @@ __pycache__/
 # frontend
 app/frontend/node_modules/
 app/frontend/dist/
+
+# 便携运行时（自动安装的 python/node）
+.runtime/
+app/.runtime/

@@ -97,40 +97,118 @@ if ($Cn) {
   Log "使用国内镜像：pip / npm"
 }
 
-# ---------- Python ----------
-$PythonExe = $null
-$PythonArgs = @()
-$candidates = @(
-  @{ exe = "python"; args = @() },
-  @{ exe = "python3"; args = @() },
-  @{ exe = "py"; args = @("-3") }
-)
-foreach ($c in $candidates) {
-  if (Get-Command $c.exe -ErrorAction SilentlyContinue) {
-    & $c.exe @($c.args) -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" 2>$null
-    if ($LASTEXITCODE -eq 0) {
-      $PythonExe = $c.exe
-      $PythonArgs = $c.args
-      break
+# ---------- 运行时：系统优先，缺失则自动装便携版（无需管理员） ----------
+$NodeVersion = "20.18.1"
+$CondaVersion = "py312_24.9.2-0"
+$Runtime = if ($env:EARVERSE_RUNTIME) { $env:EARVERSE_RUNTIME } else { Join-Path $Root ".runtime" }
+
+function Download-To([string]$out, [string[]]$urls) {
+  foreach ($u in $urls) {
+    if (-not $u) { continue }
+    Log "下载：$u"
+    try {
+      Invoke-WebRequest -Uri $u -OutFile $out -UseBasicParsing -TimeoutSec 900
+      return $true
+    } catch { Log "该源失败，换下一个…" }
+  }
+  return $false
+}
+
+function Ensure-Python {
+  $cands = @(
+    @{ exe = "python"; args = @() },
+    @{ exe = "python3"; args = @() },
+    @{ exe = "py"; args = @("-3") }
+  )
+  foreach ($c in $cands) {
+    if (Get-Command $c.exe -ErrorAction SilentlyContinue) {
+      & $c.exe @($c.args) -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" 2>$null
+      if ($LASTEXITCODE -eq 0) {
+        $script:PythonExe = $c.exe
+        $script:PythonArgs = $c.args
+        Log "Python：$(& $c.exe @($c.args) --version 2>&1)（系统已有）"
+        return
+      }
     }
   }
+  $rtPy = Join-Path $Runtime "python\python.exe"
+  if (Test-Path $rtPy) {
+    & $rtPy -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" 2>$null
+    if ($LASTEXITCODE -eq 0) {
+      $script:PythonExe = $rtPy
+      $script:PythonArgs = @()
+      Log "Python：$(& $rtPy --version 2>&1)（便携版已存在）"
+      return
+    }
+  }
+  Log "未检测到 Python 3.10+，自动安装便携版（无需管理员）…"
+  if (Get-Command winget -ErrorAction SilentlyContinue) {
+    try {
+      winget install -e --id Python.Python.3.12 --accept-source-agreements --accept-package-agreements --silent | Out-Null
+      $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
+      if (Get-Command py -ErrorAction SilentlyContinue) {
+        $script:PythonExe = "py"
+        $script:PythonArgs = @("-3")
+        Log "Python：$(& py -3 --version 2>&1)（winget 安装）"
+        return
+      }
+    } catch { Log "winget 安装失败，改用便携版…" }
+  }
+  $f = "Miniconda3-$CondaVersion-Windows-x86_64.exe"
+  New-Item -ItemType Directory -Force -Path $Runtime | Out-Null
+  $exe = Join-Path $env:TEMP $f
+  $ok = Download-To $exe @(
+    "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/$f",
+    "https://repo.anaconda.com/miniconda/$f"
+  )
+  if (-not $ok) { Die "Python 下载失败，请检查网络或手动安装 Python 3.10+" }
+  $dest = Join-Path $Runtime "python"
+  if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+  $p = Start-Process -FilePath $exe -ArgumentList @("/InstallationType=JustMe","/RegisterPython=0","/AddToPath=0","/S","/D=$dest") -Wait -PassThru
+  if ($p.ExitCode -ne 0) { Die "Python 便携版安装失败（exit $($p.ExitCode)）" }
+  $script:PythonExe = Join-Path $dest "python.exe"
+  if (-not (Test-Path $script:PythonExe)) { Die "Python 便携版异常：$($script:PythonExe) 不存在" }
+  Log "Python：$(& $script:PythonExe --version 2>&1)（便携版）"
 }
-if (-not $PythonExe) {
-  Die "未找到 Python 3.10+。请安装：winget install Python.Python.3.12（或 https://www.python.org/downloads/）"
-}
-$pyVer = (& $PythonExe @PythonArgs --version 2>&1)
-Log "Python：$pyVer"
 
-# ---------- Node ----------
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-  Die "未找到 Node.js。请安装 Node 18+：winget install OpenJS.NodeJS.LTS"
+function Ensure-Node {
+  if (Get-Command node -ErrorAction SilentlyContinue) {
+    & node -e "process.exit(Number(process.versions.node.split('.')[0])>=18?0:1)"
+    if ($LASTEXITCODE -eq 0) { Log "Node：$(& node -v)（系统已有）"; return }
+  }
+  $rtNodeDir = Join-Path $Runtime "node"
+  $rtNode = Join-Path $rtNodeDir "node.exe"
+  if (Test-Path $rtNode) {
+    & $rtNode -e "process.exit(Number(process.versions.node.split('.')[0])>=18?0:1)"
+    if ($LASTEXITCODE -eq 0) {
+      $env:PATH = "$rtNodeDir;$env:PATH"
+      Log "Node：$(& $rtNode -v)（便携版已存在）"
+      return
+    }
+  }
+  Log "未检测到 Node 18+，自动安装便携版（无需管理员）…"
+  $pkg = "node-v$NodeVersion-win-x64.zip"
+  New-Item -ItemType Directory -Force -Path $Runtime | Out-Null
+  $zip = Join-Path $env:TEMP $pkg
+  $ok = Download-To $zip @(
+    "https://npmmirror.com/mirrors/node/v$NodeVersion/$pkg",
+    "https://nodejs.org/dist/v$NodeVersion/$pkg"
+  )
+  if (-not $ok) { Die "Node 下载失败，请检查网络或手动安装 Node 18+" }
+  $tmp = Join-Path $env:TEMP ("earverse-node-" + [guid]::NewGuid().ToString("N"))
+  Expand-Archive -Path $zip -DestinationPath $tmp -Force
+  $dest = Join-Path $Runtime "node"
+  if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+  Move-Item -Path (Join-Path $tmp "node-v$NodeVersion-win-x64") -Destination $dest
+  Remove-Item -Recurse -Force $tmp
+  $env:PATH = "$dest;$env:PATH"
+  Log "Node：$(& node -v)（便携版）"
 }
-& node -e "process.exit(Number(process.versions.node.split('.')[0])>=18?0:1)"
-if ($LASTEXITCODE -ne 0) {
-  Die "Node 版本过低，需要 18+（当前 $(& node -v)）。"
-}
+
+Ensure-Python
+Ensure-Node
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-  Die "未找到 npm（通常随 Node 一起安装）。"
+  Die "npm 未找到（应随 Node 一起提供，请检查安装）。"
 }
 Log "Node：$(& node -v)  npm：$(& npm -v)"
 

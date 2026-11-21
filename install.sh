@@ -12,6 +12,9 @@
 #   ./install.sh [--no-start] [--update]
 set -euo pipefail
 
+# 保底把常见工具目录加进 PATH（curl/tar/md5 等），兼容极简 shell 环境
+export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
 REPO_OWNER="wenxiaoyu"
 REPO_NAME="EARVERSE"
 BRANCH="main"
@@ -218,28 +221,110 @@ esac
 log "目录：$ROOT"
 log "平台：$PLATFORM"
 
-# ---------- Python ----------
-PY=""
-for c in python3 python; do
-  if command -v "$c" >/dev/null 2>&1 && \
-     "$c" -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
-    PY="$c"; break
-  fi
-done
-[ -n "$PY" ] || die "未找到 Python 3.10+。请先安装：
-  macOS: brew install python
-  Ubuntu/Debian: sudo apt install python3 python3-venv
-  Windows: https://www.python.org/downloads/（或 winget install Python.Python.3.12）"
-log "Python：$("$PY" --version 2>&1)"
+# ---------- 运行时：系统优先，缺失则自动装便携版（无需 sudo） ----------
+NODE_VERSION="20.18.1"
+CONDA_VERSION="py312_24.9.2-0"
+RUNTIME_DIR="${EARVERSE_RUNTIME:-$ROOT/.runtime}"
 
-# ---------- Node ----------
-command -v node >/dev/null 2>&1 || die "未找到 Node.js。请安装 Node 18+：
-  macOS: brew install node
-  Ubuntu/Debian: sudo apt install nodejs npm
-  Windows: winget install OpenJS.NodeJS.LTS"
-command -v npm >/dev/null 2>&1 || die "未找到 npm（通常随 Node 一起安装）。"
-node -e 'const v=process.versions.node.split(".").map(Number); process.exit(v[0]>=18?0:1)' \
-  || die "Node 版本过低，需要 18+（当前 $(node -v)）。"
+download_to() {
+  local out="$1"; shift
+  local u
+  for u in "$@"; do
+    [ -n "$u" ] || continue
+    log "下载：$u"
+    if curl -fSL --connect-timeout 10 --retry 2 --max-time 900 "$u" -o "$out" 2>/dev/null; then
+      return 0
+    fi
+    log "该源失败，换下一个…"
+  done
+  return 1
+}
+
+ensure_python() {
+  local c
+  for c in python3 python; do
+    if command -v "$c" >/dev/null 2>&1 && \
+       "$c" -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+      PY="$c"; log "Python：$("$PY" --version 2>&1)（系统已有）"; return 0
+    fi
+  done
+  if [ -x "$RUNTIME_DIR/python/bin/python3" ] && \
+     "$RUNTIME_DIR/python/bin/python3" -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+    export PATH="$RUNTIME_DIR/python/bin:$PATH"
+    PY="$RUNTIME_DIR/python/bin/python3"
+    log "Python：$("$PY" --version 2>&1)（便携版已存在）"
+    return 0
+  fi
+  local os arch
+  case "$PLATFORM" in
+    macOS)      os="MacOSX" ;;
+    Linux|WSL)  os="Linux" ;;
+    *) die "当前系统无法自动安装 Python，请手动安装 Python 3.10+ 后重试" ;;
+  esac
+  case "$(uname -m)" in
+    arm64|aarch64) if [ "$os" = "MacOSX" ]; then arch="arm64"; else arch="aarch64"; fi ;;
+    x86_64|amd64)  arch="x86_64" ;;
+    *) die "当前 CPU 架构不支持自动安装 Python：$(uname -m)" ;;
+  esac
+  local f="Miniconda3-${CONDA_VERSION}-${os}-${arch}.sh"
+  local tmp; tmp="$(mktemp -d)"
+  log "未检测到 Python 3.10+，自动安装便携版（无需 sudo）…"
+  download_to "$tmp/mc.sh" \
+    "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/${f}" \
+    "https://repo.anaconda.com/miniconda/${f}" \
+    || die "Python 下载失败。请检查网络，或手动安装 Python 3.10+ 后重试"
+  mkdir -p "$RUNTIME_DIR"
+  rm -rf "$RUNTIME_DIR/python"
+  bash "$tmp/mc.sh" -b -p "$RUNTIME_DIR/python" >/dev/null 2>&1 \
+    || die "Python 便携版安装失败"
+  rm -rf "$tmp"
+  export PATH="$RUNTIME_DIR/python/bin:$PATH"
+  PY="$RUNTIME_DIR/python/bin/python3"
+  [ -x "$PY" ] || die "Python 便携版异常：$PY 不存在"
+  log "Python：$("$PY" --version 2>&1)（便携版）"
+}
+
+ensure_node() {
+  if command -v node >/dev/null 2>&1 && \
+     node -e 'process.exit(process.versions.node.split(".").map(Number)[0] >= 18 ? 0 : 1)' 2>/dev/null; then
+    log "Node：$(node -v)（系统已有）"; return 0
+  fi
+  if [ -x "$RUNTIME_DIR/node/bin/node" ] && \
+     "$RUNTIME_DIR/node/bin/node" -e 'process.exit(process.versions.node.split(".").map(Number)[0] >= 18 ? 0 : 1)' 2>/dev/null; then
+    export PATH="$RUNTIME_DIR/node/bin:$PATH"
+    log "Node：$("$RUNTIME_DIR/node/bin/node" -v)（便携版已存在）"
+    return 0
+  fi
+  local os arch
+  case "$PLATFORM" in
+    macOS)      os="darwin" ;;
+    Linux|WSL)  os="linux" ;;
+    *) die "当前系统无法自动安装 Node，请手动安装 Node 18+ 后重试" ;;
+  esac
+  case "$(uname -m)" in
+    arm64|aarch64) arch="arm64" ;;
+    x86_64|amd64)  arch="x64" ;;
+    *) die "当前 CPU 架构不支持自动安装 Node：$(uname -m)" ;;
+  esac
+  local pkg="node-v${NODE_VERSION}-${os}-${arch}.tar.gz"
+  local tmp; tmp="$(mktemp -d)"
+  log "未检测到 Node 18+，自动安装便携版（无需 sudo）…"
+  download_to "$tmp/node.tgz" \
+    "https://npmmirror.com/mirrors/node/v${NODE_VERSION}/${pkg}" \
+    "https://nodejs.org/dist/v${NODE_VERSION}/${pkg}" \
+    || die "Node 下载失败。请检查网络，或手动安装 Node 18+ 后重试"
+  tar -xzf "$tmp/node.tgz" -C "$tmp"
+  mkdir -p "$RUNTIME_DIR"
+  rm -rf "$RUNTIME_DIR/node"
+  mv "$tmp/node-v${NODE_VERSION}-${os}-${arch}" "$RUNTIME_DIR/node"
+  rm -rf "$tmp"
+  export PATH="$RUNTIME_DIR/node/bin:$PATH"
+  log "Node：$(node -v)（便携版）"
+}
+
+ensure_python
+ensure_node
+command -v npm >/dev/null 2>&1 || die "npm 未找到（应随 Node 一起提供，请检查安装）"
 log "Node：$(node -v)  npm：$(npm -v)"
 
 # ---------- 国内镜像 ----------
