@@ -9,6 +9,8 @@ try {
 } catch {}
 
 $NoStart = ($args -contains "--no-start") -or ($env:EARVERSE_NO_START -eq "1")
+$NoShortcut = ($args -contains "--no-shortcut") -or ($env:EARVERSE_NO_SHORTCUT -eq "1")
+$NoOpen = ($args -contains "--no-open") -or ($env:EARVERSE_NO_OPEN -eq "1")
 $Update = $args -contains "--update"
 $Source = if ($env:EARVERSE_SOURCE) { $env:EARVERSE_SOURCE.ToLower() } else { "auto" }
 $Cn = ($args -contains "--cn") -or ($env:EARVERSE_CN -eq "1")
@@ -240,6 +242,18 @@ try {
 
 Ok "安装完成。"
 
+# ---------- 桌面图标（默认创建） ----------
+if (-not $NoShortcut) {
+  $sc = Join-Path $Root "app\scripts\install-shortcut.ps1"
+  if (Test-Path $sc) {
+    try {
+      & powershell -NoProfile -ExecutionPolicy Bypass -File $sc | Out-Host
+    } catch {
+      Log "创建桌面图标失败（可稍后手动运行 app\scripts\install-shortcut.ps1）"
+    }
+  }
+}
+
 # ---------- 启动 ----------
 if ($NoStart) {
   Write-Host ""
@@ -258,12 +272,34 @@ function Test-PortFree([int]$port) {
   }
 }
 
+function Open-App {
+  $oa = Join-Path $Root "app\scripts\open-app.ps1"
+  if (Test-Path $oa) {
+    try { & powershell -NoProfile -ExecutionPolicy Bypass -File $oa | Out-Null } catch {}
+  }
+}
+
+function Wait-Health([int]$seconds = 60) {
+  for ($i = 0; $i -lt $seconds; $i++) {
+    try {
+      Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/health" -TimeoutSec 2 -UseBasicParsing | Out-Null
+      return $true
+    } catch { Start-Sleep -Seconds 1 }
+  }
+  return $false
+}
+
 if (-not (Test-PortFree 8000)) {
   Ok "8000 端口已被占用：可能服务已在运行。"
+  if (-not $NoOpen) { Open-App }
   Write-Host "打开 http://127.0.0.1:8000 即可；停止后再用 start.bat 启动。"
   exit 0
 }
 
 Ok "启动服务：http://127.0.0.1:8000"
 Set-Location (Join-Path $Root "app\backend")
-& $Vpy -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+$proc = Start-Process -FilePath $Vpy -ArgumentList @("-m","uvicorn","app.main:app","--host","127.0.0.1","--port","8000") -PassThru -NoNewWindow
+if (-not $NoOpen) {
+  if (Wait-Health 60) { Open-App }
+}
+$proc.WaitForExit()

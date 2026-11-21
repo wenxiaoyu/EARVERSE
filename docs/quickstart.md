@@ -40,7 +40,8 @@ irm https://gitee.com/fish/earverse/raw/main/install.ps1 | iex
 1. 下载代码（国内优先 Gitee，失败回退 GitHub）
 2. 准备 Python / Node（便携版，走清华 + npmmirror 镜像）
 3. 创建虚拟环境、安装后端依赖、构建前端
-4. 启动服务，地址：**http://127.0.0.1:8000**
+4. **自动创建桌面图标**
+5. 启动服务并**自动打开窗口**：**http://127.0.0.1:8000**
 
 首次约 1–5 分钟（要下载 150–250MB）；之后再运行会复用已有环境，很快。
 默认安装目录：mac/Linux 是 `~/earverse`，Windows 是 `C:\Users\你\earverse`。
@@ -93,9 +94,14 @@ irm https://gitee.com/fish/earverse/raw/main/install.ps1 | iex
 
 ---
 
-## 四、桌面图标（推荐，体验更像 App）
+## 四、桌面图标（安装时已自动创建）
 
-装好后默认是浏览器打开，会带地址栏。做个桌面图标，双击就是独立窗口。
+安装器会**自动生成桌面图标**，双击就是无地址栏的独立窗口；服务没启动时会自动在后台拉起。
+
+- macOS：`~/Applications/耳界 EARVERSE.app` + 桌面快捷方式
+- Windows：桌面「耳界 EARVERSE」快捷方式
+
+如果需要重新创建（换机器、图标丢了）：
 
 ### macOS
 
@@ -103,9 +109,6 @@ irm https://gitee.com/fish/earverse/raw/main/install.ps1 | iex
 cd ~/earverse
 ./app/scripts/install-shortcut.sh
 ```
-
-会在「应用程序」和桌面生成 **耳界 EARVERSE**（自带图标）。双击即打开无地址栏窗口。
-服务没启动时，它会自动在后台拉起。
 
 ### Windows
 
@@ -115,10 +118,15 @@ cd ~/earverse
 powershell -ExecutionPolicy Bypass -File .\app\scripts\install-shortcut.ps1
 ```
 
-桌面会出现「耳界 EARVERSE」快捷方式。
-
 > 如果以后双击打不开，看日志：
 > `~/Library/Logs/EARVERSE-launch.log`（macOS）
+
+### 不想要自动行为？
+
+```bash
+./install.sh --no-shortcut   # 不建桌面图标
+./install.sh --no-open       # 启动后不自动开窗
+```
 
 ---
 

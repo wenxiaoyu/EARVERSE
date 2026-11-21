@@ -30,6 +30,8 @@ START=1
 UPDATE=0
 AUTO_UPDATE=0
 CHECK_ONLY=0
+SHORTCUT=1
+OPEN=1
 NO_UPDATE_CHECK="${EARVERSE_NO_UPDATE_CHECK:-0}"
 SOURCE="${EARVERSE_SOURCE:-auto}"
 CN="${EARVERSE_CN:-0}"
@@ -38,6 +40,8 @@ for arg in "$@"; do
   case "$arg" in
     --no-start) START=0 ;;
     --start) START=1 ;;
+    --no-shortcut) SHORTCUT=0 ;;
+    --no-open) OPEN=0 ;;
     --update) UPDATE=1 ;;
     --cn) CN=1 ;;
     --check-update) CHECK_ONLY=1 ;;
@@ -51,6 +55,8 @@ for arg in "$@"; do
 用法：
   ./install.sh                 本地安装并启动
   ./install.sh --no-start      只安装
+  ./install.sh --no-shortcut   不创建桌面图标
+  ./install.sh --no-open       启动后不自动打开窗口
   ./install.sh --update        更新代码（保留画像/设置）
   ./install.sh --cn            使用国内 pip/npm 镜像
   ./install.sh --check-update  只检查远程是否有新版本
@@ -359,6 +365,14 @@ log "安装前端依赖并构建…"
 
 ok "安装完成。"
 
+# ---------- 桌面图标（默认创建） ----------
+if [ "$SHORTCUT" = "1" ] && [ "$CHECK_ONLY" = "0" ]; then
+  if [ -x "$ROOT/app/scripts/install-shortcut.sh" ]; then
+    bash "$ROOT/app/scripts/install-shortcut.sh" \
+      || log "创建桌面图标失败（可稍后手动运行 app/scripts/install-shortcut.sh）"
+  fi
+fi
+
 # ---------- 启动 ----------
 if [ "$START" = "0" ]; then
   echo
@@ -377,10 +391,24 @@ except OSError:
 PY
 then
   ok "8000 端口已被占用：可能服务已在运行。"
+  if [ "$OPEN" = "1" ] && [ -x "$ROOT/app/scripts/open-app.sh" ]; then
+    EARVERSE_DETACH=1 bash "$ROOT/app/scripts/open-app.sh" >/dev/null 2>&1 || true
+  fi
   echo "打开 http://127.0.0.1:8000 即可；停止后再用 ./start.sh 启动。"
   exit 0
 fi
 
 ok "启动服务：http://127.0.0.1:8000"
 cd app/backend
-exec "$ROOT/$VPY" -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+"$ROOT/$VPY" -m uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+UV_PID=$!
+if [ "$OPEN" = "1" ] && [ -x "$ROOT/app/scripts/open-app.sh" ]; then
+  for _ in $(seq 1 60); do
+    if curl -s -o /dev/null "http://127.0.0.1:8000/api/health" 2>/dev/null; then
+      EARVERSE_DETACH=1 bash "$ROOT/app/scripts/open-app.sh" >/dev/null 2>&1 || true
+      break
+    fi
+    sleep 1
+  done
+fi
+wait "$UV_PID"
