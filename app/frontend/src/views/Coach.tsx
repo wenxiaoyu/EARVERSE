@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { playMira, stopMira } from "../voice";
 import MascotAvatar from "../components/MascotAvatar";
+import ZhHint from "../components/ZhHint";
 import type { MiraGesture, MiraMood } from "../components/TeacherAvatar";
 import { useVadRecorder } from "../components/useVadRecorder";
 
@@ -310,6 +311,9 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
                   <div className="coach-bubble">
                     {m.text}
                     {m.correction && <div className="coach-better">Better: {m.correction}</div>}
+                    {m.role === "assistant" && m.text && !(busy && i === messages.length - 1) && (
+                      <ZhHint text={m.text} />
+                    )}
                   </div>
                 </div>
               ))}

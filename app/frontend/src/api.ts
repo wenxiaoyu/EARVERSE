@@ -97,8 +97,7 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ domain, history }),
     }),
-  speechTts: (text: string) =>
-    track((async () => {
+  speechTts: (text: string) =>    track((async () => {
       const res = await fetch("/api/speech/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,6 +108,11 @@ export const api = {
     })()),
   shareNote: (domain: string) =>
     json<any>("/api/share/note", { method: "POST", body: JSON.stringify({ domain }) }),
+  translate: (text: string) =>
+    json<{ text: string; zh: string }>("/api/translate", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
   recitationToday: (domain: string) =>
     json<any>(`/api/recitation/today?domain=${encodeURIComponent(domain)}`),
   recitationGenerate: (domain: string) =>

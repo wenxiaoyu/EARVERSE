@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, speak } from "../api";
 import { toast } from "../toast";
 import RichText from "../components/RichText";
+import ZhHint from "../components/ZhHint";
 import { createWavRecorder } from "../wavRecorder";
 
 type Scenario = { id: string; cat: string; title: string; goal: string; load: number };
@@ -250,6 +251,7 @@ export default function Scenario({
                     ) : (
                       <span className="bubble-mask">英文已隐藏 · 先听再说</span>
                     )}
+                    {!mine && <ZhHint text={t.text} />}
                     {!mine && (
                       <span className="turn-tools">
                         <button className="mini" onClick={() => speak(t.text, "real")}>▶ 重播</button>

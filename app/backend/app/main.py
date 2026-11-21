@@ -30,6 +30,7 @@ from .pronunciation import service as pronunciation
 from .config import LLMConfig, load_config, public_view, save_config
 from .generation import service as generation
 from .llm import prompts
+from .llm import translate as translate_mod
 from .llm.client import LLMClient
 from .recitation import service as recitation
 from .reports import service as reports
@@ -1172,6 +1173,15 @@ async def coach_end(request: Request):
     if out.get("saved"):
         storage.save(profile)
     return out
+
+
+@app.post("/api/translate")
+async def translate(request: Request):
+    """按需把一句英文翻译成中文（学习辅助，不进入对话上下文）。"""
+    body = await request.json()
+    text = str(body.get("text") or "").strip()
+    zh = await translate_mod.to_chinese(_llm(), text)
+    return {"text": text, "zh": zh}
 
 
 @app.post("/api/speech/tts")
