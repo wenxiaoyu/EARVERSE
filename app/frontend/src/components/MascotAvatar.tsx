@@ -161,8 +161,8 @@ function MascotTech({
 
         {/* 嘴巴：只保留能量核心（说话时加快脉动） */}
         <g className="tech-core">
-          <circle cx="160" cy="242" r="14" fill="none" stroke="#7fe7f0" strokeWidth="2" opacity=".8" />
-          <circle cx="160" cy="242" r="7" fill="#aef6ff" />
+          <circle cx="160" cy="250" r="14" fill="none" stroke="#7fe7f0" strokeWidth="2" opacity=".8" />
+          <circle cx="160" cy="250" r="7" fill="#aef6ff" />
         </g>
 
         {/* 地台粒子上升 */}
