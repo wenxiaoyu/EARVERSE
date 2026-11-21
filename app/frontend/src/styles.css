@@ -1519,4 +1519,20 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 @keyframes mascot-listen-fig{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes mascot-talkbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes mascot-dot{0%,100%{opacity:.2;transform:scale(.9)}40%{opacity:1;transform:scale(1.15)}}
+/* 全息 AI 科技版 */
+.mascot-avatar.tech .tech-body{filter:drop-shadow(0 0 10px rgba(53,195,240,.45))}
+.mascot-avatar.tech .mascot-eyes{filter:drop-shadow(0 0 6px rgba(127,231,240,.55))}
+.tech-base{transform-box:fill-box;transform-origin:center;animation:tech-spin 5s linear infinite}
+.tech-base2{transform-box:fill-box;transform-origin:center;animation:tech-spin 8s linear infinite reverse}
+.tech-core{transform-box:fill-box;transform-origin:center;animation:tech-core 2s ease-in-out infinite}
+.tech-eq{fill:#7fe7f0;opacity:0;transform-box:fill-box;transform-origin:center bottom}
+.mascot-avatar.speaking .tech-eq{opacity:1;animation:tech-eq .5s ease-in-out infinite alternate}
+.mascot-avatar.speaking .tech-eq.e2{animation-delay:.08s}
+.mascot-avatar.speaking .tech-eq.e3{animation-delay:.16s}
+.mascot-avatar.speaking .tech-eq.e4{animation-delay:.24s}
+.mascot-avatar.speaking .tech-eq.e5{animation-delay:.32s}
+@keyframes tech-spin{to{stroke-dashoffset:-80}}
+@keyframes tech-core{0%,100%{opacity:.7;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes tech-eq{from{transform:scaleY(.3)}to{transform:scaleY(1.6)}}
+
 @media(prefers-reduced-motion:reduce){.mascot-avatar *{animation:none!important;transition:none!important}}
