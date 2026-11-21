@@ -1124,7 +1124,8 @@ async def report(domain: str = "work", period: str = "week"):
 async def share_note(request: Request):
     body = await request.json()
     domain = str(body.get("domain") or "work")
-    return await share.build_note(_llm(), domain, _profile())
+    channel = str(body.get("channel") or "default")
+    return await share.build_note(_llm(), domain, _profile(), channel)
 
 
 @app.post("/api/coach/start")

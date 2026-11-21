@@ -1244,6 +1244,9 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .share-tabs{display:inline-flex;gap:4px;background:#191411;border:1px solid var(--hair);border-radius:10px;padding:3px;margin-bottom:12px}
 .share-tabs button{background:transparent;border:0;color:var(--muted);font-family:var(--sans);font-size:13px;padding:7px 14px;border-radius:8px;cursor:pointer}
 .share-tabs button.on{background:rgba(232,163,61,.14);color:var(--ink)}
+.share-tabs button.xhs-tab{background:rgba(255,46,77,.14);color:#ff6b80;font-weight:600;margin-left:2px}
+.share-tabs button.xhs-tab:hover{background:rgba(255,46,77,.24);color:#ff8a9a}
+.share-tabs button.xhs-tab:disabled{opacity:.6;cursor:default}
 .share-side label{margin-top:0}
 .share-side textarea{width:100%;min-height:170px;resize:vertical;line-height:1.7;font-size:13.5px}
 .share-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}

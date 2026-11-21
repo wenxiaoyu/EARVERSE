@@ -106,8 +106,11 @@ export const api = {
       if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
       return res.blob();
     })()),
-  shareNote: (domain: string) =>
-    json<any>("/api/share/note", { method: "POST", body: JSON.stringify({ domain }) }),
+  shareNote: (domain: string, channel = "default") =>
+    json<any>("/api/share/note", {
+      method: "POST",
+      body: JSON.stringify({ domain, channel }),
+    }),
   translate: (text: string) =>
     json<{ text: string; zh: string }>("/api/translate", {
       method: "POST",

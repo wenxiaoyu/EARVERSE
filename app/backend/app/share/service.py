@@ -261,12 +261,34 @@ def local_caption(facts: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def xhs_local_caption(facts: dict[str, Any]) -> str:
+    """未配置 AI 时的小红书兜底：更口语、留讨论口。"""
+    n = facts["day_no"]
+    lines = [f"用耳界练英语的第 {n} 天。", ""]
+    if facts["verdict"] == "no_baseline":
+        lines.append("断了一阵子又重新开始，最难的是点开那一下。")
+    elif facts["verdict"] == "worse":
+        lines.append("今天状态不太行，但至少知道了自己卡在哪。")
+    elif facts["verdict"] == "better":
+        lines.append("没什么逆袭，就是今天听顺了一点点。")
+    else:
+        lines.append("今天没什么大变化，就是还在磨。")
+    lines.append(f"{facts['better']}，{facts['worse']}。")
+    lines.append(f"明天打算：{facts['next']}。")
+    lines.append("")
+    lines.append("你们练英语是精听还是泛听？评论区聊聊，我参考一下。")
+    lines.append("")
+    lines.append(" ".join(facts.get("hashtags") or HASHTAGS))
+    return "\n".join(lines)
+
+
 def _clip(s: Any, n: int) -> str:
     t = str(s or "").strip()
     return t if len(t) <= n else t[: n - 1] + "…"
 
 
-def _normalize_ai(data: dict | None, facts: dict[str, Any]) -> dict[str, Any]:
+def _normalize_ai(data: dict | None, facts: dict[str, Any],
+                  channel: str = "default") -> dict[str, Any]:
     if not isinstance(data, dict):
         return facts
     out = dict(facts)
@@ -286,7 +308,11 @@ def _normalize_ai(data: dict | None, facts: dict[str, Any]) -> dict[str, Any]:
     ) or (
         out["verdict"] == "better" and any(w in cap for w in ("有退步", "变差"))
     )
-    if "耳界" not in cap or wrong_way:
+    if wrong_way:
+        out["caption"] = local_caption(out) if channel != "xhs" else xhs_local_caption(out)
+    elif channel == "xhs" and "耳界" not in cap:
+        out["caption"] = f"用耳界练英语的第 {out['day_no']} 天。\n\n" + cap
+    elif "耳界" not in cap:
         out["caption"] = local_caption(out)
     elif out["hashtags"] and "#" not in cap:
         out["caption"] = cap + "\n\n" + " ".join(out["hashtags"])
@@ -294,20 +320,24 @@ def _normalize_ai(data: dict | None, facts: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-async def build_note(llm, domain: str, profile: dict[str, Any]) -> dict[str, Any]:
+async def build_note(llm, domain: str, profile: dict[str, Any],
+                     channel: str = "default") -> dict[str, Any]:
     facts = compute_facts(profile, domain)
+    if channel == "xhs":
+        facts["caption"] = xhs_local_caption(facts)
+    facts["channel"] = channel
     # 今天没练就不调用 AI，前端会提示先练一轮
     if llm is None or not facts.get("practiced_today"):
         facts["source"] = "local"
         return facts
     try:
         text = await llm.chat(
-            prompts.share_note_messages(domain, facts),
+            prompts.share_note_messages(domain, facts, channel),
             temperature=0.7, max_tokens=800,
         )
         data = prompts.parse_json_reply(text)
         if data:
-            return _normalize_ai(data, facts)
+            return _normalize_ai(data, facts, channel)
     except Exception:
         pass
     facts["source"] = "local"

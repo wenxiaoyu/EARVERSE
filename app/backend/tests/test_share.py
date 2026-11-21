@@ -92,3 +92,39 @@ def test_build_note_uses_ai_copy():
     assert "听辨稳了" in note["caption"]
     assert note["metrics"]  # 指标仍来自后端，不交给 AI
     assert "用耳界" in note["caption"]
+
+
+def test_xhs_local_caption_is_conversational():
+    facts = share.compute_facts(_profile(), "work")
+    cap = share.xhs_local_caption(facts)
+    assert "用耳界练英语的第" in cap
+    assert "评论区" in cap
+    assert "精听还是泛听" in cap
+
+
+def test_build_note_xhs_channel_uses_xhs_prompt_and_caption():
+    captured = {}
+
+    class FakeLLM:
+        async def chat(self, messages, **k):
+            captured["system"] = messages[0]["content"]
+            return (
+                '{"quote":"听顺一点，就很值得。",'
+                '"caption":"用耳界练英语的第 2 天。\\n今天听辨突然通了。\\n'
+                '你们练听力是精听还是泛听？\\n#英语学习","hashtags":["#英语学习"]}'
+            )
+
+    p = _profile()
+    note = asyncio.run(share.build_note(FakeLLM(), "work", p, "xhs"))
+    assert note["channel"] == "xhs"
+    assert "共鸣" in captured["system"]
+    assert "开放问题" in captured["system"]
+    assert "精听还是泛听" in note["caption"]
+    assert "用耳界" in note["caption"]
+
+
+def test_build_note_xhs_without_llm_uses_local_xhs():
+    note = asyncio.run(share.build_note(None, "work", _profile(), "xhs"))
+    assert note["source"] == "local"
+    assert note["channel"] == "xhs"
+    assert "精听还是泛听" in note["caption"]

@@ -118,6 +118,36 @@ export default function ShareNote({
     }
   };
 
+  /* 小红书专属：生成共鸣型文案 + 切金句卡 + 复制文案 + 下载图片 */
+  const shareXhs = async () => {
+    if (!data || busy) return;
+    setBusy(true);
+    try {
+      const r = await api.shareNote(domain, "xhs");
+      if (r?.practiced_today === false) {
+        toast("今天还没有练习记录，先练一轮再来");
+        return;
+      }
+      setData(r);
+      setCaption(r.caption || "");
+      setTemplate("quote");
+      await new Promise((res) => setTimeout(res, 120));
+      try { await navigator.clipboard.writeText(r.caption || ""); } catch { /* ignore */ }
+      const url = await exportPng();
+      if (url) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `earverse-xhs-${r.date}.png`;
+        a.click();
+      }
+      toast("小红书图文已就绪：图片已下载，文案已复制");
+    } catch {
+      toast("生成小红书文案失败，请重试");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const canShare = typeof navigator !== "undefined" && Boolean(navigator.canShare);
   const done = data?.practiced_today !== false;
 
@@ -215,6 +245,9 @@ export default function ShareNote({
               <div className="share-tabs">
                 <button className={template === "score" ? "on" : ""} onClick={() => setTemplate("score")}>成绩单</button>
                 <button className={template === "quote" ? "on" : ""} onClick={() => setTemplate("quote")}>金句</button>
+                <button className="xhs-tab" onClick={shareXhs} disabled={busy}>
+                  {busy ? "准备中…" : "📕 小红书"}
+                </button>
               </div>
 
               <label>文案（可编辑）</label>
