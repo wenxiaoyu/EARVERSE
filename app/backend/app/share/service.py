@@ -238,9 +238,7 @@ def compute_facts(profile: dict[str, Any], domain: str) -> dict[str, Any]:
         "discuss": "你们练英语是精听还是泛听？评论区聊聊。",
         "hashtags": list(HASHTAGS),
     }
-    coach = (models.ensure_domain(profile, domain).get("coach") or {})
-    facts["coach_comment"] = (coach.get("last_summary") or "")[:200]
-    facts["coach_next"] = [str(x)[:60] for x in (coach.get("next_focus") or [])][:2]
+    facts.update(models.coach_excerpt(profile, domain))
     facts["caption"] = local_caption(facts)
     return facts
 

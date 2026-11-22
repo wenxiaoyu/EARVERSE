@@ -140,12 +140,8 @@ def _profile_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
 
 
 def _coach_excerpt(profile: dict[str, Any], domain: str) -> dict[str, Any]:
-    """把 Manbo 最近一次复盘/评语带进报告。"""
-    c = (models.ensure_domain(profile, domain).get("coach") or {})
-    return {
-        "coach_comment": (c.get("last_summary") or "")[:200],
-        "coach_next": [str(x)[:60] for x in (c.get("next_focus") or [])][:2],
-    }
+    """把 Manbo 的复盘/评语带进报告：优先当天，没有则回退最近一次（带日期）。"""
+    return models.coach_excerpt(profile, domain)
 
 
 def _graduation(profile: dict[str, Any]) -> dict[str, Any]:

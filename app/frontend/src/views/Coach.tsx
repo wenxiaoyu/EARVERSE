@@ -43,11 +43,14 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
   const abortRef = useRef<AbortController | null>(null);
   const streamAccRef = useRef<string | null>(null);
   const streamRafRef = useRef(0);
+  const messagesRef = useRef<Msg[]>([]);
+  const endedRef = useRef(false);
 
   useEffect(() => { liveRef.current = live; }, [live]);
   useEffect(() => { busyRef.current = busy; }, [busy]);
   useEffect(() => { speakingRef.current = speaking; }, [speaking]);
   useEffect(() => { listeningRef.current = listening; }, [listening]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "auto" });
   }, [messages, busy]);
@@ -77,6 +80,15 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
     stopMira();
     recorder.stop();
     if (streamRafRef.current) cancelAnimationFrame(streamRafRef.current);
+    // 离开页面时自动收尾：聊过但没点「结束对话」也要生成当天复盘
+    const hist = messagesRef.current
+      .filter((m) => m.text)
+      .slice(-10)
+      .map((m) => ({ role: m.role, text: m.text }));
+    const turns = hist.filter((m) => m.role === "user").length;
+    if (!endedRef.current && turns >= 2) {
+      void api.coachEnd(domain, hist).catch(() => {});
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -250,6 +262,7 @@ export default function Coach({ domain, onExit }: { domain: string; onExit: () =
 
   const end = async () => {
     if (ending) return;
+    endedRef.current = true;
     setEnding(true);
     setLive(false); liveRef.current = false; recorder.stop(); setListening(false); listeningRef.current = false;
     stopMira();

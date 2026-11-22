@@ -93,6 +93,35 @@ def local_date_of(value: str) -> str:
         return raw[:10]
 
 
+def coach_sessions(profile: dict[str, Any], domain: str) -> list[dict[str, Any]]:
+    c = ensure_domain(profile, domain).get("coach") or {}
+    return [s for s in (c.get("sessions") or []) if isinstance(s, dict)]
+
+
+def coach_excerpt(profile: dict[str, Any], domain: str,
+                  day: str | None = None) -> dict[str, Any]:
+    """当日 Manbo 复盘；没有当日会话则回退最近一次，并带上那个日期。
+
+    coach_when: "today" 表示今天的复盘；否则是 YYYY-MM-DD；空表示从没聊过。
+    """
+    day = day or local_date(0)
+    sessions = coach_sessions(profile, domain)
+    today = next((s for s in reversed(sessions)
+                  if local_date_of(s.get("at", "")) == day), None)
+    if today:
+        chosen, when = today, "today"
+    elif sessions:
+        chosen = sessions[-1]
+        when = local_date_of(chosen.get("at", ""))
+    else:
+        return {"coach_comment": "", "coach_next": [], "coach_when": ""}
+    return {
+        "coach_comment": str(chosen.get("summary") or "")[:200],
+        "coach_next": [str(x)[:60] for x in (chosen.get("next_focus") or [])][:2],
+        "coach_when": when,
+    }
+
+
 def set_goal(profile: dict[str, Any], domain: str, goal: dict[str, Any]) -> dict[str, Any]:
     d = ensure_domain(profile, domain)
     d["goal"] = goal

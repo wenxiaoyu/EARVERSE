@@ -142,3 +142,32 @@ def test_xhs_discuss_default_and_ai():
 
     note = asyncio.run(share.build_note(FakeLLM(), "work", _profile(), "xhs"))
     assert note["discuss"] == "精听还是泛听？"
+
+
+def test_coach_comment_scoped_to_today():
+    p = _profile()
+    d = m.ensure_domain(p, "work")
+    d["coach"]["sessions"] = [
+        {"at": m.now_iso(), "summary": "Today summary.", "next_focus": ["a"]},
+    ]
+    ex = m.coach_excerpt(p, "work")
+    assert ex["coach_when"] == "today"
+    assert ex["coach_comment"] == "Today summary."
+
+
+def test_coach_comment_falls_back_with_date():
+    p = _profile()
+    d = m.ensure_domain(p, "work")
+    d["coach"]["sessions"] = [
+        {"at": "2026-01-01T00:00:00Z", "summary": "Old summary.", "next_focus": ["b"]},
+    ]
+    ex = m.coach_excerpt(p, "work")
+    assert ex["coach_when"] == "2026-01-01"
+    assert ex["coach_comment"] == "Old summary."
+    facts = share.compute_facts(p, "work")
+    assert facts["coach_when"] == "2026-01-01"
+
+
+def test_coach_comment_empty_without_sessions():
+    ex = m.coach_excerpt(m.empty_profile(), "work")
+    assert ex == {"coach_comment": "", "coach_next": [], "coach_when": ""}

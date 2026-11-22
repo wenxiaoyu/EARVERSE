@@ -252,7 +252,7 @@ export default function ShareNote({
                   <div className="sn-coach">
                     <div className="sn-coach-avatar"><MiraFace /></div>
                     <div className="sn-coach-body">
-                      <b>MANBO 老师说</b>
+                      <b>MANBO 老师说{data.coach_when && data.coach_when !== "today" ? ` · ${data.coach_when}` : ""}</b>
                       <span>{data.coach_comment}</span>
                     </div>
                   </div>

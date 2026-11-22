@@ -399,7 +399,7 @@ export default function Report({ domain }: { domain: string }) {
           )}
           {report.coach_comment && (
             <div className="coach-quote">
-              <b>MANBO 教练说</b>
+              <b>MANBO 教练说{report.coach_when && report.coach_when !== "today" ? ` · ${report.coach_when}` : ""}</b>
               <p>{report.coach_comment}</p>
             </div>
           )}

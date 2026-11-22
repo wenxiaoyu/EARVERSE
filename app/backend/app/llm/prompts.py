@@ -415,6 +415,7 @@ def share_note_messages(domain: str, facts: dict, channel: str = "default") -> l
         "today": facts.get("today"),
         "coach_comment": facts.get("coach_comment"),
         "coach_next": facts.get("coach_next"),
+        "coach_when": facts.get("coach_when"),
     }
     if channel == "xhs":
         system = (
@@ -426,7 +427,7 @@ def share_note_messages(domain: str, facts: dict, channel: str = "default") -> l
             "- 结尾抛一个真诚的开放问题，邀请评论区讨论（不要用固定口号，要让人真的有话可说）；\n"
             "- 另给一句适合放封面的开放问题 discuss（≤24 字），与正文结尾的问题一致或更短；\n"
             "- 口语化、短句、有画面感，全文 120–220 字；\n"
-            "- 如果 facts.coach_comment 非空，可自然提一句 Manbo 老师的点评（中文转述，不要照搬英文），不超过 40 字；\n"
+            "- 只有当 facts.coach_when 为 today 且 facts.coach_comment 非空时，才可自然提一句 Manbo 老师的点评（中文转述，不要照搬英文），不超过 40 字；否则不要提 Manbo；\n"
             "- 不写“英语大神”“30 天流利”“逆袭”这类夸张承诺；\n"
             "- 不出现具体错误原句、录音、公司名、真实姓名；\n"
             "- 正文自然带上品牌「耳界」一次；\n"
@@ -443,7 +444,7 @@ def share_note_messages(domain: str, facts: dict, channel: str = "default") -> l
             "- 文案必须和 verdict 一致：说退步时不要写“有进步/变好”，说变好时不要写“退步”；\n"
             "- 第一行固定：用耳界练英语的第 N 天。N 用 facts.day_no；\n"
             "- 正文 3–5 行：一个真实进步、一个具体卡点、一个明天动作；\n"
-            "- 如果 facts.coach_comment 非空，加一句 Manbo 老师今天的中文转述点评（如“Manbo 老师提醒我：…”），不超过 40 字；不要照搬英文；\n"
+            "- 只有当 facts.coach_when 为 today 且 facts.coach_comment 非空时，才加一句 Manbo 老师今天的中文转述点评（如“Manbo 老师提醒我：…”），不超过 40 字；否则不要提 Manbo；\n"
             "- 每条不超过 20 个汉字，避免长句；\n"
             "- 口语化、具体、有共鸣，不写“英语大神”“30 天流利”这类夸张承诺；\n"
             "- 不出现具体错误原句、录音、公司名、真实姓名；\n"
