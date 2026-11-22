@@ -25,8 +25,11 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "about", label: "关于" },
 ];
 
+// K12 教材入口：模式未定，先隐藏（场景数据保留在 seed 里，改 true 即可恢复）
+const K12_ENABLED = false;
+
 const SCENES = [
-  { key: "g7", label: "七年级" },
+  ...(K12_ENABLED ? [{ key: "g7", label: "七年级" }] : []),
   { key: "work", label: "职场" },
   { key: "meeting", label: "会议" },
   { key: "client", label: "客户" },
@@ -54,10 +57,7 @@ const SCENES = [
 ];
 
 const SCENE_GROUPS: SceneGroup[] = [
-  {
-    label: "K12 教材",
-    keys: ["g7"],
-  },
+  ...(K12_ENABLED ? [{ label: "K12 教材", keys: ["g7"] }] : []),
   {
     label: "职场沟通",
     keys: ["work", "meeting", "client", "negotiate", "report", "phone", "email", "management", "collab", "interview"],
