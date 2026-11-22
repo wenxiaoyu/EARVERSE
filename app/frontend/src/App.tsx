@@ -26,6 +26,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 const SCENES = [
+  { key: "g7", label: "七年级" },
   { key: "work", label: "职场" },
   { key: "meeting", label: "会议" },
   { key: "client", label: "客户" },
@@ -53,6 +54,10 @@ const SCENES = [
 ];
 
 const SCENE_GROUPS: SceneGroup[] = [
+  {
+    label: "K12 教材",
+    keys: ["g7"],
+  },
   {
     label: "职场沟通",
     keys: ["work", "meeting", "client", "negotiate", "report", "phone", "email", "management", "collab", "interview"],

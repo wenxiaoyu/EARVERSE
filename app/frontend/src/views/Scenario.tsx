@@ -9,6 +9,7 @@ import { createWavRecorder } from "../wavRecorder";
 type Scenario = { id: string; cat: string; title: string; goal: string; load: number };
 
 const CAT_BY_DOMAIN: Record<string, string[]> = {
+  g7: ["g7"],
   work: ["work"],
   meeting: ["meeting"],
   client: ["client"],
