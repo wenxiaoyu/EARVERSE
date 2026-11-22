@@ -303,6 +303,7 @@ export default function Recitation({ domain }: { domain: string }) {
           <div className="row rc-actions">
             <button className="btn primary" onClick={startRecite}>开始背诵</button>
             <button className="btn ghost" onClick={() => speak(passage.text, "real")}>▶ 听全文</button>
+            <button className="btn" onClick={() => setShareOpen(true)}>📕 分享到小红书</button>
             <button className="btn ghost" onClick={nextPassage} disabled={busy}>
               {busy ? "生成中…" : "换一篇"}
             </button>
@@ -477,7 +478,6 @@ export default function Recitation({ domain }: { domain: string }) {
           <div className="row rc-actions">
             <button className="btn primary" onClick={again}>再背一次</button>
             <button className="btn ghost" onClick={nextPassage} disabled={busy}>{busy ? "生成中…" : "换一篇"}</button>
-            <button className="btn" onClick={() => setShareOpen(true)}>📕 分享到小红书</button>
             {audioUrl && <audio className="rc-audio" controls src={audioUrl} />}
           </div>
         </div>
@@ -520,16 +520,18 @@ export default function Recitation({ domain }: { domain: string }) {
         )}
       </div>
     
-      {result && (
-        <RecitationShare
-          open={shareOpen}
-          onClose={() => setShareOpen(false)}
-          passageText={passage?.text || result.title}
-          attempt={result}
-          streak={Number(meta?.streak) || 0}
-          audioUrl={audioUrl}
-        />
-      )}
+      <RecitationShare
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        passage={{
+          title: passage.title,
+          text: passage.text,
+          word_count: passage.word_count,
+          level: passage.level,
+        }}
+        attempt={stage === "result" && result ? result : null}
+        streak={Number(meta?.streak) || 0}
+      />
 
     </section>
   );

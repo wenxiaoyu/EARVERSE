@@ -2,18 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { toast } from "../toast";
 
-type Attempt = {
-  id: string;
-  title: string;
-  level: number;
-  score: number;
-  words: number;
-  wpm: number;
-  independence: number;
-  hint: number;
-};
+type Neutral = { title: string; text: string; word_count?: number; level?: number };
+type Scored = { score: number; words: number; wpm: number; independence: number };
 
-const HASHTAGS = ["#英语背诵", "#英语口语", "#英语学习", "#每日英语", "#口语练习"];
+const HASHTAGS = ["#英语背诵", "#英语口语", "#英语学习", "#每日英语", "#英语听力"];
 
 function verdictLine(score: number): string {
   if (score >= 85) return "这篇基本背顺了，只有几个小磕绊。";
@@ -22,41 +14,43 @@ function verdictLine(score: number): string {
   return "还不太熟，先看关键词再来一遍。";
 }
 
-function buildCaption(attempt: Attempt, streak: number, text: string): string {
-  const first = (text || "").split(/(?<=[.!?])\s+/)[0] || "";
-  const lines = [
-    `今天背了一段英文。`,
-    "",
-    `《${attempt.title}》`,
-    verdictLine(Math.round(attempt.score)),
-    `综合 ${Math.round(attempt.score)} 分 · ${attempt.words} 词 · ${Math.round(attempt.wpm)} wpm · 独立度 ${Math.round(attempt.independence)}`,
-    "",
-  ];
+function buildCaption(neutral: Neutral, scored: Scored | null, streak: number): string {
+  const lines = ["今天听了一段英文，跟着读了几遍。", "", `《${neutral.title}》`];
+  if (scored) {
+    lines.push(verdictLine(Math.round(scored.score)));
+    lines.push(`综合 ${Math.round(scored.score)} 分 · ${scored.words} 词 · ${Math.round(scored.wpm)} wpm`);
+  } else {
+    lines.push(`${neutral.word_count || 0} 词，先听懂，再开口。`);
+  }
+  lines.push("");
+  const first = (neutral.text || "").split(/(?<=[.!?])\s+/)[0] || "";
   if (first) lines.push(`第一句是：「${first.trim()}」`, "");
-  if (streak > 0) lines.push(`已经连续背了 ${streak} 天。`, "");
-  lines.push("封面就是我背的原文，配的是我自己的录音。");
+  if (streak > 0) lines.push(`已经连续练了 ${streak} 天。`, "");
+  lines.push("封面是这段原文，语音是 AI 老师的朗读。");
   lines.push("");
   lines.push(HASHTAGS.join(" "));
   return lines.join("\n");
 }
 
 export default function RecitationShare({
-  open, onClose, passageText, attempt, streak, audioUrl,
+  open, onClose, passage, attempt, streak,
 }: {
   open: boolean;
   onClose: () => void;
-  passageText: string;
-  attempt: Attempt;
+  passage: Neutral;
+  attempt: Scored | null;
   streak: number;
-  audioUrl: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [caption, setCaption] = useState("");
   const [busy, setBusy] = useState(false);
+  const [audioSrc, setAudioSrc] = useState("");
+  const [audioBusy, setAudioBusy] = useState(false);
+  const audioBlob = useRef<Blob | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    setCaption(buildCaption(attempt, streak, passageText));
+    setCaption(buildCaption(passage, attempt, streak));
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -65,9 +59,45 @@ export default function RecitationShare({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [open, attempt, streak, passageText, onClose]);
+  }, [open, passage, attempt, streak, onClose]);
+
+  // 关闭时释放音频 objectURL
+  useEffect(() => {
+    if (open) return;
+    if (audioSrc) URL.revokeObjectURL(audioSrc);
+    setAudioSrc("");
+    audioBlob.current = null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   if (!open) return null;
+
+  const ensureAiAudio = async (): Promise<Blob | null> => {
+    if (audioBlob.current) return audioBlob.current;
+    setAudioBusy(true);
+    try {
+      const res = await fetch("/api/speech/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: passage.text, style: "plain", speed: 0.96, voice: "stella" }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const blob = await res.blob();
+      if (!blob.size) throw new Error("empty");
+      audioBlob.current = blob;
+      const url = URL.createObjectURL(blob);
+      setAudioSrc((old) => {
+        if (old) URL.revokeObjectURL(old);
+        return url;
+      });
+      return blob;
+    } catch {
+      toast("AI 朗读生成失败，请检查模型配置");
+      return null;
+    } finally {
+      setAudioBusy(false);
+    }
+  };
 
   const exportPng = async (): Promise<string | null> => {
     if (!cardRef.current) return null;
@@ -92,26 +122,20 @@ export default function RecitationShare({
     if (!url) return;
     const a = document.createElement("a");
     a.href = url;
-    a.download = `earverse-recite-${attempt.id.slice(0, 8)}.png`;
+    a.download = "earverse-recite-cover.png";
     a.click();
   };
 
-  const downloadAudio = async () => {
-    if (!audioUrl) {
-      toast("这次没有可下载的录音");
-      return;
-    }
-    try {
-      const blob = await (await fetch(audioUrl)).blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `earverse-recite-${attempt.id.slice(0, 8)}.wav`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-    } catch {
-      toast("录音下载失败，请重试");
-    }
+  const downloadAudio = async (): Promise<boolean> => {
+    const blob = await ensureAiAudio();
+    if (!blob) return false;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "earverse-recite-ai.wav";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    return true;
   };
 
   const copyCaption = async () => {
@@ -127,9 +151,11 @@ export default function RecitationShare({
     setBusy(true);
     try {
       await downloadImage();
-      await downloadAudio();
+      const ok = await downloadAudio();
       try { await navigator.clipboard.writeText(caption); } catch { /* ignore */ }
-      toast("封面 + 语音已下载，文案已复制，去小红书发笔记吧");
+      toast(ok
+        ? "封面 + AI 朗读已下载，文案已复制，去小红书发笔记吧"
+        : "封面已下载、文案已复制；AI 朗读生成失败");
     } finally {
       setBusy(false);
     }
@@ -141,8 +167,8 @@ export default function RecitationShare({
         <div className="share-head">
           <div>
             <div className="share-kicker">RECITE NOTE · 背诵分享</div>
-            <h3>分享这段背诵</h3>
-            <p>封面是原文，语音是你的录音；到小红书用「视频」笔记配上即可。</p>
+            <h3>分享这段英文</h3>
+            <p>封面是原文，语音是 Manbo 的 AI 朗读；到小红书用「视频」笔记配上即可。</p>
           </div>
           <button className="share-close" aria-label="关闭" onClick={onClose}>×</button>
         </div>
@@ -152,20 +178,27 @@ export default function RecitationShare({
             <div className="rs-card" ref={cardRef}>
               <div className="sn-top">
                 <div className="sn-brand">耳界 <small>EARVERSE</small></div>
-                <span className="sn-day">L{attempt.level} · 背诵</span>
+                <span className="sn-day">L{passage.level || 2} · 背诵</span>
               </div>
 
-              <h3 className="rs-title">{attempt.title}</h3>
-              <div className="rs-text">{passageText}</div>
+              <h3 className="rs-title">{passage.title}</h3>
+              <div className="rs-text">{passage.text}</div>
 
               <div className="rs-foot">
-                <div className="rs-score">
-                  <b>{Math.round(attempt.score)}</b>
-                  <span>综合</span>
-                </div>
+                {attempt ? (
+                  <div className="rs-score">
+                    <b>{Math.round(attempt.score)}</b>
+                    <span>综合</span>
+                  </div>
+                ) : (
+                  <div className="rs-score">
+                    <b>{passage.word_count || 0}</b>
+                    <span>词</span>
+                  </div>
+                )}
                 <div className="rs-meta">
-                  <span>{attempt.words} 词</span>
-                  <span>{Math.round(attempt.wpm)} wpm</span>
+                  <span>AI 朗读</span>
+                  {attempt && <span>{Math.round(attempt.wpm)} wpm</span>}
                   {streak > 0 && <span>连续 {streak} 天</span>}
                 </div>
               </div>
@@ -175,20 +208,24 @@ export default function RecitationShare({
 
           <aside className="share-side">
             <label>文案（可编辑）</label>
-            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={12} />
+            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={11} />
 
             <div className="share-actions">
-              <button className="btn primary sm" onClick={shareXhs} disabled={busy}>
-                {busy ? "准备中…" : "📕 小红书"}
+              <button className="btn primary sm" onClick={shareXhs} disabled={busy || audioBusy}>
+                {busy || audioBusy ? "准备中…" : "📕 小红书"}
               </button>
               <button className="btn sm" onClick={downloadImage} disabled={busy}>下载封面</button>
-              <button className="btn sm" onClick={downloadAudio} disabled={busy || !audioUrl}>下载录音</button>
+              <button className="btn sm" onClick={() => downloadAudio()} disabled={busy || audioBusy}>
+                下载朗读
+              </button>
               <button className="btn sm" onClick={copyCaption}>复制文案</button>
             </div>
 
+            {audioSrc && <audio className="rc-audio" controls src={audioSrc} />}
+
             <p className="share-privacy">
-              小红书不支持纯语音笔记：发布时选「视频」，用这张封面图 + 你的录音即可。
-              {!audioUrl && "（这次没有保存到录音）"}
+              小红书不支持纯语音笔记：发布时选「视频」，用这张封面图 + Manbo 的朗读音频即可。
+              朗读由本机合成，可反复下载、不额外收费。
             </p>
           </aside>
         </div>
