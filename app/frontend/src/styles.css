@@ -1338,6 +1338,30 @@ input[type=range].range::-moz-range-progress{height:6px;border-radius:999px;back
 .coach-quote b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#4dd0e1;margin-bottom:6px}
 .coach-quote p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.6}
 
+/* ============ 背诵分享卡（封面 = 原文） ============ */
+.rs-card{position:relative;width:540px;height:720px;box-sizing:border-box;padding:36px 40px 28px;
+  display:flex;flex-direction:column;overflow:hidden;border-radius:22px;color:#241B12;
+  font-family:var(--sans);
+  background:radial-gradient(820px 460px at 84% -12%,rgba(232,163,61,.16),transparent 58%),
+             linear-gradient(160deg,#F8F0E3 0%,#F2E7D4 58%,#ECDFC8 100%);
+  box-shadow:0 24px 60px -30px rgba(0,0,0,.75)}
+.rs-card:before{content:"";position:absolute;inset:14px;border:1px solid rgba(70,50,28,.14);
+  border-radius:14px;pointer-events:none}
+.rs-title{position:relative;z-index:1;font-family:var(--serif);font-size:27px;line-height:1.28;
+  font-weight:900;letter-spacing:-.01em;margin:20px 0 14px}
+.rs-text{position:relative;z-index:1;flex:1 1 auto;min-height:0;overflow:hidden;
+  font-family:var(--serif);font-size:16.5px;line-height:1.86;color:#3b2d20;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:14}
+.rs-foot{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;
+  gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(70,50,28,.18)}
+.rs-score{display:flex;align-items:baseline;gap:6px}
+.rs-score b{font-family:var(--serif);font-size:50px;line-height:.9;font-weight:900;letter-spacing:-.03em}
+.rs-score span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#8b7458}
+.rs-meta{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:#8b7458}
+.rs-brandline{position:relative;z-index:1;margin-top:12px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.24em;color:#a08a6a}
+
 /* ============ 中文翻译提示（点一下才出现，字号更小） ============ */
 .zh-hint{display:flex;flex-direction:column;gap:3px;margin-top:6px}
 .zh-toggle{align-self:flex-start;background:none;border:0;padding:0;font:inherit;

@@ -3,6 +3,7 @@ import { api, speak } from "../api";
 import { prefetchSpeech } from "../voice";
 import { toast } from "../toast";
 import { createWavRecorder } from "../wavRecorder";
+import RecitationShare from "../components/RecitationShare";
 
 type Passage = {
   id: string;
@@ -97,6 +98,7 @@ export default function Recitation({ domain }: { domain: string }) {
   const [err, setErr] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [audioOpen, setAudioOpen] = useState("");
+  const [shareOpen, setShareOpen] = useState(false);
 
   const rec = useRef(createWavRecorder());
   const startedAt = useRef(0);
@@ -475,6 +477,7 @@ export default function Recitation({ domain }: { domain: string }) {
           <div className="row rc-actions">
             <button className="btn primary" onClick={again}>再背一次</button>
             <button className="btn ghost" onClick={nextPassage} disabled={busy}>{busy ? "生成中…" : "换一篇"}</button>
+            <button className="btn" onClick={() => setShareOpen(true)}>📕 分享到小红书</button>
             {audioUrl && <audio className="rc-audio" controls src={audioUrl} />}
           </div>
         </div>
@@ -516,6 +519,18 @@ export default function Recitation({ domain }: { domain: string }) {
           </>
         )}
       </div>
+    
+      {result && (
+        <RecitationShare
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          passageText={passage?.text || result.title}
+          attempt={result}
+          streak={Number(meta?.streak) || 0}
+          audioUrl={audioUrl}
+        />
+      )}
+
     </section>
   );
 }
