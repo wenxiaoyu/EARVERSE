@@ -143,6 +143,9 @@ if [ -n "$SRC" ] && [ -f "$SRC" ]; then
     if [ -d "$CAND/.git" ]; then
       # 开发者从源码仓库运行：不自动覆盖当前工作区
       ROOT="$CAND"
+      if [ "$UPDATE" = "1" ]; then
+        log "当前是 git 仓库：--update 不会覆盖代码，请先 git pull（或直接用 ./app/scripts/uninstall.sh）"
+      fi
     else
       # 已安装目录：继续走远程更新检查
       DEST="$CAND"
