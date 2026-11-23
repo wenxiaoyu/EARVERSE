@@ -11,6 +11,7 @@ try {
 $NoStart = ($args -contains "--no-start") -or ($env:EARVERSE_NO_START -eq "1")
 $NoShortcut = ($args -contains "--no-shortcut") -or ($env:EARVERSE_NO_SHORTCUT -eq "1")
 $NoOpen = ($args -contains "--no-open") -or ($env:EARVERSE_NO_OPEN -eq "1")
+$Uninstall = $args -contains "--uninstall"
 $Update = $args -contains "--update"
 $Source = if ($env:EARVERSE_SOURCE) { $env:EARVERSE_SOURCE.ToLower() } else { "auto" }
 $Cn = ($args -contains "--cn") -or ($env:EARVERSE_CN -eq "1")
@@ -25,6 +26,25 @@ function Die($m) {
   Write-Host "[earverse] $m" -ForegroundColor Red
   exit 1
 }
+
+# ---------- 卸载 ----------
+if ($Uninstall) {
+  $cand = $null
+  if ($env:EARVERSE_DIR -and (Test-Path $env:EARVERSE_DIR)) { $cand = $env:EARVERSE_DIR }
+  elseif (Test-Path (Join-Path (Get-Location) "app\backend\app\main.py")) { $cand = (Get-Location).Path }
+  elseif (Test-Path (Join-Path $HOME "earverse")) { $cand = Join-Path $HOME "earverse" }
+  if (-not $cand) { Die "找不到安装目录。请进入安装目录后运行 app\scripts\uninstall.ps1" }
+  $sc = Join-Path $cand "app\scripts\uninstall.ps1"
+  if (-not (Test-Path $sc)) { Die "未找到卸载脚本：$sc" }
+  $rest = @()
+  if (($args -contains "--yes") -or ($args -contains "-y")) { $rest += "-Yes" }
+  if (($args -contains "--purge-data") -or ($args -contains "--purge")) { $rest += "-PurgeData" }
+  if ($args -contains "--dry-run") { $rest += "-DryRun" }
+  if ($args -contains "--force") { $rest += "-Force" }
+  & powershell -NoProfile -ExecutionPolicy Bypass -File $sc @rest
+  exit $LASTEXITCODE
+}
+
 
 if (@("auto","gitee","github","custom") -notcontains $Source) {
   Die "EARVERSE_SOURCE 只支持 auto / gitee / github / custom"

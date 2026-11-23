@@ -32,6 +32,8 @@ AUTO_UPDATE=0
 CHECK_ONLY=0
 SHORTCUT=1
 OPEN=1
+UNINSTALL=0
+UNINSTALL_ARGS=()
 NO_UPDATE_CHECK="${EARVERSE_NO_UPDATE_CHECK:-0}"
 SOURCE="${EARVERSE_SOURCE:-auto}"
 CN="${EARVERSE_CN:-0}"
@@ -42,6 +44,12 @@ for arg in "$@"; do
     --start) START=1 ;;
     --no-shortcut) SHORTCUT=0 ;;
     --no-open) OPEN=0 ;;
+    --uninstall) UNINSTALL=1 ;;
+    --yes|-y) UNINSTALL_ARGS+=("--yes") ;;
+    --purge-data|--purge) UNINSTALL_ARGS+=("--purge-data") ;;
+    --keep-data) UNINSTALL_ARGS+=("--keep-data") ;;
+    --dry-run) UNINSTALL_ARGS+=("--dry-run") ;;
+    --force) UNINSTALL_ARGS+=("--force") ;;
     --update) UPDATE=1 ;;
     --cn) CN=1 ;;
     --check-update) CHECK_ONLY=1 ;;
@@ -57,6 +65,7 @@ for arg in "$@"; do
   ./install.sh --no-start      只安装
   ./install.sh --no-shortcut   不创建桌面图标
   ./install.sh --no-open       启动后不自动打开窗口
+  ./install.sh --uninstall     卸载（可加 --purge-data / --yes / --dry-run）
   ./install.sh --update        更新代码（保留画像/设置）
   ./install.sh --cn            使用国内 pip/npm 镜像
   ./install.sh --check-update  只检查远程是否有新版本
@@ -81,6 +90,22 @@ if [ -t 1 ]; then BOLD="\033[1m"; AMBER="\033[33m"; RED="\033[31m"; RESET="\033[
 log()  { printf "${AMBER}[earverse]${RESET} %s\n" "$*"; }
 ok()   { printf "${BOLD}[earverse]${RESET} %s\n" "$*"; }
 die()  { printf "${RED}[earverse] %s${RESET}\n" "$*" >&2; exit 1; }
+
+# ---------- 卸载 ----------
+if [ "$UNINSTALL" = "1" ]; then
+  CAND=""
+  if [ -n "${EARVERSE_DIR:-}" ] && [ -d "$EARVERSE_DIR" ]; then
+    CAND="$EARVERSE_DIR"
+  elif [ -f "./app/backend/app/main.py" ]; then
+    CAND="$(pwd)"
+  elif [ -d "$HOME/earverse" ]; then
+    CAND="$HOME/earverse"
+  fi
+  [ -n "$CAND" ] || die "找不到安装目录。请进入安装目录后运行 ./app/scripts/uninstall.sh"
+  SCRIPT="$CAND/app/scripts/uninstall.sh"
+  [ -f "$SCRIPT" ] || die "未找到卸载脚本：$SCRIPT"
+  exec bash "$SCRIPT" "${UNINSTALL_ARGS[@]+"${UNINSTALL_ARGS[@]}"}"
+fi
 
 case "$SOURCE" in
   auto|gitee|github|custom) ;;

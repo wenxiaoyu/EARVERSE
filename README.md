@@ -266,6 +266,17 @@ sudo ./app/scripts/install-daemon.sh  # 开机自启（LaunchDaemon，免登录�
 - 健康检查：`curl http://127.0.0.1:8000/api/health`
 - 日志：`app/logs/coach.out.log` / `app/logs/coach.err.log`
 
+### 卸载
+
+```bash
+./install.sh --uninstall              # 交互确认，默认保留学习数据
+./install.sh --uninstall --purge-data # 连学习数据一起删
+./install.sh --uninstall --dry-run    # 只看会做什么
+```
+
+会依次：停服务 → 卸开机自启 → 关进程 → 删桌面图标/缓存 → 清理安装目录。
+如果当前目录是 git 仓库（开发环境），**不会删代码**，只清运行产物。
+
 ---
 
 ## 测试

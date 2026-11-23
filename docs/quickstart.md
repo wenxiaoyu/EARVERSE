@@ -152,8 +152,14 @@ powershell -ExecutionPolicy Bypass -File .\app\scripts\install-shortcut.ps1
 更新会保留学习记录和设置。
 
 **Q：怎么卸载？**
-直接删除安装目录（`~/earverse`）。
-如果装过开机自启，再执行：`./app/scripts/service.sh uninstall`。
+
+```bash
+cd ~/earverse
+./install.sh --uninstall              # 会问一次，默认保留学习数据
+./install.sh --uninstall --purge-data # 连学习数据一起删
+```
+
+Windows：在安装目录运行 `powershell -ExecutionPolicy Bypass -File .\app\scripts\uninstall.ps1`。
 
 ---
 
