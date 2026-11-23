@@ -82,6 +82,11 @@ for arg in "$@"; do
   EARVERSE_NO_UPDATE_CHECK  1 = 不检查远程更新
 EOF
       exit 0 ;;
+    *)
+      printf "[earverse] 未知参数：%s\n" "$arg" >&2
+      printf "可用：--no-start / --no-shortcut / --no-open / --update / --cn / --uninstall / --help\n" >&2
+      exit 2
+      ;;
   esac
 done
 
