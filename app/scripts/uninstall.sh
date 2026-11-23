@@ -10,7 +10,10 @@
 #   ./app/scripts/uninstall.sh --dry-run       # 只打印将要做什么
 #   ./app/scripts/uninstall.sh --force         # 允许删除 git 仓库目录（危险）
 set -euo pipefail
+# 旧版 env.sh 在 set -u 下会报 PYTHON: unbound variable，这里临时关掉
+set +u
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/env.sh"
+set -u
 ROOT="$(cd "$APP_ROOT/.." && pwd)"
 
 YES=0
